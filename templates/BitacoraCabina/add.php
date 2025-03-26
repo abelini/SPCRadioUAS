@@ -1,0 +1,27 @@
+<?php
+/**
+ * @var \App\View\AppView $this
+ * @var \App\Model\Entity\BitacoraCabina $bitacoraCabina
+ */
+?>
+<div class="row">
+    <aside class="column">
+        <div class="side-nav">
+            <h4 class="heading"><?= __('Actions') ?></h4>
+            <?= $this->Html->link(__('List Bitacora Cabina'), ['action' => 'index'], ['class' => 'side-nav-item']) ?>
+        </div>
+    </aside>
+    <div class="column column-80">
+        <div class="bitacoraCabina form content">
+            <?= $this->Form->create($bitacoraCabina) ?>
+            <fieldset>
+                <legend><?= __('Add Bitacora Cabina') ?></legend>
+                <?php
+                    echo $this->Form->control('fecha');
+                ?>
+            </fieldset>
+            <?= $this->Form->button(__('Submit')) ?>
+            <?= $this->Form->end() ?>
+        </div>
+    </div>
+</div>
