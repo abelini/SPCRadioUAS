@@ -10,6 +10,18 @@
 
 Software basado en CakePHP para administrar las tareas operativas del entorno de cabina.
 
+* Roles de operación (turnos y horarios)
+* Programas radiofónicos (altas, bajas y modificaciones)
+* Personal
+* Asignaciones de tareas (maestros de ceremonias, grabaciones de spots, etc)
+* Reportes de bitácora de cabina
+* Reportes de incidencias de vigilancia
+* API para solicitar
+    * Operador actual
+    * Programación actual
+* Otras tareas internas propias de la estación
+
+    
 Par uso exclusivo de Radio UAS.
 
 
