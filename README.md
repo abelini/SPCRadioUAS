@@ -13,13 +13,22 @@ Software basado en CakePHP para administrar las tareas operativas del entorno de
 
 * Roles de operación (turnos y horarios)
 * Programas radiofónicos (altas, bajas y modificaciones)
-* Personal
+* Manejo de personal
 * Asignaciones de tareas (maestros de ceremonias, grabaciones de spots, etc)
 * Reportes de cumplimiento de la programación
 * Reportes de incidencias de vigilancia
-* API para solicitar
+* REST API para solicitar
     * Operador actual
+      ```
+      GET locutores/get
+        ```
     * Programación actual
+      ```
+      GET schedule/daily?day={n}
+        ```
+      ```
+      GET schedule/now
+        ```
 * Otras tareas internas propias de la estación
 
     
