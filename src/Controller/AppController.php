@@ -4,16 +4,20 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Model\Entity\Permiso;
+use App\Model\Entity\Usuario;
 use Cake\Controller\Controller;
-use Cake\Datasource\EntityInterface;
+//use Cake\Datasource\EntityInterface;
 use Cake\Event\EventInterface;
+use Cake\I18n\DateTime;
 
 
 class AppController extends Controller {
 	
-	public EntityInterface $user;
+	protected Usuario $user;
 	
-	public const string APP_NAME = 'SISTEMA DE PRODUCCIÓN Y CABINA';
+	protected static DateTime $datetime;
+	
+	protected const string APP_NAME = 'SISTEMA DE PRODUCCIÓN Y CABINA';
 	
 	protected array $paginate = [
 		'limit' => 40,
@@ -23,6 +27,7 @@ class AppController extends Controller {
 		parent::beforeFilter($event);
 		
 		$layout = 'home';
+		self::$datetime = DateTime::now();
 		$auth = $this->Authentication->getResult();
 		if($auth->isValid()) {
 			$this->user = $this->getTableLocator()
@@ -42,6 +47,7 @@ class AppController extends Controller {
 		$this->viewBuilder()->setLayout($layout);
 		
 		$this->set('AppName', self::APP_NAME);
+		$this->set('datetime', self::$datetime);
     }
 
 	public function initialize(): void {

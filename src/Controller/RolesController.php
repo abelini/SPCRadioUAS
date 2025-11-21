@@ -39,7 +39,7 @@ class RolesController extends AppController {
 			'pdfConfig', [
 				'download' => true,
 				'orientation' => 'portrait',
-				'pageSize' => 'Legal',
+				'pageSize' => 'A4',//'Legal',
 				'filename' => 'Rol-'.$rol->ID ,
 				'margin' => [
 					'bottom' => 10,

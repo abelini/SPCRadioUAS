@@ -41,14 +41,24 @@ class LocutoresController extends AppController {
 										]);
 						})
 						->first();
-		$jsonData = [
-			'name' => $rol->asignaciones[0]->locutor->name,
-			'starts' => $rol->asignaciones[0]->horario->horaInicio->i18nFormat("ha", 'en_US'),
-			'ends' => $rol->asignaciones[0]->horario->horaFin->i18nFormat("ha", 'en_US'),
-		];
-		
+		if(!empty($rol->asignaciones)){
+			$response = [
+				'name' => $rol->asignaciones[0]->locutor->name,
+				'starts' => $rol->asignaciones[0]->horario->horaInicio->i18nFormat("ha", 'en_US'),
+				'ends' => $rol->asignaciones[0]->horario->horaFin->i18nFormat("ha", 'en_US'),
+			];
+		} else {
+			$response = [
+				'name' => '',
+				'starts' => '',
+				'ends' => '',
+			];
+		}
 		$this->viewBuilder()->setLayout(null);
-		return $this->render()->withType('application/json')->withStringBody(json_encode($jsonData));
+		
+		return $this->render()
+					->withType('application/json')
+						->withStringBody(json_encode($response));
     }
 
 }

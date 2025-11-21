@@ -24,19 +24,17 @@ class CabinaController extends AppController {
 	
 	private const array ACCESS_TOKENS = [
 		
-		// Carlos Rangel
-			'EAAD9svI5jeEBO1HrAhXrZCyjlbsdFFtOgwQDlOCwZB76iEhTcQol48xzgiUbebmdFZCZCQttg6fJmSd3HWhNzuIZCgqHsiTMuJA7TPdtpshpPkQbBKPdktif2jMMYwFw5CfP4TkVT2pM5AnsvmI9jahlTMlD2SXEwrYo79MZBYmICdhSwxIswSJlKpcPGRrGIZD',
-		
 		// Abel Botello
 			'EAAD9svI5jeEBOZCzgLEJqJXz1HJ0R5jQagDu7dAzdKDhmZA5xa7exLG36Jy3uefUI3PIGa1LPgCuc61TQ9ph8twO2ZAqQVZCeRrtX6UCnn31QT0fTzV0ydbywG6XafES6FyjyICbUDtZCKWRkKgfBX078V3HM3w6RVIIJIWZBROkY6fZCPCBevgFTdZAmA8USjEhyVh41YRt',
+			
+		// Carlos Rangel
+			'EAAD9svI5jeEBO1HrAhXrZCyjlbsdFFtOgwQDlOCwZB76iEhTcQol48xzgiUbebmdFZCZCQttg6fJmSd3HWhNzuIZCgqHsiTMuJA7TPdtpshpPkQbBKPdktif2jMMYwFw5CfP4TkVT2pM5AnsvmI9jahlTMlD2SXEwrYo79MZBYmICdhSwxIswSJlKpcPGRrGIZD',
 		
 		// Alethia Perez
 		// Tania
 			'EAAD9svI5jeEBO1lKrMJbkTIj0MVchBqnAtdDZBptZCK1naoDEvz9VX9Rd2ZCb8Oyum0YiU6mdWTLu3CdfLhSO3XZBx1CUPAZCQmyrhAKydhbNkPEGIKPAPpCSDu8j6a5oRmaGu7kPZBuysoPav7dRTLImvSZBZCdQ60QrIlxj440qQOpfOrmdESjyRtEOTIq',
-		
 	];
 	
-
 	public function initialize() : void {
 		parent::initialize();
 		$this->Authentication->allowUnauthenticated(['comments', 'getComments']);

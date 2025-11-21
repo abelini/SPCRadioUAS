@@ -12,7 +12,9 @@ use Cake\ORM\Query\SelectQuery;
 
 class ScheduleController extends AppController {
 	
-	protected const string DEFAULT_RADIOFEED_TEXT = 'Fonoteca - Selecciones musicales';
+	protected const string DEFAULT_RADIOFEED_TEXT = 'Fonoteca - Paisajes sonoros';
+	
+	protected const string RADIOUAS_URI = 'https://radio.uas.edu.mx';
 	
 	public function initialize() : void {
 		parent::initialize();
@@ -27,7 +29,7 @@ class ScheduleController extends AppController {
 									->matching('Dias', function(SelectQuery $query) {
 										return $query->where(['Dias.ID' => (new DateTime())->dayOfWeek]);
 									})
-									->orderAsc('horaInicio')
+									->orderByAsc('horaInicio')
 									->all();
 									
 		$programa = $programas->filter(function($programa, $key) {
@@ -40,6 +42,7 @@ class ScheduleController extends AppController {
 		$this->viewBuilder()->setLayout(null);
 		
 		return $this->render()
+						->withHeader('Access-Control-Allow-Origin', self::RADIOUAS_URI)
 						->withType('text/plain')
 						->withStringBody($feed);
     }
@@ -53,16 +56,18 @@ class ScheduleController extends AppController {
 									->select([
 										'name', 'horaInicio', 'horaFin', 'produccion',
 										'icon' => 'uo',
+										'music' => 'musical',
 										'starts' => 'horaInicio',
 										'ends' => 'horaFin',
 									])
 									->matching('Dias', function(SelectQuery $query) use($day) {
 										return $query->where(['Dias.ID' => $day]);
 									})
-									->orderAsc('horaInicio')
+									->orderByAsc('horaInicio')
 									->all();
 									
 		return $this->render()
+						->withHeader('Access-Control-Allow-Origin', self::RADIOUAS_URI)
 						->withType('application/json')
 						->withStringBody(json_encode($programas->toArray()));
 	}
