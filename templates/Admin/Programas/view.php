@@ -1,7 +1,7 @@
 <div class="content">
 
-	<div class="w3-galaxy-blue w3-padding">
-		<h1>Programa «<?= $programa ?>»</h1>
+	<div class="w3-deep-blue w3-padding">
+		<h5><i class="fa-solid fa-radio"></i> Programa «<?= $programa ?>»</h5>
 	</div>
 
 	<table class="w3-table-all">
@@ -34,8 +34,8 @@
 	<?php if($programa->reportable) : ?>
 	
 	<div class="related">
-		<div class="w3-galaxy-blue w3-padding">
-			<h1>Estadísticas del <?= $fechaInicial->i18nFormat("d 'de' MMMM 'de' YYYY") ?> a la fecha (<?= $diff ?>)</h1>
+		<div class="w3-deep-blue w3-padding">
+			<h5><i class="fa-solid fa-chart-simple"></i> Estadísticas del <?= $fechaInicial->i18nFormat("d 'de' MMMM 'de' YYYY") ?> a la fecha (<?= $diff ?>)</h5>
 		</div>
 	
 		<div class="w3-row">
@@ -43,9 +43,15 @@
 			<div class="w3-col l3 w3-padding">
 				<p>Se han registrado <?= $reportes->count()?> emisiones de este programa en las bitácoras.</p>
 				
+				<?php if($reportes->count() > 0) : ?>
+				
 				<p>Este programa tiene un cumplimiento del: <strong><?=  $this->Number->toPercentage((count($ocurrences['V']) + count($ocurrences['G']) + count($ocurrences['S'])) / $reportes->count(), 1, ['multiply' => true])?></strong>.</p>
 				
 				<p>Solo existen <strong><?= count($ocurrences['X'])?> (<?= $programa->get('XtoWord') ?>)</strong> faltas registradas.</p>
+				
+				<?php endif; ?>
+				
+				
 			</div>
 			
 			<div class="w3-col l9 w3-padding">
@@ -68,7 +74,8 @@
 				var options = {
 					title: "Desglose de reportes del programa",
 					is3D: true,
-					colors:['green','orange', 'blue', 'red']
+					colors:['green','orange', 'blue', 'red'],
+					sliceVisibilityThreshold:0
 				};
 
 				let chart = new google.visualization.PieChart(document.getElementById("main-chart"));
@@ -78,6 +85,13 @@
 		
 	</div>
 	<?php endif; ?>
+	
+	<?= $this->Html->link('<i class="fa-regular fa-pen-to-square"></i> Modificar este programa', ['action' => 'edit', $programa->ID], ['class' => 'w3-button w3-green w3-left w3-margin-right', 'escape' => false])?>
+	
+	
+	<?= $this->Form->postLink('<i class="fa-regular fa-trash-can"></i> Eliminar este programa', ['action' => 'delete', $programa->ID], ['method' => 'DELETE', 'confirm' => 'Esto eliminará permanentemente esta solicitud', 'class' => 'w3-button w3-red w3-right', 'escape' => false])?>
+	
+		<div style="clear:both"></div>
 </div>
 
 

@@ -1,30 +1,30 @@
+<?= $this->Flash->render()?>
+
 <div class="w3-">
 	<div class="w3-galaxy-blue w3-padding w3-center">
 		<span class="w3-left w3-xxlarge"><?= $bitacora->previous() != null ? $this->Html->link('<i class="fa-solid fa-circle-chevron-left"></i>', ['?' => ['d' => $bitacora->previous()->fecha->format('Y-m-d')]], ['escape' => false]) : '' ?></span>
 		<span class="w3-right w3-xxlarge"><?= $bitacora->next() != null ? $this->Html->link('<i class="fa-solid fa-circle-chevron-right"></i>', ['?' => ['d' => $bitacora->next()->fecha->format('Y-m-d')]], ['escape' => false]) : '' ?></span>
-		<h1 class=" w3-text-white"><?= $bitacora ?></h1>
+		<h1><?= $bitacora ?></h1>
 		
 	</div>
 	
-	<div class="w3-row w3-padding w3-margin-bottom w3-golden uas-dorado">
-		<div class="w3-col l2">Operador</div>
-		<div class="w3-col l2">Turno</div>
-		<div class="w3-col l3">Reporte de programas</div>
-		<div class="w3-col l1">Enlaces</div>
-		<div class="w3-col l4">Reporte de enlaces remotos</div>
+	<div class="w3-row w3-low-blue w3-padding">
+		<div class="w3-col l2 w3-bold">Operador</div>
+		<div class="w3-col l2 w3-bold">Turno</div>
+		<div class="w3-col l3 w3-bold">Reporte de programas</div>
+		<div class="w3-col l1 w3-bold">Enlaces</div>
+		<div class="w3-col l4 w3-bold">Reporte de enlaces remotos</div>
 	</div>
 	
-	<?= $this->Flash->render()?>
-
 	<?= $this->Form->create($bitacora, ['url' => ['action' => 'update'], 'type' => 'PUT'])?>
 
 		<?php for($i = 0; $i < count($asignaciones); $i ++) : ?>
-			<?php $disableControl = $checkTimeToDisable($asignaciones[$i]->horario);?>
+			<?php $disableControl = $checkTimeToDisable($asignaciones[$i]->horario, $bitacora->reportes[$i]->ID ?? 0);?>
 			
 			<div class="w3-row-padding w3-padding <?= $asignaciones[$i]->classForCurrent($bitacora->fecha, 'w3-card-4 active'); ?>">
 				<div class="w3-col l2">
-					<p><?= $asignaciones[$i]->locutor->name ?></p>
-					<?= $this->Html->image($asignaciones[$i]->locutor->photo, ['class' => 'w3-circle w3-image profile'])?>
+					<p class="w3-bold"><?= $asignaciones[$i]->locutor->name ?></p>
+					<?= $this->Html->image($asignaciones[$i]->locutor->photo, ['class' => 'w3-image profile'])?>
 				</div>
 				<div class="w3-col l2">
 					<p><?= $asignaciones[$i]->horario ?></p>
@@ -68,12 +68,12 @@
 		
 		
 		<?= $this->Form->hidden('ID')?>
-		<?= $this->Form->hidden('fecha')?>
+		<?//= $this->Form->hidden('fecha', ['value' => $bitacora->fecha->toIso8601String()])?>
 		
-		<div class="w3-row w3-padding uas-dorado w3-center">
+		<div class="w3-row w3-padding w3-low-blue w3-center">
 			Valores: <span style="font-weight:normal">(V) Programa en vivo, (G) Programa grabado, (S) Programa suspendido por la Dirección, (X) El conductor no se presentó</span>
 		</div>
-		<div class="w3-padding uas-amarillo w3-center">
+		<div class="w3-padding w3-galaxy-blue w3-center">
 			En caso de haber, registrar un enlace remoto por línea. Si no, favor de dejar en blanco el espacio.
 		</div>
 		
@@ -87,7 +87,7 @@
 <style>
 .w3-row-padding {  background-color: #fafafa;} .uas-dorado {font-weight:bold;background:#c49e0d;color:#fff;} .uas-amarillo{background:#877514;color:#fff;}
 .w3-row-padding.active {  background-color: #eee; margin-bottom:8px;position:relative;z-index:10;}
-img.profile{width:40%;display:block;margin:auto;filter:grayscale(95%);}
+img.profile{width:40%;display:block;margin:auto;filter:grayscale(95%);border:2px #333 solid;}
 .active img.profile{filter:none;width:60%;} fieldset label {padding-right:12px;}
 body{background:#fff;} .w3-padding{padding16px !important;} .created-mod{color:#dbdbdb;}
 </style>  

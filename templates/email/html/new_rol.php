@@ -1,7 +1,7 @@
 <?php $outterTR = 1; $innerTR = 1;?>
 
 <div style="padding:0.01em 16px;color:#000!important;background-color:#efefef !important;">
-	<?= $this->Html->image($this->Url->image('logo.png', ['fullBase' => true]), ['style' => 'display:block;float:right;max-width:96px;'])?>
+	<?= $this->Html->image($this->Url->image('LogoRolCabinaPDF.png', ['fullBase' => true]), ['style' => 'display:block;float:right;max-width:96px;'])?>
 	<h2>Compañeros locutores</h2>
 	<p>Ya está disponible el <strong>rol de cabina</strong> para la semana del:</p>
 </div>
@@ -46,11 +46,11 @@
 	
 <div style="padding:4px;width:100%;background-color:#c49e0d;color:#fff;">
 	<p style="text-align:center">A T E N T A M E N T E</p>
-	<p style="text-align:center">Lic. Marisol Herrera Guerrero</p>
+	<p style="text-align:center">L.C.C. Brenda Rodríguez García</p>
 </div>
 
 <div style="padding:4px;width:100%;background-color:#877514;color:#fff;">
-	<p style="text-align:center">Dirección de Radio Universidad Autónoma de Sinaloa © <?= $rol->fechaInicio->format("Y")?></p>
+	<p style="text-align:center">Dirección de Radio UAS © <?= $rol->fechaInicio->format("Y")?></p>
 </div>
 
 

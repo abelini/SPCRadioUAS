@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
-use \DateTime as DT;
-use \DateInterval;
-use \DateTimeInterface;
+//use \DateTime as DT;
+//use \DateInterval;
+//use \DateTimeInterface;
 
 use App\Controller\AppController;
 use App\Model\Entity\Permiso;
@@ -30,10 +30,10 @@ class DashboardController extends AppController {
     
     public function index() : Response {
 	    
-	    $datetime = DateTime::now();
+	    $datetime = parent::$datetime; //DateTime::now();
 	    
 	    $this->set('user', $this->user);
-	    $this->set('time', $datetime);
+	    //$this->set('time', $datetime);
 
 		switch($this->user->permisos[0]->name) {
 			case Permiso::ADMINISTRATOR 	: 	$this->solicitudes = $this->getSolicitudesStats();
@@ -53,7 +53,7 @@ class DashboardController extends AppController {
 							
 		}
 
-		$diff = $this->getDateDiffString($datetime->diff(DT::createFromFormat(DateTimeInterface::ISO8601, $this->bitacoras['FirstOne']->format(DateTimeInterface::ISO8601))));
+		$diff = $this->getDateDiffString($datetime->diff(DateTime::createFromFormat(\DateTimeInterface::ISO8601, $this->bitacoras['FirstOne']->format(\DateTimeInterface::ISO8601))));
 		
 		$this->set('bitacorasDiff', $diff);
 	    $this->set('solicitudes', $this->solicitudes);
@@ -112,7 +112,7 @@ class DashboardController extends AppController {
 		return $stats->toArray()[0];
     }
     
-	protected function getDateDiffString(DateInterval $diff) : string {
+	protected function getDateDiffString(\DateInterval $diff) : string {
 	    return $diff->y .' años, '. $diff->m .' meses y '. $diff->d .' días';
     }
 }

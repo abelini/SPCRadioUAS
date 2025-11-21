@@ -15,23 +15,21 @@
     <?= $this->fetch('meta') ?>
     <?= $this->fetch('css') ?>
     <?= $this->fetch('script') ?>
-	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+	<link rel="stylesheet" href="https://www.w3schools.com/w3css/5/w3.css">
 	<?= $this->Html->css(['custom']) ?>
 	<style>
 		.footer{clear:both;}
 	</style>
-	<style stype="text/css">
-		@import url('https://fonts.googleapis.com/css2?family=Khand:wght@300;400&display=swap');
-	</style>
 </head>
 <body>
-	<header class="w3-galaxy-blue w3-top">
-		<?= $this->Html->link($AppName, ['controller' => 'dashboard']) ?>
+	<header class="w3-deep-blue w3-top">
 		<a href="#" class="w3-button w3-right w3-padding-small w3-hide-large" onclick="w3_open()"><i class="fa-solid fa-bars"></i></a>
+		<?= $this->Html->image('radio-levels-wh.png', ['style' => 'width:98px;', 'class' => 'w3-left'])?>
+		<h4 class="title"><?= $this->Html->link($AppName, ['controller' => 'dashboard']) ?></h4>	
 	</header>
 	
 	<main class="main">
-		<nav class="w3-sidebar w3-bar-block w3-collapse w3-card w3-animate-left" style="width:220px" id="menu">
+		<nav class="w3-sidebar w3-bar-block w3-collapse w3-card w3-animate-left" id="menu">
 			
 			<?= $this->Html->link('<i class="fa-solid fa-microphone-lines"></i> Roles de Cabina', ['controller' => 'roles',], ['class' => 'w3-bar-item w3-button w3-border-bottom', 'escape' => false])?>
 			<?= $this->Html->link('<i class="fa-regular fa-folder-open"></i> Solicitudes', ['controller' => 'solicitudes',], ['class' => 'w3-bar-item w3-button w3-border-bottom', 'escape' => false])?>
@@ -50,14 +48,15 @@
 		</nav>
 		<div class="content-box" style="">
 			<div class="w3-container">
-			<?= $this->Flash->render() ?>
-			<?= $this->fetch('content') ?>
-		  </div>
+				<?= $this->Flash->render() ?>
+				<?= $this->fetch('content') ?>
+			</div>
 		</div>
+		<div class="c"></div>
 	</main>
 	
     <footer class="w3-padding-large w3-bottom">
-		<p class="w3-center">Dirección de Radio Universidad Autónoma de Sinaloa &copy; 2024</p>
+		<p class="w3-center">Dirección de Radio Universidad Autónoma de Sinaloa &copy; <?= $datetime->format('Y')?></p>
     </footer>
     <script src="https://kit.fontawesome.com/18176e4df9.js" crossorigin="anonymous"></script>
     <script>

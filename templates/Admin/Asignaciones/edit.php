@@ -1,8 +1,10 @@
+<div class="content">
+	<div class="w3-deep-blue w3-padding">
+		<h5>Modificar asignación</h5>
+	</div>
+	
 
-	<h1>Modificar asignación</h1>
-
-
-<div class="asignaciones form content">
+<div class="asignaciones form">
             <?= $this->Form->create($asignacion) ?>
 
 			<?php
@@ -19,7 +21,7 @@
             <?= $this->Form->button(__('Submit')) ?>
             <?= $this->Form->end() ?>
         </div>
-
+</div>
 
 
 

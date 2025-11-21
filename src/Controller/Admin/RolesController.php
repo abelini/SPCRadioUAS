@@ -23,7 +23,7 @@ class RolesController extends AppController {
 		$query = $this->Roles
 					->find()
 						->contain(['Turnos'])
-						->orderDesc('fechaInicio');
+						->orderByDesc('fechaInicio');
 						
 		$roles = $this->paginate($query);
 		
@@ -34,7 +34,7 @@ class RolesController extends AppController {
 	public function view($id = null) {
 		$rol = $this->Roles->get($id, contain: [
 			'Asignaciones' => function(Query $query) {
-				return $query->orderAsc('horaInicio')
+				return $query->orderByAsc('horaInicio')
 							->contain([
 								'Locutores' => function(Query $query) {
 									return $query->select(['ID', 'name']);

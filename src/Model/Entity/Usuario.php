@@ -20,6 +20,10 @@ class Usuario extends Worker {
 		'permisos' => true,
 	];
 	
+	public function getProfilePicture() : string {
+		return parent::getProfilePictureUrl();
+	}
+	
 	protected function _setPassword($password){
         return password_hash($password, PASSWORD_DEFAULT);
     }

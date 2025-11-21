@@ -63,12 +63,12 @@ class UsuariosController extends AppController {
 			}
 			$password = $user->generateAndSetPassword();
 			if($this->Usuarios->save($user)){
-				//$this->getMailer('User')->resetPassword($user, $password, parent::$title);
-				$this->Flash->success('Se te generó una contraseña nueva: '. $password );
+				$this->getMailer('User')->resetPassword($user, $password, parent::APP_NAME);
+				$this->Flash->success('Se te generó una contraseña nueva. Revisa tu correo.');
 			} else {
 				$this->Flash->error('Error. Por favor, intenta nuevamente en un momento.');
 			}
-			return $this->redirect(['action' => 'login']);
+			return $this->render('auth');
 		}
 		return $this->render();
 	}
@@ -90,26 +90,17 @@ class UsuariosController extends AppController {
 		$this->set(compact('usuarios', 'permisos'));
 	}
 
-    /**
-     * View method
-     *
-     * @param string|null $id Usuario id.
-     * @return \Cake\Http\Response|null|void Renders view
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function view($id = null)
-    {
+	public function view($id = null) {
         $usuario = $this->Usuarios->get($id, contain: ['Permisos']);
         $this->set(compact('usuario'));
-    }
+	}
 
     /**
      * Add method
      *
      * @return \Cake\Http\Response|null|void Redirects on successful add, renders view otherwise.
      */
-    public function add()
-    {
+    public function add() {
         $usuario = $this->Usuarios->newEmptyEntity();
         if ($this->request->is('post')) {
             $usuario = $this->Usuarios->patchEntity($usuario, $this->request->getData());

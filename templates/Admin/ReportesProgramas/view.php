@@ -1,7 +1,7 @@
 <div class="content">
 
-	<div class="w3-galaxy-blue w3-padding">
-		<h1>Reporte de programa #<?= $reporte->ID ?></h1>
+	<div class="w3-deep-blue w3-padding">
+		<h5>Reporte de programa #<?= $reporte->ID ?></h5>
 	</div>
 	
 	<table class="w3-table-all">
@@ -16,8 +16,8 @@
 
 	</table>
 		
-	<div class="w3-galaxy-blue w3-padding">
-		<h1>Bitácora</h1>
+	<div class="w3-low-blue w3-padding">
+		<h5>Bitácora</h5>
 	</div>
 	
 	<table class="w3-table-all">

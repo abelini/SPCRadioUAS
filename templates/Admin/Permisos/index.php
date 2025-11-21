@@ -11,20 +11,33 @@
         <table>
             <thead>
                 <tr>
-                    <th><?= $this->Paginator->sort('id') ?></th>
+                    <th><?= $this->Paginator->sort('ID') ?></th>
                     <th><?= $this->Paginator->sort('name') ?></th>
+                    <th><?= $this->Paginator->sort('plural') ?></th>
+                    <th><?= $this->Paginator->sort('singular') ?></th>
+                    <th><?= $this->Paginator->sort('icon') ?></th>
                     <th class="actions"><?= __('Actions') ?></th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($permisos as $permiso): ?>
                 <tr>
-                    <td><?= $this->Number->format($permiso->id) ?></td>
+                    <td><?= $this->Number->format($permiso->ID) ?></td>
                     <td><?= h($permiso->name) ?></td>
+                    <td><?= h($permiso->plural) ?></td>
+                    <td><?= h($permiso->singular) ?></td>
+                    <td><?= h($permiso->icon) ?></td>
                     <td class="actions">
-                        <?= $this->Html->link(__('View'), ['action' => 'view', $permiso->id]) ?>
-                        <?= $this->Html->link(__('Edit'), ['action' => 'edit', $permiso->id]) ?>
-                        <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $permiso->id], ['confirm' => __('Are you sure you want to delete # {0}?', $permiso->id)]) ?>
+                        <?= $this->Html->link(__('View'), ['action' => 'view', $permiso->ID]) ?>
+                        <?= $this->Html->link(__('Edit'), ['action' => 'edit', $permiso->ID]) ?>
+                        <?= $this->Form->postLink(
+                            __('Delete'),
+                            ['action' => 'delete', $permiso->ID],
+                            [
+                                'method' => 'delete',
+                                'confirm' => __('Are you sure you want to delete # {0}?', $permiso->ID),
+                            ]
+                        ) ?>
                     </td>
                 </tr>
                 <?php endforeach; ?>

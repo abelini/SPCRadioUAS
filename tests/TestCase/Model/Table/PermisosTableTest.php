@@ -56,7 +56,7 @@ class PermisosTableTest extends TestCase
      * Test validationDefault method
      *
      * @return void
-     * @uses \App\Model\Table\PermisosTable::validationDefault()
+     * @link \App\Model\Table\PermisosTable::validationDefault()
      */
     public function testValidationDefault(): void
     {

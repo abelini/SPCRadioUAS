@@ -19,8 +19,11 @@ class PermisosFixture extends TestFixture
     {
         $this->records = [
             [
-                'id' => 1,
+                'ID' => 1,
                 'name' => 'Lorem ipsum dolor sit amet',
+                'plural' => 'Lorem ipsum dolor sit amet',
+                'singular' => 'Lorem ipsum dolor sit amet',
+                'icon' => 'Lorem ipsum dolor sit amet',
             ],
         ];
         parent::init();

@@ -35,7 +35,7 @@ class AutorizanteTable extends Table {
 	public function findList(SelectQuery $query, \Closure|array|string|null $keyField = null, \Closure|array|string|null $valueField = null, \Closure|array|string|null $g = null, string $s = ';') : SelectQuery {
 		$finder = $query->select(['ID', 'name'])
 					->where(function(QueryExpression $exp, SelectQuery $query) {
-						return $exp->in('ID', Autorizante::LISTA);
+						return $exp->in('ID', [Autorizante::DIRECTOR]);
 					});
 		return parent::findList($finder, keyField:$keyField, valueField:$valueField);
 	}

@@ -12,7 +12,7 @@ class SolicitudesController extends AppController {
 		$query = $this->Solicitudes
 						->find()
 							->contain(['TipoSolicitud', 'PrimerAsignado', 'SegundoAsignado', 'Autorizante', 'ProductorTecnico'])
-							->orderDesc('fecha');
+							->orderByDesc('fecha');
 		$solicitudes = $this->paginate($query);
 
 		$this->set(compact('solicitudes'));

@@ -13,13 +13,13 @@
     <?= $this->fetch('script') ?>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     	<style stype="text/css">
-		@import url('https://fonts.googleapis.com/css2?family=Khand:wght@300;400&display=swap');
+		@import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
 	</style>
 </head>
 <body>
 	<nav class="top-nav">
 		<div class="top-nav-title">
-			<?= $this->Html->image('logo.png', ['class' => 'logo', 'fullBase' => true])?>
+			<?= $this->Html->image('LogoRolCabinaPDF.png', ['class' => 'logo', 'fullBase' => true])?>
         </div>
 	</nav>
 	<main class="main">
@@ -30,9 +30,7 @@
 
 	<script src="https://kit.fontawesome.com/18176e4df9.js" crossorigin="anonymous"></script>
 	<style>
-		.w3-galaxy-blue{color:#fff!important;background-color:#2A4B7C!important;}
-		h1{font-family:"Khand";font-weight:400;font-style: normal;color:#2A4B7C;font-size:32px;line-height:32px;font-weight:500;}
-		.top-nav {padding:1rem;display:inherit;} .logo{margin:auto;max-width:15%;min-width:10%;display:block;}
+		.top-nav {padding:1rem;display:inherit;} .logo{margin:auto;max-width:20%;min-width:15%;display:block;}
 		.main {max-width:1200px;margin:0 auto;} footer {padding:32px;}
 		@media only screen and (max-width: 600px) {
 			.w3-container {padding:0;}

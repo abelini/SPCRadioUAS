@@ -1,8 +1,11 @@
 <div class="asignaciones w3-responsive">
-	<div class="w3-galaxy-blue w3-padding w3-center">
+	<div class="w3-galaxy-blue head w3-padding w3-center">
 		<span class="w3-left w3-xxlarge"><?= $rol->previous() != null ? $this->Html->link('<i class="fa-solid fa-circle-chevron-left"></i>', ['?' => ['rol' => $rol->previous()->ID]], ['escape' => false]) : '' ?></span>
 		<span class="w3-right w3-xxlarge"><?= $rol->next() != null ? $this->Html->link('<i class="fa-solid fa-circle-chevron-right"></i>', ['?' => ['rol' => $rol->next()->ID]], ['escape' => false]) : '' ?></span>
-		<h1 class=" w3-text-white">Semana del <?= $rol->fechaInicio->i18nFormat("EEEE d 'de' MMMM")?> al <?= $rol->fechaFin->i18nFormat("EEEE d 'de' MMMM 'de' YYYY")?></h1>
+		<h1>ROL DE CABINA</h1>
+	</div>
+	<div class="w3-low-blue w3-center" style="text-transform:uppercase;">
+		<h2><?= $rol->fechaInicio->i18nFormat("EEEE d 'de' MMMM")?> a <?= $rol->fechaFin->i18nFormat("EEEE d 'de' MMMM 'de' YYYY")?></h2>
 	</div>
 	
 	<?php foreach($asignaciones as $dia => $asignaciones) : ?>
@@ -36,6 +39,7 @@
 </div>
 
 <style>
+.head {background:#1A2B4C !important;color:#0094cd !important;} 
 	.by-time{margin:0;} .grid{padding:0 !important;} .day{letter-spacing:2px;font-size:20px;text-transform:uppercase;width:180px;}
 	.rol-info{width:800px;} .download{width:300px;margin:auto;}
 	@media only screen and (max-width: 600px) {

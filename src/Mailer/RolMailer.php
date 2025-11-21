@@ -17,7 +17,9 @@ class RolMailer extends GoogleMailer {
 		$rolesRepository = TableRegistry::getTableLocator()->get('Roles');
 		$locutoresRepository = TableRegistry::getTableLocator()->get('Locutores');
 		
-		$locutores = $locutoresRepository->find('list', keyField:'email', valueField:'name')->all()->toArray();
+		$locutores = $locutoresRepository->find('list', keyField:'email', valueField:'name')
+											->all()
+												->toArray();
 		
 		$rol = $rolesRepository->get($rolID, contain: [
 			'Asignaciones' => function(SelectQuery $query) {
@@ -51,7 +53,6 @@ class RolMailer extends GoogleMailer {
 
 		$this
 			->setTo($locutores)
-			//->setTo(['abelini@gmail.com' => 'Ing. Abel Botello'])
 			->setSubject('Rol de cabina ['.$rol->fechaInicio->format('d/m/y').'] a ['.$rol->fechaFin->format('d/m/y').']')
 			->setViewVars([
 				'rol' => $rol,

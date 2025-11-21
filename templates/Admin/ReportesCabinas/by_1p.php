@@ -1,6 +1,6 @@
-<div class="w3-galaxy-blue w3-padding report-title">
-	<h4 class="w3-left-align w3-left"><?= $programa->name ?></h4>
-	<h4 class="w3-right-align"><?= $start->i18nFormat("d 'de' MMMM YYYY") ?> a <?= $end->i18nFormat("d 'de' MMMM YYYY ") ?> <i class="fa-solid fa-calendar-days"></i></h4>
+<div class="w3-deep-blue w3-padding report-title">
+	<h5 class="w3-left-align w3-left"><?= $programa->name ?></h5>
+	<h5 class="w3-right-align"><?= $start->i18nFormat("d 'de' MMMM YYYY") ?> a <?= $end->i18nFormat("d 'de' MMMM YYYY ") ?> <i class="fa-solid fa-calendar-days"></i></h5>
 </div>
 
 <div class="w3-row">

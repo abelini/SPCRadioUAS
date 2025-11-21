@@ -3,6 +3,7 @@
 namespace App\Mailer;
 
 use App\Mailer\GoogleMailer;
+use App\Model\Entity\Usuario;
 
 
 class UserMailer extends GoogleMailer {
@@ -15,7 +16,7 @@ class UserMailer extends GoogleMailer {
 
 	}
 
-    public function resetPassword(User $user, string $password, string $materia) : GoogleMailer {
+    public function resetPassword(Usuario $user, string $password, string $app) : GoogleMailer {
         $this
 			->setTo($user->email, $user->nombres)
 			->setEmailFormat('html')
@@ -23,7 +24,7 @@ class UserMailer extends GoogleMailer {
 			->setViewVars([
 				'user' => $user,
 				'password' => $password,
-				'materia' => $materia
+				'app' => $app,
 			])
 			->viewBuilder()
 				->setTemplate('reset_password');

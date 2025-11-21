@@ -45,7 +45,7 @@ class LocutoresTable extends Table {
 	public function findAll(SelectQuery $query) : SelectQuery {
 		return $query
 				->selectAllExcept($this, ['password'])
-				->orderAsc('fullname')
+				->orderByAsc('fullname')
 				->matching('Permisos', function(SelectQuery $query) {
 					return $query->where(['Permisos.ID' => Permiso::LOCUTOR]);
 				});

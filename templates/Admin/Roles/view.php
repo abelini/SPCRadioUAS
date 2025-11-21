@@ -1,9 +1,10 @@
 <div class="content">
-	<div class="w3-golden w3-padding">
-		<h1>Rol de cabina #<?= $rol->ID ?></h1>
+	<div class="w3-deep-blue w3-padding">
+		<h5>Rol de cabina #<?= $rol->ID ?></h5>
 	</div>
 
 	<table class="w3-table-all">
+
 		<tr>
 			<th>Tipo de horario</th>
 			<td><?= $this->Html->link($rol->turno->name, ['controller' => 'Turnos', 'action' => 'view', $rol->turno->ID])?></td>
@@ -16,11 +17,12 @@
 			<th>Termina el día</th>
 			<td><?= $rol->fechaFin->i18nFormat("EEEE d 'de' MMMM 'de' YYYY") ?></td>
 		</tr>
+
 	</table>
 
 	<div class="asignaciones">
-		<div class="w3-dark-golden w3-padding">
-			<h2>Asignaciones de la semana</h2>
+		<div class="w3-low-blue w3-padding">
+			<h5>Asignaciones de la semana</h5>
 		</div>
 
 	<table class="w3-table-all by-day">

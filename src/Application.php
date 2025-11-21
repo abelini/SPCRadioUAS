@@ -48,8 +48,6 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
 		}
 		Configure::write('DebugKit.safeTld', ['org']);
 		Configure::write('DebugKit.variablesPanelMaxDepth', 8);
-		
-		Configure::write('CakePdf', ['engine' => 'CakePdf.CustomWkHtmlToPdf',]);
 	}
 
 	public function middleware(MiddlewareQueue $middlewareQueue): MiddlewareQueue {
@@ -98,14 +96,24 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
 			'queryParam' => 'redirect',
 		]);
 
-		$fields = [
+		$credentials = [
 			AbstractIdentifier::CREDENTIAL_USERNAME => 'username',
 			AbstractIdentifier::CREDENTIAL_PASSWORD => 'password'
+		];
+		$identifier = [
+			'Authentication.Password' => [
+				'fields' => $credentials,
+				'resolver' => [
+					'className' => 'Authentication.Orm',
+					'userModel' => 'Usuarios',
+				],
+			],
 		];
 		// Load the authenticators. Session should be first.
 		$service->loadAuthenticator('Authentication.Session');
 		$service->loadAuthenticator('Authentication.Form', [
-			'fields' => $fields,
+			'fields' => $credentials,
+			'identifier' => $identifier,
 			'loginUrl' => Router::url([
 				'prefix' => 'Admin',
 				'plugin' => null,
@@ -114,19 +122,10 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
 			]),
 		]);
 
-		// Load identifiers
-		$service->loadIdentifier('Authentication.Password', [
-			'fields' => [
-				AbstractIdentifier::CREDENTIAL_USERNAME => 'username',
-				AbstractIdentifier::CREDENTIAL_PASSWORD => 'password'
-			],
-			'resolver' => [
-				'className' => 'Authentication.Orm',
-				'userModel' => 'Usuarios',
-				//'finder' => 'active', // default: 'all'
-			],
-		]);
-
+		//	DEPRECATED since 3.3.0
+		/*
+		$service->loadIdentifier('Authentication.Password', $identifier);
+		*/
 		return $service;
 	}
 

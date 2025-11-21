@@ -1,7 +1,7 @@
 <div class="content">
 
-	<div class="w3-galaxy-blue w3-padding">
-		<h1>Modificar el programa «<?= $programa ?>»</h1>
+	<div class="w3-deep-blue w3-padding">
+		<h5><i class="fa-solid fa-radio"></i> Modificar el programa <strong>«<?= $programa ?>»</strong></h5>
 	</div>
 
 	<div class="w3-container">
@@ -25,11 +25,14 @@
 			
 			<?= $this->Form->label('reportable','¿Se debe reportar?') ?>
 			<?= $this->Form->control('reportable', ['label' => false]) ?>
+			
+			<?= $this->Form->label('musical','¿Es un segmento de música?') ?>
+			<?= $this->Form->control('musical', ['label' => false]) ?>
 
 			<?= $this->Form->label('dias','Días en que se transmite') ?>
 			<?= $this->Form->control('dias._ids', ['options' => $dias, 'size' => 7, 'label' => false]);?>
 			
-			<?= $this->Form->button('Guardar') ?>
+			<?= $this->Form->button('Guardar', ['class' => '']) ?>
 			
 		<?= $this->Form->end() ?>
 

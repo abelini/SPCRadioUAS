@@ -10,7 +10,7 @@ use Cake\TestSuite\TestCase;
 /**
  * App\Controller\Admin\PermisosController Test Case
  *
- * @uses \App\Controller\Admin\PermisosController
+ * @link \App\Controller\Admin\PermisosController
  */
 class PermisosControllerTest extends TestCase
 {
@@ -31,7 +31,7 @@ class PermisosControllerTest extends TestCase
      * Test index method
      *
      * @return void
-     * @uses \App\Controller\Admin\PermisosController::index()
+     * @link \App\Controller\Admin\PermisosController::index()
      */
     public function testIndex(): void
     {
@@ -42,7 +42,7 @@ class PermisosControllerTest extends TestCase
      * Test view method
      *
      * @return void
-     * @uses \App\Controller\Admin\PermisosController::view()
+     * @link \App\Controller\Admin\PermisosController::view()
      */
     public function testView(): void
     {
@@ -53,7 +53,7 @@ class PermisosControllerTest extends TestCase
      * Test add method
      *
      * @return void
-     * @uses \App\Controller\Admin\PermisosController::add()
+     * @link \App\Controller\Admin\PermisosController::add()
      */
     public function testAdd(): void
     {
@@ -64,7 +64,7 @@ class PermisosControllerTest extends TestCase
      * Test edit method
      *
      * @return void
-     * @uses \App\Controller\Admin\PermisosController::edit()
+     * @link \App\Controller\Admin\PermisosController::edit()
      */
     public function testEdit(): void
     {
@@ -75,7 +75,7 @@ class PermisosControllerTest extends TestCase
      * Test delete method
      *
      * @return void
-     * @uses \App\Controller\Admin\PermisosController::delete()
+     * @link \App\Controller\Admin\PermisosController::delete()
      */
     public function testDelete(): void
     {

@@ -7,7 +7,7 @@ use Cake\ORM\Entity;
 
 
 class Permiso extends Entity {
-	
+
 	public const string ADMINISTRATOR = 'Administrador';
 	
 	public const string CAPTURISTA = 'Capturista';
@@ -24,8 +24,11 @@ class Permiso extends Entity {
 	
 	public const int LOCUTOR = 10;
 	
-	protected array $_accessible = [
-		'name' => true,
-		'usuarios' => true,
-	];
+    protected array $_accessible = [
+        'name' => true,
+        'plural' => true,
+        'singular' => true,
+        'icon' => true,
+        'usuarios' => true,
+    ];
 }

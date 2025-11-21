@@ -17,7 +17,7 @@ class ProgramasController extends AppController {
 	
 	public function index() {
 		$query = $this->Programas->find()
-								->orderAsc('name');
+								->orderByAsc('name');
 		$programas = $this->paginate($query);
 
 		$this->set(compact('programas'));
@@ -33,15 +33,17 @@ class ProgramasController extends AppController {
 
 	protected function getReportByProgram(Programa $programa) {
 		
-		$programa = $this->Programas->loadInto($programa, ['ReportesProgramas' => function(SelectQuery $query) {
-			return $query->matching('ReportesCabinas', function(SelectQuery $query) {
-				return $query->matching('BitacoraCabina', function(SelectQuery $query) {
-					return $query->where(function(QueryExpression $exp) {
-						return $exp->between('fecha', new DateTime(ReportesPrograma::REPORTING_START_DATE), DateTime::now());
+		$programa = $this->Programas->loadInto($programa, [
+			'ReportesProgramas' => function(SelectQuery $query) {
+				return $query->matching('ReportesCabinas', function(SelectQuery $query) {
+					return $query->matching('BitacoraCabina', function(SelectQuery $query) {
+						return $query->where(function(QueryExpression $exp) {
+							return $exp->between('fecha', new DateTime(ReportesPrograma::REPORTING_START_DATE), DateTime::now());
+						});
 					});
 				});
-			});
-		}]);
+			}
+		]);
 		//$star = $start;
 		$reportes = new Collection($programa->reportes);
 		$groupedReportes = $reportes->groupBy('status')->toArray();
@@ -71,21 +73,21 @@ class ProgramasController extends AppController {
 	    return $diff->y .' años, '. $diff->m .' meses y '. $diff->d .' días';
     }
 
-    public function add()
-    {
-        $programa = $this->Programas->newEmptyEntity();
-        if ($this->request->is('post')) {
-            $programa = $this->Programas->patchEntity($programa, $this->request->getData());
-            if ($this->Programas->save($programa)) {
-                $this->Flash->success(__('The programa has been saved.'));
+	public function add(){
+		$programa = $this->Programas->newEmptyEntity();
+		if ($this->request->is('post')) {
+			$programa = $this->Programas->patchEntity($programa, $this->request->getData());
+			if ($this->Programas->save($programa)) {
+				$this->Flash->success(__('The programa has been saved.'));
 
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The programa could not be saved. Please, try again.'));
-        }
-        $dias = $this->Programas->Dias->find('list', limit: 200)->all();
-        $this->set(compact('programa', 'dias'));
-    }
+				return $this->redirect(['action' => 'index']);
+			}
+			debug($programa->getErrors());
+			$this->Flash->error(__('The programa could not be saved. Please, try again.'));
+		}
+		$dias = $this->Programas->Dias->find('list', limit: 200)->all();
+		$this->set(compact('programa', 'dias'));
+	}
 
     /**
      * Edit method

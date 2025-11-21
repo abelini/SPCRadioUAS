@@ -12,20 +12,20 @@ class GoogleMailer extends Mailer {
 		'radio@uas.edu.mx' => 'Dirección de Radio UAS'
 	];
 	
-	private const array BCC = [
+	private const array CC = [
 		'abel@uas.edu.mx' => 'Ing. Abel Bottello',
 		'angelloperez@uas.edu.mx' => 'Angellos Pérez',
-		'marisolhg@uas.edu.mx' => 'Marisol Herrera',
+		'brenda@uas.edu.mx' => 'Brenda Rodríguez',
 	];
 	
-	protected const array PROFILE = [
+	protected const array GENERAL_PROFILE = [
 		'from' => self::FROM,
-		'bcc' => self::BCC,
+		'cc' => self::CC,
 		'emailFormat' => 'html',
 	];
 	
 	public function __construct() {
-		parent::__construct(self::PROFILE);
+		parent::__construct(self::GENERAL_PROFILE);
 		
 		TransportFactory::setConfig('GoogleTransport', [
 			'host' => 'smtp.gmail.com',

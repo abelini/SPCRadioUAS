@@ -1,6 +1,6 @@
-<div class="w3-galaxy-blue w3-padding report-title">
-	<?= $this->Html->link('<i class="fa-solid fa-print"></i>', ['action' => 'download-report', '?' => $this->request->getQuery()], ['class' => 'w3-right', 'escape' => false])?>
-	<h4 class="w3-left-align"><i class="fa-solid fa-flag-checkered"></i> Reporte general del período de <?= $reportStart->i18nFormat("d 'de' MMMM yyyy") ?> a <?= $reportEnd->i18nFormat("d 'de' MMMM yyyy") ?></h4>
+<div class="w3-deep-blue w3-padding">
+	<h5 class="w3-right"><?= $this->Html->link('<i class="fa-solid fa-print"></i>', ['action' => 'download-report', '?' => $this->request->getQuery()], ['class' => 'w3-right', 'escape' => false])?></h5>
+	<h5><i class="fa-solid fa-flag-checkered"></i> Reporte general del período de <?= $reportStart->i18nFormat("d 'de' MMMM yyyy") ?> a <?= $reportEnd->i18nFormat("d 'de' MMMM yyyy") ?></h5>
 </div>
 
 <div class="w3-row">
@@ -27,8 +27,8 @@
 	</div>
 </div>
 
-<div class="w3-galaxy-blue w3-padding report-title">
-	<h5 class="w3-left-align"><i class="fa-solid fa-tower-cell"></i> Informe de enlaces remotos en el período</h5>
+<div class="w3-deep-blue w3-padding report-title">
+	<h5><i class="fa-solid fa-tower-cell"></i> Informe de enlaces remotos en el período</h5>
 </div>
 
 <div class="w3-row">
@@ -39,8 +39,8 @@
 	<?php endforeach; ?>
 </div>
 
-<div class="w3-galaxy-blue w3-padding report-title">
-	<h5 class="w3-left-align"><i class="fa-solid fa-chart-line"></i> Reportes individuales de cumplimiento</h5>
+<div class="w3-deep-blue w3-padding report-title">
+	<h5><i class="fa-solid fa-chart-line"></i> Reportes individuales de cumplimiento</h5>
 </div>
 
 <div class="w3-row-padding">
@@ -82,7 +82,8 @@
 	var generalOptions = {
 			pieHole: 0.4,
 			legend:{position:"none"},
-			slices:{0:{color:"green"}, 1:{color:"red"},}
+			slices:{0:{color:"green"}, 1:{color:"red"},},
+			pieSliceText:"none",
 		};
 		
 	<?php foreach($programas as $programa) : ?>
@@ -98,7 +99,7 @@
 </script>
 
 <style>
-	.report-title h4 {color:#fff !important;} .report-title h5{color:#fff !important;font-size:24px;} p{margin:0;} .cr-list span {padding:0 0 8px;text-transform:uppercase;}
+	p{margin:0;} .cr-list span {padding:0 0 8px;text-transform:uppercase;}
 	.minichart{width:256px;height:128px;margin:auto;display:block;} .c{clear:both;} .cr-list{display:inline-grid !important;} .cr-list span {border-bottom:1px solid #ccc !important;}
-	h5 i, h4 i{margin-right:16px;} .fa-print{padding:16px;font-size:32px;}
+	h5 i, h4 i{margin-right:16px;}
 </style>

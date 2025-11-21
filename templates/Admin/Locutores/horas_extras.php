@@ -1,9 +1,9 @@
 <div class="content">
-	<div class="w3-dark-golden w3-padding">
-		<h1>Horas extras del personal para la quincena</h1>
+	<div class="w3-deep-blue w3-padding">
+		<h5><i class="fa-regular fa-clock"></i> Horas extras del personal para la quincena</h5>
 	</div>
-	<div class="w3-golden w3-padding w3-center">
-		<h2 style="text-transform:uppercase"><?= $empieza->i18nFormat("d 'de' MMMM")?> <i class="fa-solid fa-arrow-right-long"></i> <?= $termina->i18nFormat("d 'de' MMMM")?></h2>
+	<div class="w3-low-blue w3-padding w3-center">
+		<h6 style="text-transform:uppercase"><?= $empieza->i18nFormat("d 'de' MMMM")?> <i class="fa-solid fa-arrow-right-long"></i> <?= $termina->i18nFormat("d 'de' MMMM")?></h6>
 	</div>
 	
 	<p class="w3-section"><strong>HORAS EXTRAS POR DÍAS INHÁBILES</strong>:</p>
@@ -62,7 +62,8 @@
 			<td>
 				<ul class="w3-ul">
 					<?php foreach($locutor['eventos'] as $evento) : ?>
-					<li class="w3-text-gray"><i class="fa-solid fa-user-tie"></i> <?= $evento->shortDesc() ?> (<?= $evento->fecha->format('d/m/Y') ?> )</li>
+					<li><i class="fa-solid fa-user-tie"></i> <?= $evento->shortDesc() ?></li>
+					<li><i class="fa-regular fa-calendar-check"></i> <?= $evento->fecha->i18nFormat(\IntlDateFormatter::LONG) ?></li>
 					<?php endforeach; ?>
 				</ul>
 			</td>

@@ -84,15 +84,22 @@ class ReportesProgramasController extends AppController {
 		return $this->render();
 	}
 
-	public function delete($id = null) {
+	public function delete($id = null) : Response {
 		$this->request->allowMethod(['delete']);
-		$reportesPrograma = $this->ReportesProgramas->get($id);
-		if ($this->ReportesProgramas->delete($reportesPrograma)) {
-			$this->Flash->success(__('The reportes programa has been deleted.'));
+		$reportePrograma = $this->ReportesProgramas->get($id);
+		$rc = $this->ReportesProgramas
+							->ReportesCabinas
+								->find()
+								->select(['bitacoraID'])
+								->where(['ID' => $reportePrograma->ReporteCabinaID])
+								->first();
+
+		if ($this->ReportesProgramas->delete($reportePrograma)) {
+			$this->Flash->success('Reporte de programa eliminado');
 		} else {
 			$this->Flash->error(__('The reportes programa could not be deleted. Please, try again.'));
 		}
-
-		return $this->redirect(['action' => 'index']);
+		
+		return $this->redirect(['controller' => 'BitacoraCabina', 'action' => 'view', $rc->bitacoraID]);
 	}
 }

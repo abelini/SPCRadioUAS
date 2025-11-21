@@ -1,10 +1,15 @@
-<div class="bitacoraCabina form content">
+<div class="content">
+
+	<div class="w3-deep-blue w3-padding">
+		<h5><i class="fa-solid fa-table-list"></i> Agregar una bitácora faltante</h5>
+	</div>
+	
 	<?= $this->Form->create($bitacora) ?>
-
-			<h4>Agregar una bitácora faltante</h4>
+		
+		<p class="w3-section">Selecciona la fecha</p>
 			
-			<?= $this->Form->control('fecha')?>
+			<?= $this->Form->control('fecha', ['label' => false])?>
 
-		<?= $this->Form->button(__('Submit')) ?>
+		<?= $this->Form->button('Crear bitácora', ['class' => 'w3-section']) ?>
 	<?= $this->Form->end() ?>
 </div>

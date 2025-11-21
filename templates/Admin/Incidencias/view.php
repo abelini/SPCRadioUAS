@@ -1,6 +1,6 @@
 <div class="content">
-	<div class="w3-dark-golden w3-padding">
-		<h1>Incidencias</h1>
+	<div class="w3-deep-blue w3-padding">
+		<h5>Incidencias</h5>
 	</div>
 
 	
@@ -34,11 +34,11 @@
 	
 	<div class="related">
 		<div class="w3-row">
-			<div class="w3-half w3-golden w3-padding">
-				<h2>Detalle</h2>
+			<div class="w3-half w3-deep-blue w3-padding">
+				<h5>Detalle</h5>
 			</div>
-			<div class="w3-half w3-dark-golden w3-padding">
-				<h2>Seguimiento</h2>
+			<div class="w3-half w3-low-blue w3-padding">
+				<h5>Seguimiento</h5>
 			</div>
 		</div>
 		

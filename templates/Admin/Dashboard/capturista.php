@@ -1,22 +1,22 @@
 <div class="content">
-	<h3 class="t w3-text-gray">BIENVENIDO</h3>
+	<h3 class="t w3-text-gray">BIENVENIDA</h3>
 	<h1 class="t w3-text-gray"><?= $user->name ?></h1>
 	
 	<hr>
 	
 	<div class="dashboard w3-container w3-section w3-row-padding">
 		<div class="w3-col l3">
-			<h2 class="w3-margin-bottom"><i class="fa-solid fa-bell"></i> <strong>NOTIFICACIONES</strong></h2>
+			<h4 class="w3-margin-bottom"><i class="fa-solid fa-bell"></i> <strong>NOTIFICACIONES</strong></h4>
 			
 			<div class="w3-section message success">
-				<h3>Sin novedad</h3>
+				<h5>Sin novedad</h5>
 				<p>Todo marcha a la perfección.</p>
 			</div>  
 		</div>
 		
 		
 		<div class="w3-col l9">
-			<h2 class="w3-margin-bottom"><i class="fa-solid fa-chart-simple"></i> <strong>ESTADÍSTICAS</strong></h2>
+			<h4 class="w3-margin-bottom"><i class="fa-solid fa-chart-simple"></i> <strong>ESTADÍSTICAS</strong></h4>
 			
 			<p class="w3-padding-16">Hay <strong><?= $solicitudes['Total']?> solicitudes</strong> registradas en el sistema.</p>
 			
@@ -59,7 +59,7 @@
 	</div>
 
 	<div class="w3-padding-large">
-		<p class="w3-right w3-text-gray"><?= $time->i18nFormat(\IntlDateFormatter::FULL) ?></p>
+		<p class="w3-right w3-text-gray"><?= $datetime->i18nFormat(\IntlDateFormatter::FULL) ?></p>
 	</div>
 </div>
 

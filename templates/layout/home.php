@@ -29,11 +29,11 @@
 						</div>
 						<div class="w3-half w3-white w3-center w3-padding login">
 							
-							<h1>Radio Universidad Autónoma de Sinaloa</h1>
+							<?= $this->Html->image('radio-levels.png', ['class' => 'logo w3-image w3-center'])?>
 							
 							<h2><?= $AppName ?></h2>
 							
-							<?= $this->Html->image('logo.png', ['class' => 'logo w3-image w3-center'])?>
+							
 							
 							<?= $this->Flash->render() ?>
 							
@@ -42,7 +42,7 @@
 							<?= $this->Html->image('iloveuas.png', ['class' => 'iloveuas w3-center w3-image'])?>
 								
 							<p class="w3-center w3-small">
-								Dirección de Radio Universidad Autónoma de Sinaloa<br/>&reg; 2024
+								Dirección de Radio Universidad Autónoma de Sinaloa<br/>&reg; <?= date('Y')?>
 							</p>
 						</div>
 					</div>
@@ -59,8 +59,8 @@
 			 .w3-modal-content{width:100%;} img.modal{cursor:pointer;}
 			p{color:#666;text-align:left;padding:12px;} p.title{font-weight:bold;} .date{font-weight:lighter;color:#aaa;}
 			*/
-			h1{line-height:45px;font-size:45px;letter-spacing:1px;} h2{font-size:30px;letter-spacing:1px;}
-			.logo{max-width:35%;} .iloveuas{max-width:15%;} p,h2{color:#aaa;}
+			h1{line-height:45px;font-size:45px;letter-spacing:1px;} h2{font-size:30px;color:#1a2b4c;} h3{color:#0094cd;}
+			.logo{max-width:40%;} .iloveuas{max-width:15%;} p{color:#aaa;} h1,h2,h3{text-transform:uppercase;font-weight:450;}
 			
 			@media only screen and (min-width:1200px) {
 				.reg-modal{width:100%;margin:0;}

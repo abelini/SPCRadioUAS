@@ -1,22 +1,19 @@
 <div class="content">
-	<div class="w3-dark-golden w3-padding">
-		<h1>Roles de cabina</h1>
+	<div class="w3-deep-blue w3-padding">
+		<h5><i class="fa-solid fa-table-list"></i> Roles de cabina</h5>
 	</div>
-	
-	<div class="w3-container">
-		 <?= $this->Html->link('<i class="fa-solid fa-file-arrow-up"></i> Registrar un rol de semana', ['action' => 'add'], ['class' => 'w3-button w3-golden w3-hover-dark-golden w3-right w3-section', 'escape' => false]) ?>
-	</div>
-	
 
-	<table class="w3-table-all">
-		<tr>
-			<th>Semana</th>
-			<th class="w">Inicia</th>
-			<th class="a"></th>
-			<th class="w">Termina</th>
-			<th>Horario</th>
-			<th class="actions"></th>
-	    </tr>
+	<table class="w3-table">
+		<thead>
+			<tr>
+				<th>Semana</th>
+				<th class="w">Inicia</th>
+				<th class="a"></th>
+				<th class="w">Termina</th>
+				<th>Configuración de horario</th>
+				<th class="actions"></th>
+		    </tr>
+	    </thead>
 	    <?php foreach ($roles as $rol): ?>
 	    <tr>
 			<td>#<?= $rol->ID ?></td>
@@ -33,17 +30,20 @@
 	    <?php endforeach; ?>
 	</table>
 
-    <div class="paginator">
-        <ul class="pagination">
-            <?= $this->Paginator->first('<< ' . __('first')) ?>
-            <?= $this->Paginator->prev('< ' . __('previous')) ?>
-            <?= $this->Paginator->numbers() ?>
-            <?= $this->Paginator->next(__('next') . ' >') ?>
-            <?= $this->Paginator->last(__('last') . ' >>') ?>
-        </ul>
-        <p><?= $this->Paginator->counter(__('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')) ?></p>
-    </div>
+	<div class="w3-center w3-padding-48">
+		<div class="w3-bar w3-border">
+		<?= $this->Paginator->first('<i class="fa-solid fa-angles-left"></i>', ['escape' => false]) ?>
+		<?= $this->Paginator->prev('<i class="fa-solid fa-angle-left"></i>', ['escape' => false]) ?>
+		<?= $this->Paginator->numbers() ?>
+		<?= $this->Paginator->next('<i class="fa-solid fa-angle-right"></i>', ['escape' => false]) ?>
+		<?= $this->Paginator->last('<i class="fa-solid fa-angles-right"></i>', ['escape' => false]) ?>
+		</div>
+	</div>
+	<p class="w3-text-gray"><?= $this->Paginator->counter('Página {{page}} de {{pages}}. Mostrando {{current}} resultados de un total de {{count}}') ?></p>
+
 </div>
+
+<?= $this->Html->link('<i class="fa-solid fa-plus"></i>', ['action' => 'add'], ['class' => 'w3-button w3-circle w3-xxlarge w3-golden w3-hover-dark-golden add', 'escape' => false]) ?>
 
 <style>
 	.w{width:160px;} .a{width:40px;}

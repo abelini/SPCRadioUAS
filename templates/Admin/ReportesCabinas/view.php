@@ -1,6 +1,6 @@
 <div class="content">
-	<div class="w3-galaxy-blue w3-padding">
-		<h1>Reporte de cabina #<?= $reporte->ID ?></h1>
+	<div class="w3-deep-blue w3-padding">
+		<h5>Reporte de cabina #<?= $reporte->ID ?></h5>
 	</div>
 	<table class="w3-table-all">
 		<tr>
@@ -24,13 +24,13 @@
 	<div class="text">
 		<strong><?= ($reporte->controles > 0)? 'Lista de enlaces remotos' : 'Reporte de cabina' ?></strong>
 		<blockquote>
-			<?= $this->Text->autoParagraph($reporte->getPrintableReport()); ?>
+			<?= $reporte->getPrintableReport(); ?>
 		</blockquote>
 	</div>
 
 	<div class="related">
-		<div class="w3-galaxy-blue w3-padding">
-			<h2>Reportes individuales de programas</h2>
+		<div class="w3-low-blue w3-padding">
+			<h5>Reportes individuales de programas</h5>
 		</div>
 		
 		    
@@ -47,7 +47,7 @@
 			<tr>
 			    <td>#<?= $rp->ID ?></td>
 			    <td><?= $rp->programa->name ?></td>
-				<td><?= $rp->getStatusText() ?></td>
+				<td><?= $rp->getStatusText(true) ?></td>
 				<td class="actions">
 					<?= $this->Html->link('<i class="fa-solid fa-arrow-up-right-from-square"></i>', ['controller' => 'ReportesProgramas', 'action' => 'view', $rp->ID], ['escape' => false]) ?>
 					<?= $this->Html->link('<i class="fa-regular fa-pen-to-square"></i>', ['controller' => 'ReportesProgramas', 'action' => 'edit', $rp->ID], ['escape' => false]) ?>
@@ -57,7 +57,9 @@
 			<?php endforeach; ?>
 		  </table>
 
-	    <?php endif; ?>
+		<?php else : ?>
+			<p class="w3-padding"><i class="fa-regular fa-file-excel"></i> No se reportaron programas en este turno</p>
+		<?php endif; ?>
 	</div>
   
 </div>

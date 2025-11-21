@@ -8,8 +8,8 @@
     <aside class="column">
         <div class="side-nav">
             <h4 class="heading"><?= __('Actions') ?></h4>
-            <?= $this->Html->link(__('Edit Permiso'), ['action' => 'edit', $permiso->id], ['class' => 'side-nav-item']) ?>
-            <?= $this->Form->postLink(__('Delete Permiso'), ['action' => 'delete', $permiso->id], ['confirm' => __('Are you sure you want to delete # {0}?', $permiso->id), 'class' => 'side-nav-item']) ?>
+            <?= $this->Html->link(__('Edit Permiso'), ['action' => 'edit', $permiso->ID], ['class' => 'side-nav-item']) ?>
+            <?= $this->Form->postLink(__('Delete Permiso'), ['action' => 'delete', $permiso->ID], ['confirm' => __('Are you sure you want to delete # {0}?', $permiso->ID), 'class' => 'side-nav-item']) ?>
             <?= $this->Html->link(__('List Permisos'), ['action' => 'index'], ['class' => 'side-nav-item']) ?>
             <?= $this->Html->link(__('New Permiso'), ['action' => 'add'], ['class' => 'side-nav-item']) ?>
         </div>
@@ -23,8 +23,20 @@
                     <td><?= h($permiso->name) ?></td>
                 </tr>
                 <tr>
-                    <th><?= __('Id') ?></th>
-                    <td><?= $this->Number->format($permiso->id) ?></td>
+                    <th><?= __('Plural') ?></th>
+                    <td><?= h($permiso->plural) ?></td>
+                </tr>
+                <tr>
+                    <th><?= __('Singular') ?></th>
+                    <td><?= h($permiso->singular) ?></td>
+                </tr>
+                <tr>
+                    <th><?= __('Icon') ?></th>
+                    <td><?= h($permiso->icon) ?></td>
+                </tr>
+                <tr>
+                    <th><?= __('ID') ?></th>
+                    <td><?= $this->Number->format($permiso->ID) ?></td>
                 </tr>
             </table>
             <div class="related">
@@ -33,7 +45,7 @@
                 <div class="table-responsive">
                     <table>
                         <tr>
-                            <th><?= __('Id') ?></th>
+                            <th><?= __('ID') ?></th>
                             <th><?= __('Empleado') ?></th>
                             <th><?= __('Username') ?></th>
                             <th><?= __('Password') ?></th>
@@ -41,22 +53,31 @@
                             <th><?= __('Fullname') ?></th>
                             <th><?= __('Email') ?></th>
                             <th><?= __('Base') ?></th>
+                            <th><?= __('Photo') ?></th>
                             <th class="actions"><?= __('Actions') ?></th>
                         </tr>
-                        <?php foreach ($permiso->usuarios as $usuarios) : ?>
+                        <?php foreach ($permiso->usuarios as $usuario) : ?>
                         <tr>
-                            <td><?= h($usuarios->id) ?></td>
-                            <td><?= h($usuarios->empleado) ?></td>
-                            <td><?= h($usuarios->username) ?></td>
-                            <td><?= h($usuarios->password) ?></td>
-                            <td><?= h($usuarios->name) ?></td>
-                            <td><?= h($usuarios->fullname) ?></td>
-                            <td><?= h($usuarios->email) ?></td>
-                            <td><?= h($usuarios->base) ?></td>
+                            <td><?= h($usuario->ID) ?></td>
+                            <td><?= h($usuario->empleado) ?></td>
+                            <td><?= h($usuario->username) ?></td>
+                            <td><?= h($usuario->password) ?></td>
+                            <td><?= h($usuario->name) ?></td>
+                            <td><?= h($usuario->fullname) ?></td>
+                            <td><?= h($usuario->email) ?></td>
+                            <td><?= h($usuario->base) ?></td>
+                            <td><?= h($usuario->photo) ?></td>
                             <td class="actions">
-                                <?= $this->Html->link(__('View'), ['controller' => 'Usuarios', 'action' => 'view', $usuarios->id]) ?>
-                                <?= $this->Html->link(__('Edit'), ['controller' => 'Usuarios', 'action' => 'edit', $usuarios->id]) ?>
-                                <?= $this->Form->postLink(__('Delete'), ['controller' => 'Usuarios', 'action' => 'delete', $usuarios->id], ['confirm' => __('Are you sure you want to delete # {0}?', $usuarios->id)]) ?>
+                                <?= $this->Html->link(__('View'), ['controller' => 'Usuarios', 'action' => 'view', $usuario->ID]) ?>
+                                <?= $this->Html->link(__('Edit'), ['controller' => 'Usuarios', 'action' => 'edit', $usuario->ID]) ?>
+                                <?= $this->Form->postLink(
+                                    __('Delete'),
+                                    ['controller' => 'Usuarios', 'action' => 'delete', $usuario->ID],
+                                    [
+                                        'method' => 'delete',
+                                        'confirm' => __('Are you sure you want to delete # {0}?', $usuario->ID),
+                                    ]
+                                ) ?>
                             </td>
                         </tr>
                         <?php endforeach; ?>

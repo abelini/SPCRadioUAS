@@ -1,20 +1,20 @@
 <div class="content">
-	<div class="w3-dark-golden w3-padding">
-		<h2 class="w3-right">Bitácora #<?= $bitacora->ID ?></h2>
-		<h1><?= $bitacora->fecha->i18nFormat(\IntlDateFormatter::FULL) ?></h1>
+	<div class="w3-deep-blue w3-padding">
+		<h5 class="w3-right">Bitácora #<?= $bitacora->ID ?></h5>
+		<h5><i class="fa-solid fa-list-check"></i> <?= $bitacora->fecha->i18nFormat(\IntlDateFormatter::FULL) ?></h5>
 	</div>
 
 
 	<?php if (!empty($bitacora->reportes)) : ?>
 		
 		<table class="w3-table-all">
-			<tr>
-				<th>Reporte</th>
-				<th>Operador</th>
-				<th>Turno</th>
-				<th>CR</th>
-				<th>Reporte de enlaces remotos</th>
-				<th class="actions">Acciones</th>
+			<tr class="w3-low-blue">
+				<th style="width:110px;"><h6>Reporte</h6></th>
+				<th style="width:160px;"><h6>Operador</h6></th>
+				<th style="width:180px;"><h6>Turno</h6></th>
+				<th style="width:70px;"><h6>CR</h6></th>
+				<th><h6>Reporte de enlaces remotos</h6></th>
+				<th style="width:120px;"><h6>Acciones</h6></th>
 			</tr>
 			<?php foreach ($bitacora->reportes as $rc) : ?>
 				<tr>
@@ -25,7 +25,7 @@
 					<td><?= $rc->getPrintableReport() ?></td>
 	
 					<td class="actions">
-						<?= $this->Html->link('<i class="fa-solid fa-file-circle-plus"></i>', ['controller' => 'ReportesProgramas', 'action' => 'addMissing', $rc->ID], ['escape' => false])?>
+						
 						<?= $this->Html->link('<i class="fa-solid fa-arrow-up-right-from-square"></i>', ['controller' => 'ReportesCabinas', 'action' => 'view', $rc->ID], ['escape' => false]) ?>
 						<?= $this->Html->link('<i class="fa-regular fa-pen-to-square"></i>', ['controller' => 'ReportesCabinas', 'action' => 'edit', $rc->ID], ['escape' => false]) ?>
 						<?= $this->Form->postLink('<i class="fa-regular fa-trash-can"></i>', ['controller' => 'ReportesCabinas', 'action' => 'delete', $rc->ID], ['confirm' => __('Are you sure you want to delete # {0}?', $rc->ID), 'escape' => false]) ?>
@@ -52,6 +52,9 @@
 							<?php endforeach;?>
 						</table>
 					</td>
+					<td>
+						<?= $this->Html->link('<i class="fa-solid fa-file-circle-plus"></i>', ['controller' => 'ReportesProgramas', 'action' => 'addMissing', $rc->ID], ['escape' => false])?>
+					</td>
 				</tr>
                         <?php endforeach; ?>
 		</table>
@@ -59,5 +62,5 @@
 
 </div>
 <style>
-	td.picture {vertical-align:middle !important;} img{width:80px;padding:4px;}
+	td.picture {vertical-align:middle !important;} img{width:80px;padding:4px;} td.actions {width:110px;}
 </style>

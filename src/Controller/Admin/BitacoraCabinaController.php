@@ -13,7 +13,7 @@ use Cake\ORM\Table;
 class BitacoraCabinaController extends AppController {
 	
 	public function index() : Response {
-		$query = $this->BitacoraCabina->find()->orderDesc('fecha');
+		$query = $this->BitacoraCabina->find()->orderByDesc('fecha');
 		$bitacoras = $this->paginate($query);
 
 		$this->set(compact('bitacoras'));

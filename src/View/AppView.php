@@ -1,41 +1,29 @@
 <?php
 declare(strict_types=1);
 
-/**
- * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
- * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
- *
- * Licensed under The MIT License
- * Redistributions of files must retain the above copyright notice.
- *
- * @copyright Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
- * @link      https://cakephp.org CakePHP(tm) Project
- * @since     3.0.0
- * @license   https://opensource.org/licenses/mit-license.php MIT License
- */
+
 namespace App\View;
 
 use Cake\View\View;
 
-/**
- * Application View
- *
- * Your application's default view class
- *
- * @link https://book.cakephp.org/4/en/views.html#the-app-view
- */
-class AppView extends View
-{
-    /**
-     * Initialization hook method.
-     *
-     * Use this method to add common initialization code like adding helpers.
-     *
-     * e.g. `$this->addHelper('Html');`
-     *
-     * @return void
-     */
-    public function initialize(): void
-    {
-    }
+
+class AppView extends View {
+	
+	private array $templates = [
+		'nextActive' => '<a rel="next" href="{{url}}" class="w3-bar-item w3-button next">{{text}}</a>',
+		'nextDisabled' => '<a class="w3-bar-item w3-button next disabled">{{text}}</a>',
+		'prevActive' => '<a rel="prev" href="{{url}}" class="w3-bar-item w3-button prev">{{text}}</a>',
+		'prevDisabled' => '<a class="w3-bar-item w3-button prev disabled">{{text}}</a>',
+
+		'first' => '<a href="{{url}}" class="w3-bar-item w3-button first">{{text}}</a>',
+		'last' => '<a href="{{url}}" class="w3-bar-item w3-button last">{{text}}</a>',
+		'number' => '<a href="{{url}}" class="w3-bar-item w3-button">{{text}}</a>',
+		'current' => '<a href="" class="w3-bar-item w3-button active">{{text}}</a>',
+	];
+	
+
+	public function initialize(): void {
+		$this->addHelper('Paginator', ['templates' => $this->templates]);
+	}
+
 }

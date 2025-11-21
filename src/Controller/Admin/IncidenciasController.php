@@ -10,7 +10,7 @@ use Cake\I18n\DateTime;
 class IncidenciasController extends AppController {
 
 	public function index() {
-		$query = $this->Incidencias->find()->contain(['Areas', 'Updates'])->orderDesc('fecha');
+		$query = $this->Incidencias->find()->contain(['Areas', 'Updates'])->orderByDesc('fecha');
 		$incidencias = $this->paginate($query);
 		$this->set(compact('incidencias'));
 	}

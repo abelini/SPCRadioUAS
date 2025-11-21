@@ -1,15 +1,15 @@
 <div class="content">
-	<div class="w3-dark-golden w3-padding">
-		<h1>Registro de incidencias</h1>
+	<div class="w3-deep-blue w3-padding">
+		<h5>Registro de incidencias</h5>
 	</div>
 	
-	<table class="w3-table w3-table-all w3-section">
+	<table class="w3-table w3-table-all ">
 		<thead>
 			<tr>
-				<th><?= $this->Paginator->sort('ID', 'Folio') ?></th>
-				<th><?= $this->Paginator->sort('areaID', 'Área') ?></th>
+				<th>Folio</th>
+				<th>Área</th>
 				<th>Observaciones</th>
-				<th><?= $this->Paginator->sort('fecha') ?></th>
+				<th>Fecha</th>
 				<th>Estado</th>
 				<th class="actions"></th>
 			</tr>

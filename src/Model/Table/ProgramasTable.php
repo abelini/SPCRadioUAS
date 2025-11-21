@@ -72,7 +72,11 @@ class ProgramasTable extends Table {
 			->boolean('uo')
 			->requirePresence('uo', 'create')
 			->notEmptyString('uo');
-
+			
+		$validator
+			->boolean('musical')
+			->requirePresence('musical', 'create')
+			->notEmptyString('musical');
 		return $validator;
 	}
 }

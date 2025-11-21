@@ -6,9 +6,9 @@ namespace App\Test\Fixture;
 use Cake\TestSuite\Fixture\TestFixture;
 
 /**
- * PrimerasignadoFixture
+ * PrimerAsignadoFixture
  */
-class PrimerasignadoFixture extends TestFixture
+class PrimerAsignadoFixture extends TestFixture
 {
     /**
      * Table name

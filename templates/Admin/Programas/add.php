@@ -25,6 +25,9 @@
 			
 			<?= $this->Form->label('reportable','¿Se debe reportar?') ?>
 			<?= $this->Form->control('reportable', ['label' => false]) ?>
+			
+			<?= $this->Form->label('musical','¿Es un segmento de música?') ?>
+			<?= $this->Form->control('musical', ['label' => false]) ?>
 
 			<?= $this->Form->label('dias','Días en que se transmite') ?>
 			<?= $this->Form->control('dias._ids', ['options' => $dias, 'size' => 7, 'label' => false]);?>

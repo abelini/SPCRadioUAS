@@ -8,7 +8,7 @@ use Cake\ORM\Entity;
 
 class ReportesPrograma extends Entity {
 	
-	public const string REPORTING_START_DATE = 'May 1, 2022';
+	public const string REPORTING_START_DATE = 'Apr 25, 2022';
 		
 	protected const string V = 'V';
 	

@@ -71,7 +71,7 @@ return function (RouteBuilder $routes): void {
      *
      * ```
      */
-     /*
+     
      $routes->scope('/api', function (RouteBuilder $builder): void {
      // No $builder->applyMiddleware() here.
      
@@ -79,7 +79,7 @@ return function (RouteBuilder $routes): void {
      // $builder->setExtensions(['json', 'xml']);
      
      // Connect API actions here.
-		$builder->connect('/sonic/stats', 'Sonic::stats');
+		$builder->connect('/programs/list', 'Programs::list');
 	});
-     */
+     
 };

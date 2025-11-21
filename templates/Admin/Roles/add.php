@@ -1,6 +1,6 @@
 <div class="content">
-	<div class="w3-dark-golden w3-padding">
-		<h1>Crear un rol de cabina</h1>
+	<div class="w3-deep-blue w3-padding">
+		<h5><i class="fa-solid fa-table-list"></i> Crear un rol de cabina</h5>
 	</div>
 
 	<?= $this->Form->create($rol) ?>
@@ -19,12 +19,14 @@
 		<?= $this->Form->label('turnoID', 'Tipo de horario')?>
 		<?= $this->Form->control('turnoID', ['class' => 'w3-select w3-margin-bottom', 'options' => $turnos, 'label' => false])?>
 
-		<?= $this->Form->button('Guardar', ['class' => 'w3-button w3-section w3-golden w3-hover-dark-golden']) ?>
+		<?= $this->Form->button('<i class="fa-solid fa-file-arrow-up"></i> Guardar', ['class' => 'w3-button w3-section w3-golden w3-hover-dark-golden', 'escapeTitle' => false]) ?>
 
 	<div id="schedule"></div>
 	
 	<?= $this->Form->end()?>
-
+	
+	
+	
 </div>
 
 <script type="text/javascript">
@@ -59,9 +61,10 @@
 	}
 </script>
 
+
 <?= $this->Html->script('datejs', ['block' => true])?>
 
 <style>
-	.roles{width:600px;} label{font-size:16px;padding:12px 0;}
-	#schedule select{height:242px;background:#fff;font-size:16px;padding:4px;}
+	.roles{width:600px;} label{font-size:16px;padding:12px 0;} 
+	#schedule select{height:auto;background:#fff;font-size:16px;padding:4px;}
 </style>

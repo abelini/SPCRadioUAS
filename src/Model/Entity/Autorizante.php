@@ -8,9 +8,7 @@ use Cake\ORM\Entity;
 
 class Autorizante extends Entity implements \Stringable {
     	
-	public const array LISTA = [
-		56, // Marisol
-	];
+	public const int DIRECTOR = 52;
 	
 	public function __toString() : string {
 		return $this->name;

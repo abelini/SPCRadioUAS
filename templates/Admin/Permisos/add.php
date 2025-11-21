@@ -19,7 +19,9 @@
                 <legend><?= __('Add Permiso') ?></legend>
                 <?php
                     echo $this->Form->control('name');
-                    echo $this->Form->control('usuarios._ids', ['options' => $usuarios]);
+                    echo $this->Form->control('plural');
+                    echo $this->Form->control('singular');
+                    echo $this->Form->control('icon');
                 ?>
             </fieldset>
             <?= $this->Form->button(__('Submit')) ?>
