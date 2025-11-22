@@ -20,14 +20,14 @@ Software basado en CakePHP para administrar las tareas operativas del entorno de
 * REST API para solicitar
     * Operador actual
       ```
-      GET locutores/get
+      GET /locutores/get
         ```
     * Programación actual
       ```
-      GET schedule/daily?day={n}
+      GET /schedule/daily?day={n}
         ```
       ```
-      GET schedule/now
+      GET /schedule/now
         ```
 * Otras tareas internas propias de la estación
 
@@ -35,4 +35,4 @@ Software basado en CakePHP para administrar las tareas operativas del entorno de
 Par uso exclusivo de Radio UAS.
 
 
-Esta versión de SPC utiliza CakePHP 5.1.6
+Esta versión de SPC utiliza CakePHP 5.2 y PHP 8.4
