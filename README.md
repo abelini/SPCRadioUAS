@@ -29,6 +29,16 @@ Software basado en CakePHP para administrar las tareas operativas del entorno de
       ```
       GET /schedule/now
         ```
+    * Música de la Fonoteca Virtual
+      ```
+      GET /music/album?ID={EmbyItemID}
+        ```
+      ```
+      GET /music/artist?ID={EmbyItemID}
+        ```
+      ```
+      GET /music/playlist?ID={EmbyPlaylistID}
+        ```
 * Otras tareas internas propias de la estación
 
     
