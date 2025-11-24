@@ -35,4 +35,4 @@ Software basado en CakePHP para administrar las tareas operativas del entorno de
 Par uso exclusivo de Radio UAS.
 
 
-Esta versión de SPC utiliza CakePHP 5.2 y PHP 8.4
+Esta versión de SPC utiliza CakePHP 5.2.9 y PHP 8.4
