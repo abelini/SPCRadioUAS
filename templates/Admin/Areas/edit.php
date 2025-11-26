@@ -8,7 +8,7 @@
     <aside class="column">
         <div class="side-nav">
             <h4 class="heading"><?= __('Actions') ?></h4>
-            <?= $this->Form->postLink(
+            <?= $this->Form->deleteLink(
                 __('Delete'),
                 ['action' => 'delete', $area->ID],
                 ['confirm' => __('Are you sure you want to delete # {0}?', $area->ID), 'class' => 'side-nav-item']
@@ -22,8 +22,8 @@
             <fieldset>
                 <legend><?= __('Edit Area') ?></legend>
                 <?php
-                    echo $this->Form->control('name');
-                    echo $this->Form->control('icon');
+                echo $this->Form->control('name');
+                echo $this->Form->control('icon');
                 ?>
             </fieldset>
             <?= $this->Form->button(__('Submit')) ?>

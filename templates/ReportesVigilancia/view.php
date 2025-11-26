@@ -9,7 +9,7 @@
         <div class="side-nav">
             <h4 class="heading"><?= __('Actions') ?></h4>
             <?= $this->Html->link(__('Edit Reportes Vigilancium'), ['action' => 'edit', $reportesVigilancium->ID], ['class' => 'side-nav-item']) ?>
-            <?= $this->Form->postLink(__('Delete Reportes Vigilancium'), ['action' => 'delete', $reportesVigilancium->ID], ['confirm' => __('Are you sure you want to delete # {0}?', $reportesVigilancium->ID), 'class' => 'side-nav-item']) ?>
+            <?= $this->Form->deleteLink(__('Delete Reportes Vigilancium'), ['action' => 'delete', $reportesVigilancium->ID], ['confirm' => __('Are you sure you want to delete # {0}?', $reportesVigilancium->ID), 'class' => 'side-nav-item']) ?>
             <?= $this->Html->link(__('List Reportes Vigilancia'), ['action' => 'index'], ['class' => 'side-nav-item']) ?>
             <?= $this->Html->link(__('New Reportes Vigilancium'), ['action' => 'add'], ['class' => 'side-nav-item']) ?>
         </div>
@@ -28,11 +28,13 @@
                 </tr>
                 <tr>
                     <th><?= __('Blackout Duration') ?></th>
-                    <td><?= $reportesVigilancium->blackout_duration === null ? '' : $this->Number->format($reportesVigilancium->blackout_duration) ?></td>
+                    <td><?= $reportesVigilancium->blackout_duration === null ? '' : $this->Number->format($reportesVigilancium->blackout_duration) ?>
+                    </td>
                 </tr>
                 <tr>
                     <th><?= __('Lost Signal Duration') ?></th>
-                    <td><?= $reportesVigilancium->lost_signal_duration === null ? '' : $this->Number->format($reportesVigilancium->lost_signal_duration) ?></td>
+                    <td><?= $reportesVigilancium->lost_signal_duration === null ? '' : $this->Number->format($reportesVigilancium->lost_signal_duration) ?>
+                    </td>
                 </tr>
                 <tr>
                     <th><?= __('Fire') ?></th>

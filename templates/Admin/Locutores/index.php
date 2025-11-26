@@ -24,21 +24,21 @@
             </thead>
             <tbody>
                 <?php foreach ($locutores as $locutore): ?>
-                <tr>
-                    <td><?= $this->Number->format($locutore->ID) ?></td>
-                    <td><?= $this->Number->format($locutore->empleado) ?></td>
-                    <td><?= h($locutore->username) ?></td>
-                    <td><?= h($locutore->name) ?></td>
-                    <td><?= h($locutore->fullname) ?></td>
-                    <td><?= h($locutore->email) ?></td>
-                    <td><?= h($locutore->base) ?></td>
-                    <td><?= h($locutore->photo) ?></td>
-                    <td class="actions">
-                        <?= $this->Html->link(__('View'), ['action' => 'view', $locutore->ID]) ?>
-                        <?= $this->Html->link(__('Edit'), ['action' => 'edit', $locutore->ID]) ?>
-                        <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $locutore->ID], ['confirm' => __('Are you sure you want to delete # {0}?', $locutore->ID)]) ?>
-                    </td>
-                </tr>
+                    <tr>
+                        <td><?= $this->Number->format($locutore->ID) ?></td>
+                        <td><?= $this->Number->format($locutore->empleado) ?></td>
+                        <td><?= h($locutore->username) ?></td>
+                        <td><?= h($locutore->name) ?></td>
+                        <td><?= h($locutore->fullname) ?></td>
+                        <td><?= h($locutore->email) ?></td>
+                        <td><?= h($locutore->base) ?></td>
+                        <td><?= h($locutore->photo) ?></td>
+                        <td class="actions">
+                            <?= $this->Html->link(__('View'), ['action' => 'view', $locutore->ID]) ?>
+                            <?= $this->Html->link(__('Edit'), ['action' => 'edit', $locutore->ID]) ?>
+                            <?= $this->Form->deleteLink(__('Delete'), ['action' => 'delete', $locutore->ID], ['confirm' => __('Are you sure you want to delete # {0}?', $locutore->ID)]) ?>
+                        </td>
+                    </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
@@ -51,6 +51,7 @@
             <?= $this->Paginator->next(__('next') . ' >') ?>
             <?= $this->Paginator->last(__('last') . ' >>') ?>
         </ul>
-        <p><?= $this->Paginator->counter(__('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')) ?></p>
+        <p><?= $this->Paginator->counter(__('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')) ?>
+        </p>
     </div>
 </div>

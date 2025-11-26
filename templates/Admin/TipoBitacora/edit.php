@@ -8,7 +8,7 @@
     <aside class="column">
         <div class="side-nav">
             <h4 class="heading"><?= __('Actions') ?></h4>
-            <?= $this->Form->postLink(
+            <?= $this->Form->deleteLink(
                 __('Delete'),
                 ['action' => 'delete', $tipoBitacora->ID],
                 ['confirm' => __('Are you sure you want to delete # {0}?', $tipoBitacora->ID), 'class' => 'side-nav-item']
@@ -22,8 +22,8 @@
             <fieldset>
                 <legend><?= __('Edit Tipo Bitacora') ?></legend>
                 <?php
-                    echo $this->Form->control('name');
-                    echo $this->Form->control('turnos');
+                echo $this->Form->control('name');
+                echo $this->Form->control('turnos');
                 ?>
             </fieldset>
             <?= $this->Form->button(__('Submit')) ?>

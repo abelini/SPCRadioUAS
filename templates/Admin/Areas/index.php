@@ -19,16 +19,16 @@
             </thead>
             <tbody>
                 <?php foreach ($areas as $area): ?>
-                <tr>
-                    <td><?= $this->Number->format($area->ID) ?></td>
-                    <td><?= h($area->name) ?></td>
-                    <td><?= h($area->icon) ?></td>
-                    <td class="actions">
-                        <?= $this->Html->link(__('View'), ['action' => 'view', $area->ID]) ?>
-                        <?= $this->Html->link(__('Edit'), ['action' => 'edit', $area->ID]) ?>
-                        <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $area->ID], ['confirm' => __('Are you sure you want to delete # {0}?', $area->ID)]) ?>
-                    </td>
-                </tr>
+                    <tr>
+                        <td><?= $this->Number->format($area->ID) ?></td>
+                        <td><?= h($area->name) ?></td>
+                        <td><?= h($area->icon) ?></td>
+                        <td class="actions">
+                            <?= $this->Html->link(__('View'), ['action' => 'view', $area->ID]) ?>
+                            <?= $this->Html->link(__('Edit'), ['action' => 'edit', $area->ID]) ?>
+                            <?= $this->Form->deleteLink(__('Delete'), ['action' => 'delete', $area->ID], ['confirm' => __('Are you sure you want to delete # {0}?', $area->ID)]) ?>
+                        </td>
+                    </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
@@ -41,6 +41,7 @@
             <?= $this->Paginator->next(__('next') . ' >') ?>
             <?= $this->Paginator->last(__('last') . ' >>') ?>
         </ul>
-        <p><?= $this->Paginator->counter(__('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')) ?></p>
+        <p><?= $this->Paginator->counter(__('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')) ?>
+        </p>
     </div>
 </div>

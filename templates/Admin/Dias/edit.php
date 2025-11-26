@@ -10,7 +10,7 @@
     <aside class="column">
         <div class="side-nav">
             <h4 class="heading"><?= __('Actions') ?></h4>
-            <?= $this->Form->postLink(
+            <?= $this->Form->deleteLink(
                 __('Delete'),
                 ['action' => 'delete', $dia->ID],
                 ['confirm' => __('Are you sure you want to delete # {0}?', $dia->ID), 'class' => 'side-nav-item']
@@ -24,9 +24,9 @@
             <fieldset>
                 <legend><?= __('Edit Dia') ?></legend>
                 <?php
-                    echo $this->Form->control('name');
-                    echo $this->Form->control('horarios._ids', ['options' => $horarios]);
-                    echo $this->Form->control('programas._ids', ['options' => $programas]);
+                echo $this->Form->control('name');
+                echo $this->Form->control('horarios._ids', ['options' => $horarios]);
+                echo $this->Form->control('programas._ids', ['options' => $programas]);
                 ?>
             </fieldset>
             <?= $this->Form->button(__('Submit')) ?>

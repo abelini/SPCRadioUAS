@@ -21,25 +21,22 @@
             </thead>
             <tbody>
                 <?php foreach ($permisos as $permiso): ?>
-                <tr>
-                    <td><?= $this->Number->format($permiso->ID) ?></td>
-                    <td><?= h($permiso->name) ?></td>
-                    <td><?= h($permiso->plural) ?></td>
-                    <td><?= h($permiso->singular) ?></td>
-                    <td><?= h($permiso->icon) ?></td>
-                    <td class="actions">
-                        <?= $this->Html->link(__('View'), ['action' => 'view', $permiso->ID]) ?>
-                        <?= $this->Html->link(__('Edit'), ['action' => 'edit', $permiso->ID]) ?>
-                        <?= $this->Form->postLink(
-                            __('Delete'),
-                            ['action' => 'delete', $permiso->ID],
-                            [
-                                'method' => 'delete',
-                                'confirm' => __('Are you sure you want to delete # {0}?', $permiso->ID),
-                            ]
-                        ) ?>
-                    </td>
-                </tr>
+                    <tr>
+                        <td><?= $this->Number->format($permiso->ID) ?></td>
+                        <td><?= h($permiso->name) ?></td>
+                        <td><?= h($permiso->plural) ?></td>
+                        <td><?= h($permiso->singular) ?></td>
+                        <td><?= h($permiso->icon) ?></td>
+                        <td class="actions">
+                            <?= $this->Html->link(__('View'), ['action' => 'view', $permiso->ID]) ?>
+                            <?= $this->Html->link(__('Edit'), ['action' => 'edit', $permiso->ID]) ?>
+                            <?= $this->Form->deleteLink(
+                                __('Delete'),
+                                ['action' => 'delete', $permiso->ID],
+                                ['confirm' => __('Are you sure you want to delete # {0}?', $permiso->ID)]
+                            ) ?>
+                        </td>
+                    </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
@@ -52,6 +49,7 @@
             <?= $this->Paginator->next(__('next') . ' >') ?>
             <?= $this->Paginator->last(__('last') . ' >>') ?>
         </ul>
-        <p><?= $this->Paginator->counter(__('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')) ?></p>
+        <p><?= $this->Paginator->counter(__('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')) ?>
+        </p>
     </div>
 </div>

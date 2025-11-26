@@ -9,7 +9,7 @@
     <aside class="column">
         <div class="side-nav">
             <h4 class="heading"><?= __('Actions') ?></h4>
-            <?= $this->Form->postLink(
+            <?= $this->Form->deleteLink(
                 __('Delete'),
                 ['action' => 'delete', $usuario->id],
                 ['confirm' => __('Are you sure you want to delete # {0}?', $usuario->id), 'class' => 'side-nav-item']
@@ -23,15 +23,15 @@
             <fieldset>
                 <legend><?= __('Edit Usuario') ?></legend>
                 <?php
-                    echo $this->Form->control('empleado');
-                    echo $this->Form->control('username');
-                    //echo $this->Form->control('password');
-                    echo $this->Form->control('name');
-                    echo $this->Form->control('fullname');
-                    echo $this->Form->control('email');
-                    echo $this->Form->control('base');
-					echo $this->Form->control('photo');
-                    echo $this->Form->control('permisos._ids', ['options' => $permisos]);
+                echo $this->Form->control('empleado');
+                echo $this->Form->control('username');
+                //echo $this->Form->control('password');
+                echo $this->Form->control('name');
+                echo $this->Form->control('fullname');
+                echo $this->Form->control('email');
+                echo $this->Form->control('base');
+                echo $this->Form->control('photo');
+                echo $this->Form->control('permisos._ids', ['options' => $permisos]);
                 ?>
             </fieldset>
             <?= $this->Form->button(__('Submit')) ?>

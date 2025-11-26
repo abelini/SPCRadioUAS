@@ -20,17 +20,17 @@
             </thead>
             <tbody>
                 <?php foreach ($bitacoraCabina as $bitacoraCabina): ?>
-                <tr>
-                    <td><?= $this->Number->format($bitacoraCabina->id) ?></td>
-                    <td><?= h($bitacoraCabina->fecha) ?></td>
-                    <td><?= h($bitacoraCabina->created) ?></td>
-                    <td><?= h($bitacoraCabina->modified) ?></td>
-                    <td class="actions">
-                        <?= $this->Html->link(__('View'), ['action' => 'view', $bitacoraCabina->id]) ?>
-                        <?= $this->Html->link(__('Edit'), ['action' => 'edit', $bitacoraCabina->id]) ?>
-                        <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $bitacoraCabina->id], ['confirm' => __('Are you sure you want to delete # {0}?', $bitacoraCabina->id)]) ?>
-                    </td>
-                </tr>
+                    <tr>
+                        <td><?= $this->Number->format($bitacoraCabina->id) ?></td>
+                        <td><?= h($bitacoraCabina->fecha) ?></td>
+                        <td><?= h($bitacoraCabina->created) ?></td>
+                        <td><?= h($bitacoraCabina->modified) ?></td>
+                        <td class="actions">
+                            <?= $this->Html->link(__('View'), ['action' => 'view', $bitacoraCabina->id]) ?>
+                            <?= $this->Html->link(__('Edit'), ['action' => 'edit', $bitacoraCabina->id]) ?>
+                            <?= $this->Form->deleteLink(__('Delete'), ['action' => 'delete', $bitacoraCabina->id], ['confirm' => __('Are you sure you want to delete # {0}?', $bitacoraCabina->id)]) ?>
+                        </td>
+                    </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
@@ -43,6 +43,7 @@
             <?= $this->Paginator->next(__('next') . ' >') ?>
             <?= $this->Paginator->last(__('last') . ' >>') ?>
         </ul>
-        <p><?= $this->Paginator->counter(__('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')) ?></p>
+        <p><?= $this->Paginator->counter(__('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')) ?>
+        </p>
     </div>
 </div>

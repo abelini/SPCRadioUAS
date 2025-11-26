@@ -9,7 +9,7 @@
     <aside class="column">
         <div class="side-nav">
             <h4 class="heading"><?= __('Actions') ?></h4>
-            <?= $this->Form->postLink(
+            <?= $this->Form->deleteLink(
                 __('Delete'),
                 ['action' => 'delete', $role->id],
                 ['confirm' => __('Are you sure you want to delete # {0}?', $role->id), 'class' => 'side-nav-item']
@@ -23,9 +23,9 @@
             <fieldset>
                 <legend><?= __('Edit Role') ?></legend>
                 <?php
-                    echo $this->Form->control('fecha_inicio');
-                    echo $this->Form->control('fecha_fin');
-                    echo $this->Form->control('turno_id', ['options' => $turnos]);
+                echo $this->Form->control('fecha_inicio');
+                echo $this->Form->control('fecha_fin');
+                echo $this->Form->control('turno_id', ['options' => $turnos]);
                 ?>
             </fieldset>
             <?= $this->Form->button(__('Submit')) ?>

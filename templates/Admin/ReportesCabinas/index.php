@@ -24,21 +24,21 @@
             </thead>
             <tbody>
                 <?php foreach ($reportesCabinas as $reportesCabina): ?>
-                <tr>
-                    <td><?= $this->Number->format($reportesCabina->ID) ?></td>
-                    <td><?= $this->Number->format($reportesCabina->bitacoraID) ?></td>
-                    <td><?= $this->Number->format($reportesCabina->locutorID) ?></td>
-                    <td><?= h($reportesCabina->horaInicio) ?></td>
-                    <td><?= h($reportesCabina->horaFin) ?></td>
-                    <td><?= $this->Number->format($reportesCabina->controles) ?></td>
-                    <td><?= h($reportesCabina->created) ?></td>
-                    <td><?= h($reportesCabina->modified) ?></td>
-                    <td class="actions">
-                        <?= $this->Html->link(__('View'), ['action' => 'view', $reportesCabina->ID]) ?>
-                        <?= $this->Html->link(__('Edit'), ['action' => 'edit', $reportesCabina->ID]) ?>
-                        <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $reportesCabina->ID], ['confirm' => __('Are you sure you want to delete # {0}?', $reportesCabina->ID)]) ?>
-                    </td>
-                </tr>
+                    <tr>
+                        <td><?= $this->Number->format($reportesCabina->ID) ?></td>
+                        <td><?= $this->Number->format($reportesCabina->bitacoraID) ?></td>
+                        <td><?= $this->Number->format($reportesCabina->locutorID) ?></td>
+                        <td><?= h($reportesCabina->horaInicio) ?></td>
+                        <td><?= h($reportesCabina->horaFin) ?></td>
+                        <td><?= $this->Number->format($reportesCabina->controles) ?></td>
+                        <td><?= h($reportesCabina->created) ?></td>
+                        <td><?= h($reportesCabina->modified) ?></td>
+                        <td class="actions">
+                            <?= $this->Html->link(__('View'), ['action' => 'view', $reportesCabina->ID]) ?>
+                            <?= $this->Html->link(__('Edit'), ['action' => 'edit', $reportesCabina->ID]) ?>
+                            <?= $this->Form->deleteLink(__('Delete'), ['action' => 'delete', $reportesCabina->ID], ['confirm' => __('Are you sure you want to delete # {0}?', $reportesCabina->ID)]) ?>
+                        </td>
+                    </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
@@ -51,6 +51,7 @@
             <?= $this->Paginator->next(__('next') . ' >') ?>
             <?= $this->Paginator->last(__('last') . ' >>') ?>
         </ul>
-        <p><?= $this->Paginator->counter(__('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')) ?></p>
+        <p><?= $this->Paginator->counter(__('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')) ?>
+        </p>
     </div>
 </div>

@@ -9,7 +9,7 @@
         <div class="side-nav">
             <h4 class="heading"><?= __('Actions') ?></h4>
             <?= $this->Html->link(__('Edit Reportes Cabina'), ['action' => 'edit', $reportesCabina->id], ['class' => 'side-nav-item']) ?>
-            <?= $this->Form->postLink(__('Delete Reportes Cabina'), ['action' => 'delete', $reportesCabina->id], ['confirm' => __('Are you sure you want to delete # {0}?', $reportesCabina->id), 'class' => 'side-nav-item']) ?>
+            <?= $this->Form->deleteLink(__('Delete Reportes Cabina'), ['action' => 'delete', $reportesCabina->id], ['confirm' => __('Are you sure you want to delete # {0}?', $reportesCabina->id), 'class' => 'side-nav-item']) ?>
             <?= $this->Html->link(__('List Reportes Cabinas'), ['action' => 'index'], ['class' => 'side-nav-item']) ?>
             <?= $this->Html->link(__('New Reportes Cabina'), ['action' => 'add'], ['class' => 'side-nav-item']) ?>
         </div>
@@ -59,31 +59,31 @@
             </div>
             <div class="related">
                 <h4><?= __('Related Reportes Programas') ?></h4>
-                <?php if (!empty($reportesCabina->reportes_programas)) : ?>
-                <div class="table-responsive">
-                    <table>
-                        <tr>
-                            <th><?= __('Id') ?></th>
-                            <th><?= __('Reportes Cabina Id') ?></th>
-                            <th><?= __('Programa Id') ?></th>
-                            <th><?= __('Status') ?></th>
-                            <th class="actions"><?= __('Actions') ?></th>
-                        </tr>
-                        <?php foreach ($reportesCabina->reportes_programas as $reportesProgramas) : ?>
-                        <tr>
-                            <td><?= h($reportesProgramas->id) ?></td>
-                            <td><?= h($reportesProgramas->reportes_cabina_id) ?></td>
-                            <td><?= h($reportesProgramas->programa_id) ?></td>
-                            <td><?= h($reportesProgramas->status) ?></td>
-                            <td class="actions">
-                                <?= $this->Html->link(__('View'), ['controller' => 'ReportesProgramas', 'action' => 'view', $reportesProgramas->id]) ?>
-                                <?= $this->Html->link(__('Edit'), ['controller' => 'ReportesProgramas', 'action' => 'edit', $reportesProgramas->id]) ?>
-                                <?= $this->Form->postLink(__('Delete'), ['controller' => 'ReportesProgramas', 'action' => 'delete', $reportesProgramas->id], ['confirm' => __('Are you sure you want to delete # {0}?', $reportesProgramas->id)]) ?>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </table>
-                </div>
+                <?php if (!empty($reportesCabina->reportes_programas)): ?>
+                    <div class="table-responsive">
+                        <table>
+                            <tr>
+                                <th><?= __('Id') ?></th>
+                                <th><?= __('Reportes Cabina Id') ?></th>
+                                <th><?= __('Programa Id') ?></th>
+                                <th><?= __('Status') ?></th>
+                                <th class="actions"><?= __('Actions') ?></th>
+                            </tr>
+                            <?php foreach ($reportesCabina->reportes_programas as $reportesProgramas): ?>
+                                <tr>
+                                    <td><?= h($reportesProgramas->id) ?></td>
+                                    <td><?= h($reportesProgramas->reportes_cabina_id) ?></td>
+                                    <td><?= h($reportesProgramas->programa_id) ?></td>
+                                    <td><?= h($reportesProgramas->status) ?></td>
+                                    <td class="actions">
+                                        <?= $this->Html->link(__('View'), ['controller' => 'ReportesProgramas', 'action' => 'view', $reportesProgramas->id]) ?>
+                                        <?= $this->Html->link(__('Edit'), ['controller' => 'ReportesProgramas', 'action' => 'edit', $reportesProgramas->id]) ?>
+                                        <?= $this->Form->deleteLink(__('Delete'), ['controller' => 'ReportesProgramas', 'action' => 'delete', $reportesProgramas->id], ['confirm' => __('Are you sure you want to delete # {0}?', $reportesProgramas->id)]) ?>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </table>
+                    </div>
                 <?php endif; ?>
             </div>
         </div>

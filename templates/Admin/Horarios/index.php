@@ -20,17 +20,18 @@
             </thead>
             <tbody>
                 <?php foreach ($horarios as $horario): ?>
-                <tr>
-                    <td><?= $this->Number->format($horario->ID) ?></td>
-                    <td><?= h($horario->horaInicio) ?></td>
-                    <td><?= h($horario->horaFin) ?></td>
-                    <td><?= $horario->hasValue('turno') ? $this->Html->link($horario->turno->name, ['controller' => 'Turnos', 'action' => 'view', $horario->turno->ID]) : '' ?></td>
-                    <td class="actions">
-                        <?= $this->Html->link(__('View'), ['action' => 'view', $horario->ID]) ?>
-                        <?= $this->Html->link(__('Edit'), ['action' => 'edit', $horario->ID]) ?>
-                        <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $horario->ID], ['confirm' => __('Are you sure you want to delete # {0}?', $horario->ID)]) ?>
-                    </td>
-                </tr>
+                    <tr>
+                        <td><?= $this->Number->format($horario->ID) ?></td>
+                        <td><?= h($horario->horaInicio) ?></td>
+                        <td><?= h($horario->horaFin) ?></td>
+                        <td><?= $horario->hasValue('turno') ? $this->Html->link($horario->turno->name, ['controller' => 'Turnos', 'action' => 'view', $horario->turno->ID]) : '' ?>
+                        </td>
+                        <td class="actions">
+                            <?= $this->Html->link(__('View'), ['action' => 'view', $horario->ID]) ?>
+                            <?= $this->Html->link(__('Edit'), ['action' => 'edit', $horario->ID]) ?>
+                            <?= $this->Form->deleteLink(__('Delete'), ['action' => 'delete', $horario->ID], ['confirm' => __('Are you sure you want to delete # {0}?', $horario->ID)]) ?>
+                        </td>
+                    </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
@@ -43,6 +44,7 @@
             <?= $this->Paginator->next(__('next') . ' >') ?>
             <?= $this->Paginator->last(__('last') . ' >>') ?>
         </ul>
-        <p><?= $this->Paginator->counter(__('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')) ?></p>
+        <p><?= $this->Paginator->counter(__('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')) ?>
+        </p>
     </div>
 </div>
