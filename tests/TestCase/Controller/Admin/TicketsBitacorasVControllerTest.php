@@ -1,16 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Test\TestCase\Controller\Admin;
+namespace SPC\Test\TestCase\Controller\Admin;
 
-use App\Controller\Admin\TicketsBitacorasVController;
+use SPC\Controller\Admin\TicketsBitacorasVController;
 use Cake\TestSuite\IntegrationTestTrait;
 use Cake\TestSuite\TestCase;
 
 /**
  * App\Controller\Admin\TicketsBitacorasVController Test Case
  *
- * @uses \App\Controller\Admin\TicketsBitacorasVController
+ * @uses \SPC\Controller\Admin\TicketsBitacorasVController
  */
 class TicketsBitacorasVControllerTest extends TestCase
 {
@@ -30,7 +30,7 @@ class TicketsBitacorasVControllerTest extends TestCase
      * Test index method
      *
      * @return void
-     * @uses \App\Controller\Admin\TicketsBitacorasVController::index()
+     * @uses \SPC\Controller\Admin\TicketsBitacorasVController::index()
      */
     public function testIndex(): void
     {
@@ -41,7 +41,7 @@ class TicketsBitacorasVControllerTest extends TestCase
      * Test view method
      *
      * @return void
-     * @uses \App\Controller\Admin\TicketsBitacorasVController::view()
+     * @uses \SPC\Controller\Admin\TicketsBitacorasVController::view()
      */
     public function testView(): void
     {
@@ -52,7 +52,7 @@ class TicketsBitacorasVControllerTest extends TestCase
      * Test add method
      *
      * @return void
-     * @uses \App\Controller\Admin\TicketsBitacorasVController::add()
+     * @uses \SPC\Controller\Admin\TicketsBitacorasVController::add()
      */
     public function testAdd(): void
     {
@@ -63,7 +63,7 @@ class TicketsBitacorasVControllerTest extends TestCase
      * Test edit method
      *
      * @return void
-     * @uses \App\Controller\Admin\TicketsBitacorasVController::edit()
+     * @uses \SPC\Controller\Admin\TicketsBitacorasVController::edit()
      */
     public function testEdit(): void
     {
@@ -74,10 +74,11 @@ class TicketsBitacorasVControllerTest extends TestCase
      * Test delete method
      *
      * @return void
-     * @uses \App\Controller\Admin\TicketsBitacorasVController::delete()
+     * @uses \SPC\Controller\Admin\TicketsBitacorasVController::delete()
      */
     public function testDelete(): void
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 }
+

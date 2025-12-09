@@ -1,16 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Test\TestCase\Controller\Admin;
+namespace SPC\Test\TestCase\Controller\Admin;
 
-use App\Controller\Admin\ReportesCabinasController;
+use SPC\Controller\Admin\ReportesCabinasController;
 use Cake\TestSuite\IntegrationTestTrait;
 use Cake\TestSuite\TestCase;
 
 /**
  * App\Controller\Admin\ReportesCabinasController Test Case
  *
- * @uses \App\Controller\Admin\ReportesCabinasController
+ * @uses \SPC\Controller\Admin\ReportesCabinasController
  */
 class ReportesCabinasControllerTest extends TestCase
 {
@@ -30,7 +30,7 @@ class ReportesCabinasControllerTest extends TestCase
      * Test index method
      *
      * @return void
-     * @uses \App\Controller\Admin\ReportesCabinasController::index()
+     * @uses \SPC\Controller\Admin\ReportesCabinasController::index()
      */
     public function testIndex(): void
     {
@@ -41,7 +41,7 @@ class ReportesCabinasControllerTest extends TestCase
      * Test view method
      *
      * @return void
-     * @uses \App\Controller\Admin\ReportesCabinasController::view()
+     * @uses \SPC\Controller\Admin\ReportesCabinasController::view()
      */
     public function testView(): void
     {
@@ -52,7 +52,7 @@ class ReportesCabinasControllerTest extends TestCase
      * Test add method
      *
      * @return void
-     * @uses \App\Controller\Admin\ReportesCabinasController::add()
+     * @uses \SPC\Controller\Admin\ReportesCabinasController::add()
      */
     public function testAdd(): void
     {
@@ -63,7 +63,7 @@ class ReportesCabinasControllerTest extends TestCase
      * Test edit method
      *
      * @return void
-     * @uses \App\Controller\Admin\ReportesCabinasController::edit()
+     * @uses \SPC\Controller\Admin\ReportesCabinasController::edit()
      */
     public function testEdit(): void
     {
@@ -74,10 +74,11 @@ class ReportesCabinasControllerTest extends TestCase
      * Test delete method
      *
      * @return void
-     * @uses \App\Controller\Admin\ReportesCabinasController::delete()
+     * @uses \SPC\Controller\Admin\ReportesCabinasController::delete()
      */
     public function testDelete(): void
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 }
+

@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Test\TestCase\Model\Table;
+namespace SPC\Test\TestCase\Model\Table;
 
-use App\Model\Table\GrabadorTable;
+use SPC\Model\Table\GrabadorTable;
 use Cake\TestSuite\TestCase;
 
 /**
@@ -14,7 +14,7 @@ class GrabadorTableTest extends TestCase
     /**
      * Test subject
      *
-     * @var \App\Model\Table\GrabadorTable
+     * @var \SPC\Model\Table\GrabadorTable
      */
     protected $Grabador;
 
@@ -60,7 +60,7 @@ class GrabadorTableTest extends TestCase
      * Test validationDefault method
      *
      * @return void
-     * @uses \App\Model\Table\GrabadorTable::validationDefault()
+     * @uses \SPC\Model\Table\GrabadorTable::validationDefault()
      */
     public function testValidationDefault(): void
     {
@@ -71,10 +71,11 @@ class GrabadorTableTest extends TestCase
      * Test buildRules method
      *
      * @return void
-     * @uses \App\Model\Table\GrabadorTable::buildRules()
+     * @uses \SPC\Model\Table\GrabadorTable::buildRules()
      */
     public function testBuildRules(): void
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 }
+

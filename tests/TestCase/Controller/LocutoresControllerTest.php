@@ -1,16 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Test\TestCase\Controller;
+namespace SPC\Test\TestCase\Controller;
 
-use App\Controller\LocutoresController;
+use SPC\Controller\LocutoresController;
 use Cake\TestSuite\IntegrationTestTrait;
 use Cake\TestSuite\TestCase;
 
 /**
  * App\Controller\LocutoresController Test Case
  *
- * @uses \App\Controller\LocutoresController
+ * @uses \SPC\Controller\LocutoresController
  */
 class LocutoresControllerTest extends TestCase
 {
@@ -32,7 +32,7 @@ class LocutoresControllerTest extends TestCase
      * Test index method
      *
      * @return void
-     * @uses \App\Controller\LocutoresController::index()
+     * @uses \SPC\Controller\LocutoresController::index()
      */
     public function testIndex(): void
     {
@@ -43,7 +43,7 @@ class LocutoresControllerTest extends TestCase
      * Test view method
      *
      * @return void
-     * @uses \App\Controller\LocutoresController::view()
+     * @uses \SPC\Controller\LocutoresController::view()
      */
     public function testView(): void
     {
@@ -54,7 +54,7 @@ class LocutoresControllerTest extends TestCase
      * Test add method
      *
      * @return void
-     * @uses \App\Controller\LocutoresController::add()
+     * @uses \SPC\Controller\LocutoresController::add()
      */
     public function testAdd(): void
     {
@@ -65,7 +65,7 @@ class LocutoresControllerTest extends TestCase
      * Test edit method
      *
      * @return void
-     * @uses \App\Controller\LocutoresController::edit()
+     * @uses \SPC\Controller\LocutoresController::edit()
      */
     public function testEdit(): void
     {
@@ -76,10 +76,11 @@ class LocutoresControllerTest extends TestCase
      * Test delete method
      *
      * @return void
-     * @uses \App\Controller\LocutoresController::delete()
+     * @uses \SPC\Controller\LocutoresController::delete()
      */
     public function testDelete(): void
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 }
+

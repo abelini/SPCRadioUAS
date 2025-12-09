@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Test\TestCase\Model\Table;
+namespace SPC\Test\TestCase\Model\Table;
 
-use App\Model\Table\DiasTable;
+use SPC\Model\Table\DiasTable;
 use Cake\TestSuite\TestCase;
 
 /**
@@ -14,7 +14,7 @@ class DiasTableTest extends TestCase
     /**
      * Test subject
      *
-     * @var \App\Model\Table\DiasTable
+     * @var \SPC\Model\Table\DiasTable
      */
     protected $Dias;
 
@@ -58,10 +58,11 @@ class DiasTableTest extends TestCase
      * Test validationDefault method
      *
      * @return void
-     * @uses \App\Model\Table\DiasTable::validationDefault()
+     * @uses \SPC\Model\Table\DiasTable::validationDefault()
      */
     public function testValidationDefault(): void
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 }
+

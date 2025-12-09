@@ -1,16 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Test\TestCase\Controller\Api;
+namespace SPC\Test\TestCase\Controller\Api;
 
-use App\Controller\Api\SonicController;
+use SPC\Controller\Api\SonicController;
 use Cake\TestSuite\IntegrationTestTrait;
 use Cake\TestSuite\TestCase;
 
 /**
  * App\Controller\Api\SonicController Test Case
  *
- * @uses \App\Controller\Api\SonicController
+ * @uses \SPC\Controller\Api\SonicController
  */
 class SonicControllerTest extends TestCase
 {
@@ -29,7 +29,7 @@ class SonicControllerTest extends TestCase
      * Test index method
      *
      * @return void
-     * @uses \App\Controller\Api\SonicController::index()
+     * @uses \SPC\Controller\Api\SonicController::index()
      */
     public function testIndex(): void
     {
@@ -40,7 +40,7 @@ class SonicControllerTest extends TestCase
      * Test view method
      *
      * @return void
-     * @uses \App\Controller\Api\SonicController::view()
+     * @uses \SPC\Controller\Api\SonicController::view()
      */
     public function testView(): void
     {
@@ -51,7 +51,7 @@ class SonicControllerTest extends TestCase
      * Test add method
      *
      * @return void
-     * @uses \App\Controller\Api\SonicController::add()
+     * @uses \SPC\Controller\Api\SonicController::add()
      */
     public function testAdd(): void
     {
@@ -62,7 +62,7 @@ class SonicControllerTest extends TestCase
      * Test edit method
      *
      * @return void
-     * @uses \App\Controller\Api\SonicController::edit()
+     * @uses \SPC\Controller\Api\SonicController::edit()
      */
     public function testEdit(): void
     {
@@ -73,10 +73,11 @@ class SonicControllerTest extends TestCase
      * Test delete method
      *
      * @return void
-     * @uses \App\Controller\Api\SonicController::delete()
+     * @uses \SPC\Controller\Api\SonicController::delete()
      */
     public function testDelete(): void
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 }
+

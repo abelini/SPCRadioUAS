@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Controller\Api;
+namespace SPC\Controller\Api;
 
-use App\Controller\AppController;
+use SPC\Controller\AppController;
 
 /**
  * Sonic Controller
@@ -99,3 +99,4 @@ class SonicController extends AppController
         return $this->redirect(['action' => 'index']);
     }
 }
+

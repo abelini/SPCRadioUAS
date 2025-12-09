@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Test\TestCase\Model\Table;
+namespace SPC\Test\TestCase\Model\Table;
 
-use App\Model\Table\TipoSolicitudTable;
+use SPC\Model\Table\TipoSolicitudTable;
 use Cake\TestSuite\TestCase;
 
 /**
@@ -14,7 +14,7 @@ class TipoSolicitudTableTest extends TestCase
     /**
      * Test subject
      *
-     * @var \App\Model\Table\TipoSolicitudTable
+     * @var \SPC\Model\Table\TipoSolicitudTable
      */
     protected $TipoSolicitud;
 
@@ -55,10 +55,11 @@ class TipoSolicitudTableTest extends TestCase
      * Test validationDefault method
      *
      * @return void
-     * @uses \App\Model\Table\TipoSolicitudTable::validationDefault()
+     * @uses \SPC\Model\Table\TipoSolicitudTable::validationDefault()
      */
     public function testValidationDefault(): void
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 }
+

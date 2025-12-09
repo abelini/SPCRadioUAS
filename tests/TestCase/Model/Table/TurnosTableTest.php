@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Test\TestCase\Model\Table;
+namespace SPC\Test\TestCase\Model\Table;
 
-use App\Model\Table\TurnosTable;
+use SPC\Model\Table\TurnosTable;
 use Cake\TestSuite\TestCase;
 
 /**
@@ -14,7 +14,7 @@ class TurnosTableTest extends TestCase
     /**
      * Test subject
      *
-     * @var \App\Model\Table\TurnosTable
+     * @var \SPC\Model\Table\TurnosTable
      */
     protected $Turnos;
 
@@ -57,10 +57,11 @@ class TurnosTableTest extends TestCase
      * Test validationDefault method
      *
      * @return void
-     * @uses \App\Model\Table\TurnosTable::validationDefault()
+     * @uses \SPC\Model\Table\TurnosTable::validationDefault()
      */
     public function testValidationDefault(): void
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 }
+

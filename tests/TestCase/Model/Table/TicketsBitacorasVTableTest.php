@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Test\TestCase\Model\Table;
+namespace SPC\Test\TestCase\Model\Table;
 
-use App\Model\Table\TicketsBitacorasVTable;
+use SPC\Model\Table\TicketsBitacorasVTable;
 use Cake\TestSuite\TestCase;
 
 /**
@@ -14,7 +14,7 @@ class TicketsBitacorasVTableTest extends TestCase
     /**
      * Test subject
      *
-     * @var \App\Model\Table\TicketsBitacorasVTable
+     * @var \SPC\Model\Table\TicketsBitacorasVTable
      */
     protected $TicketsBitacorasV;
 
@@ -55,10 +55,11 @@ class TicketsBitacorasVTableTest extends TestCase
      * Test validationDefault method
      *
      * @return void
-     * @uses \App\Model\Table\TicketsBitacorasVTable::validationDefault()
+     * @uses \SPC\Model\Table\TicketsBitacorasVTable::validationDefault()
      */
     public function testValidationDefault(): void
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 }
+

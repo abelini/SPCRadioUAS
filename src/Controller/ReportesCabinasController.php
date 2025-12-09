@@ -1,19 +1,22 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Controller;
+namespace SPC\Controller;
 
 
-class ReportesCabinasController extends AppController {
+class ReportesCabinasController extends SPCController
+{
 
-	public function display() {
-		$query = $this->ReportesCabinas->find();
-		$reportesCabinas = $this->paginate($query);
+    public function display()
+    {
+        $query = $this->ReportesCabinas->find();
+        $reportesCabinas = $this->paginate($query);
 
-		$this->set(compact('reportesCabinas'));
+        $this->set(compact('reportesCabinas'));
     }
 
-    public function add() {
+    public function add()
+    {
         $reportesCabina = $this->ReportesCabinas->newEmptyEntity();
         if ($this->request->is('post')) {
             $reportesCabina = $this->ReportesCabinas->patchEntity($reportesCabina, $this->request->getData());
@@ -27,3 +30,4 @@ class ReportesCabinasController extends AppController {
         $this->set(compact('reportesCabina'));
     }
 }
+

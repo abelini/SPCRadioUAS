@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Test\TestCase\Model\Table;
+namespace SPC\Test\TestCase\Model\Table;
 
-use App\Model\Table\SegundoAsignadoTable;
+use SPC\Model\Table\SegundoAsignadoTable;
 use Cake\TestSuite\TestCase;
 
 /**
@@ -14,7 +14,7 @@ class SegundoAsignadoTableTest extends TestCase
     /**
      * Test subject
      *
-     * @var \App\Model\Table\SegundoAsignadoTable
+     * @var \SPC\Model\Table\SegundoAsignadoTable
      */
     protected $SegundoAsignado;
 
@@ -60,7 +60,7 @@ class SegundoAsignadoTableTest extends TestCase
      * Test validationDefault method
      *
      * @return void
-     * @uses \App\Model\Table\SegundoAsignadoTable::validationDefault()
+     * @uses \SPC\Model\Table\SegundoAsignadoTable::validationDefault()
      */
     public function testValidationDefault(): void
     {
@@ -71,10 +71,11 @@ class SegundoAsignadoTableTest extends TestCase
      * Test buildRules method
      *
      * @return void
-     * @uses \App\Model\Table\SegundoAsignadoTable::buildRules()
+     * @uses \SPC\Model\Table\SegundoAsignadoTable::buildRules()
      */
     public function testBuildRules(): void
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 }
+

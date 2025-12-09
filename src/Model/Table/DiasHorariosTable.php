@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Model\Table;
+namespace SPC\Model\Table;
 
 use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
@@ -88,3 +88,4 @@ class DiasHorariosTable extends Table
         return $rules;
     }
 }
+

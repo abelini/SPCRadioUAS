@@ -14,7 +14,7 @@ declare(strict_types=1);
  * @since     3.0.0
  * @license   https://opensource.org/licenses/mit-license.php MIT License
  */
-namespace App\Console;
+namespace SPC\Console;
 
 if (!defined('STDIN')) {
     define('STDIN', fopen('php://stdin', 'r'));
@@ -248,3 +248,4 @@ class Installer
         $io->write('Unable to update __APP_NAME__ value.');
     }
 }
+

@@ -1,29 +1,33 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Controller\Admin;
+namespace SPC\Controller\Admin;
 
-use App\Controller\AppController;
+use SPC\Controller\AppController;
 
 
-class SolicitudesController extends AppController {
+class SolicitudesController extends AppController
+{
 
-	public function index() {
+	public function index()
+	{
 		$query = $this->Solicitudes
-						->find()
-							->contain(['TipoSolicitud', 'PrimerAsignado', 'SegundoAsignado', 'Autorizante', 'ProductorTecnico'])
-							->orderByDesc('fecha');
+			->find()
+			->contain(['TipoSolicitud', 'PrimerAsignado', 'SegundoAsignado', 'Autorizante', 'ProductorTecnico'])
+			->orderByDesc('fecha');
 		$solicitudes = $this->paginate($query);
 
 		$this->set(compact('solicitudes'));
 	}
 
-	public function view($id = null) {
+	public function view($id = null)
+	{
 		$solicitud = $this->Solicitudes->get($id, contain: ['TipoSolicitud', 'PrimerAsignado', 'SegundoAsignado', 'Autorizante', 'ProductorTecnico']);
 		$this->set(compact('solicitud'));
 	}
 
-	public function add() {
+	public function add()
+	{
 		$solicitud = $this->Solicitudes->newEmptyEntity();
 		if ($this->request->is('post')) {
 			$solicitud = $this->Solicitudes->patchEntity($solicitud, $this->request->getData());
@@ -40,9 +44,10 @@ class SolicitudesController extends AppController {
 		$autorizante = $this->Solicitudes->Autorizante->find('list')->all();
 		$productorTecnico = $this->Solicitudes->ProductorTecnico->find('list')->all();
 		$this->set(compact('solicitud', 'tipos', 'primerAsignado', 'segundoAsignado', 'autorizante', 'productorTecnico'));
-    }
+	}
 
-	public function edit($id = null) {
+	public function edit($id = null)
+	{
 		$solicitud = $this->Solicitudes->get($id);
 		if ($this->request->is('put')) {
 			$solicitud = $this->Solicitudes->patchEntity($solicitud, $this->request->getData());
@@ -61,23 +66,24 @@ class SolicitudesController extends AppController {
 		$this->set(compact('solicitud', 'tipos', 'primerAsignado', 'segundoAsignado', 'autorizante', 'productorTecnico'));
 	}
 
-    /**
-     * Delete method
-     *
-     * @param string|null $id Solicitude id.
-     * @return \Cake\Http\Response|null Redirects to index.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function delete($id = null)
-    {
-        $this->request->allowMethod(['post', 'delete']);
-        $solicitude = $this->Solicitudes->get($id);
-        if ($this->Solicitudes->delete($solicitude)) {
-            $this->Flash->success(__('The solicitude has been deleted.'));
-        } else {
-            $this->Flash->error(__('The solicitude could not be deleted. Please, try again.'));
-        }
+	/**
+	 * Delete method
+	 *
+	 * @param string|null $id Solicitude id.
+	 * @return \Cake\Http\Response|null Redirects to index.
+	 * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+	 */
+	public function delete($id = null)
+	{
+		$this->request->allowMethod(['post', 'delete']);
+		$solicitude = $this->Solicitudes->get($id);
+		if ($this->Solicitudes->delete($solicitude)) {
+			$this->Flash->success(__('The solicitude has been deleted.'));
+		} else {
+			$this->Flash->error(__('The solicitude could not be deleted. Please, try again.'));
+		}
 
-        return $this->redirect(['action' => 'index']);
-    }
+		return $this->redirect(['action' => 'index']);
+	}
 }
+

@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Test\TestCase\Model\Table;
+namespace SPC\Test\TestCase\Model\Table;
 
-use App\Model\Table\UsuariosTable;
+use SPC\Model\Table\UsuariosTable;
 use Cake\TestSuite\TestCase;
 
 /**
@@ -14,7 +14,7 @@ class UsuariosTableTest extends TestCase
     /**
      * Test subject
      *
-     * @var \App\Model\Table\UsuariosTable
+     * @var \SPC\Model\Table\UsuariosTable
      */
     protected $Usuarios;
 
@@ -61,7 +61,7 @@ class UsuariosTableTest extends TestCase
      * Test validationDefault method
      *
      * @return void
-     * @uses \App\Model\Table\UsuariosTable::validationDefault()
+     * @uses \SPC\Model\Table\UsuariosTable::validationDefault()
      */
     public function testValidationDefault(): void
     {
@@ -72,10 +72,11 @@ class UsuariosTableTest extends TestCase
      * Test buildRules method
      *
      * @return void
-     * @uses \App\Model\Table\UsuariosTable::buildRules()
+     * @uses \SPC\Model\Table\UsuariosTable::buildRules()
      */
     public function testBuildRules(): void
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 }
+

@@ -14,14 +14,14 @@ declare(strict_types=1);
  * @since         3.0.4
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
-namespace App\View;
+namespace SPC\View;
 
 /**
  * A view class that is used for AJAX responses.
  * Currently only switches the default layout and sets the response type -
  * which just maps to text/html by default.
  */
-class AjaxView extends AppView
+class AjaxView extends SPCView
 {
     /**
      * The name of the layout file to render the view inside of. The name
@@ -44,3 +44,4 @@ class AjaxView extends AppView
         $this->response = $this->response->withType('ajax');
     }
 }
+

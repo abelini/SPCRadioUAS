@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Test\TestCase\Model\Table;
+namespace SPC\Test\TestCase\Model\Table;
 
-use App\Model\Table\DiasProgramasTable;
+use SPC\Model\Table\DiasProgramasTable;
 use Cake\TestSuite\TestCase;
 
 /**
@@ -14,7 +14,7 @@ class DiasProgramasTableTest extends TestCase
     /**
      * Test subject
      *
-     * @var \App\Model\Table\DiasProgramasTable
+     * @var \SPC\Model\Table\DiasProgramasTable
      */
     protected $DiasProgramas;
 
@@ -57,7 +57,7 @@ class DiasProgramasTableTest extends TestCase
      * Test validationDefault method
      *
      * @return void
-     * @uses \App\Model\Table\DiasProgramasTable::validationDefault()
+     * @uses \SPC\Model\Table\DiasProgramasTable::validationDefault()
      */
     public function testValidationDefault(): void
     {
@@ -68,10 +68,11 @@ class DiasProgramasTableTest extends TestCase
      * Test buildRules method
      *
      * @return void
-     * @uses \App\Model\Table\DiasProgramasTable::buildRules()
+     * @uses \SPC\Model\Table\DiasProgramasTable::buildRules()
      */
     public function testBuildRules(): void
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 }
+

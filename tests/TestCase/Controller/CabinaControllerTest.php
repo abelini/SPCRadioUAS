@@ -1,16 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Test\TestCase\Controller;
+namespace SPC\Test\TestCase\Controller;
 
-use App\Controller\CabinaController;
+use SPC\Controller\CabinaController;
 use Cake\TestSuite\IntegrationTestTrait;
 use Cake\TestSuite\TestCase;
 
 /**
  * App\Controller\CabinaController Test Case
  *
- * @uses \App\Controller\CabinaController
+ * @uses \SPC\Controller\CabinaController
  */
 class CabinaControllerTest extends TestCase
 {
@@ -29,7 +29,7 @@ class CabinaControllerTest extends TestCase
      * Test index method
      *
      * @return void
-     * @uses \App\Controller\CabinaController::index()
+     * @uses \SPC\Controller\CabinaController::index()
      */
     public function testIndex(): void
     {
@@ -40,7 +40,7 @@ class CabinaControllerTest extends TestCase
      * Test view method
      *
      * @return void
-     * @uses \App\Controller\CabinaController::view()
+     * @uses \SPC\Controller\CabinaController::view()
      */
     public function testView(): void
     {
@@ -51,7 +51,7 @@ class CabinaControllerTest extends TestCase
      * Test add method
      *
      * @return void
-     * @uses \App\Controller\CabinaController::add()
+     * @uses \SPC\Controller\CabinaController::add()
      */
     public function testAdd(): void
     {
@@ -62,7 +62,7 @@ class CabinaControllerTest extends TestCase
      * Test edit method
      *
      * @return void
-     * @uses \App\Controller\CabinaController::edit()
+     * @uses \SPC\Controller\CabinaController::edit()
      */
     public function testEdit(): void
     {
@@ -73,10 +73,11 @@ class CabinaControllerTest extends TestCase
      * Test delete method
      *
      * @return void
-     * @uses \App\Controller\CabinaController::delete()
+     * @uses \SPC\Controller\CabinaController::delete()
      */
     public function testDelete(): void
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 }
+

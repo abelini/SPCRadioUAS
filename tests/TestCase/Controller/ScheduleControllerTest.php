@@ -1,16 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Test\TestCase\Controller;
+namespace SPC\Test\TestCase\Controller;
 
-use App\Controller\ScheduleController;
+use SPC\Controller\ScheduleController;
 use Cake\TestSuite\IntegrationTestTrait;
 use Cake\TestSuite\TestCase;
 
 /**
  * App\Controller\ScheduleController Test Case
  *
- * @uses \App\Controller\ScheduleController
+ * @uses \SPC\Controller\ScheduleController
  */
 class ScheduleControllerTest extends TestCase
 {
@@ -29,7 +29,7 @@ class ScheduleControllerTest extends TestCase
      * Test index method
      *
      * @return void
-     * @uses \App\Controller\ScheduleController::index()
+     * @uses \SPC\Controller\ScheduleController::index()
      */
     public function testIndex(): void
     {
@@ -40,7 +40,7 @@ class ScheduleControllerTest extends TestCase
      * Test view method
      *
      * @return void
-     * @uses \App\Controller\ScheduleController::view()
+     * @uses \SPC\Controller\ScheduleController::view()
      */
     public function testView(): void
     {
@@ -51,7 +51,7 @@ class ScheduleControllerTest extends TestCase
      * Test add method
      *
      * @return void
-     * @uses \App\Controller\ScheduleController::add()
+     * @uses \SPC\Controller\ScheduleController::add()
      */
     public function testAdd(): void
     {
@@ -62,7 +62,7 @@ class ScheduleControllerTest extends TestCase
      * Test edit method
      *
      * @return void
-     * @uses \App\Controller\ScheduleController::edit()
+     * @uses \SPC\Controller\ScheduleController::edit()
      */
     public function testEdit(): void
     {
@@ -73,10 +73,11 @@ class ScheduleControllerTest extends TestCase
      * Test delete method
      *
      * @return void
-     * @uses \App\Controller\ScheduleController::delete()
+     * @uses \SPC\Controller\ScheduleController::delete()
      */
     public function testDelete(): void
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 }
+

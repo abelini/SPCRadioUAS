@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Model\Table;
+namespace SPC\Model\Table;
 
 use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
@@ -9,24 +9,27 @@ use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
 
-class UpdatesTable extends Table {
+class UpdatesTable extends Table
+{
 
-	public function initialize(array $config): void {
-		parent::initialize($config);
+    public function initialize(array $config): void
+    {
+        parent::initialize($config);
 
-		$this->setTable('updates_reportes_vigilancia');
-		$this->setEntityClass('Update');
-		$this->setDisplayField('observacion');
-		$this->setPrimaryKey('ID');
-		
-		$this->belongsTo('Incidencias')
-			->setForeignKey('incidenciaID');
-		
-		$this->belongsTo('Usuarios')
-			->setForeignKey('userID');
-	}
+        $this->setTable('updates_reportes_vigilancia');
+        $this->setEntityClass('Update');
+        $this->setDisplayField('observacion');
+        $this->setPrimaryKey('ID');
 
-	public function validationDefault(Validator $validator): Validator {
+        $this->belongsTo('Incidencias')
+            ->setForeignKey('incidenciaID');
+
+        $this->belongsTo('Usuarios')
+            ->setForeignKey('userID');
+    }
+
+    public function validationDefault(Validator $validator): Validator
+    {
         $validator
             ->integer('incidenciaID')
             ->requirePresence('incidenciaID', 'create')
@@ -48,5 +51,6 @@ class UpdatesTable extends Table {
             ->notEmptyDateTime('date');
 
         return $validator;
-	}
+    }
 }
+

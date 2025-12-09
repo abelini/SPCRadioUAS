@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Model\Entity;
+namespace SPC\Model\Entity;
 
 use Cake\Http\Client;
 use Cake\ORM\Entity;
@@ -57,3 +57,4 @@ class Worker extends Entity implements \Stringable {
 		return $this->name;
 	}
 }
+

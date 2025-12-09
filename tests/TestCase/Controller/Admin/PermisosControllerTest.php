@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Test\TestCase\Controller\Admin;
+namespace SPC\Test\TestCase\Controller\Admin;
 
-use App\Controller\Admin\PermisosController;
+use SPC\Controller\Admin\PermisosController;
 use Cake\TestSuite\IntegrationTestTrait;
 use Cake\TestSuite\TestCase;
 
@@ -82,3 +82,4 @@ class PermisosControllerTest extends TestCase
         $this->markTestIncomplete('Not implemented yet.');
     }
 }
+

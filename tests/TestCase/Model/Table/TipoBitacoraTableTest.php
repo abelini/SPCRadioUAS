@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Test\TestCase\Model\Table;
+namespace SPC\Test\TestCase\Model\Table;
 
-use App\Model\Table\TipoBitacoraTable;
+use SPC\Model\Table\TipoBitacoraTable;
 use Cake\TestSuite\TestCase;
 
 /**
@@ -14,7 +14,7 @@ class TipoBitacoraTableTest extends TestCase
     /**
      * Test subject
      *
-     * @var \App\Model\Table\TipoBitacoraTable
+     * @var \SPC\Model\Table\TipoBitacoraTable
      */
     protected $TipoBitacora;
 
@@ -55,10 +55,11 @@ class TipoBitacoraTableTest extends TestCase
      * Test validationDefault method
      *
      * @return void
-     * @uses \App\Model\Table\TipoBitacoraTable::validationDefault()
+     * @uses \SPC\Model\Table\TipoBitacoraTable::validationDefault()
      */
     public function testValidationDefault(): void
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 }
+

@@ -1,16 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Test\TestCase\Controller\Admin;
+namespace SPC\Test\TestCase\Controller\Admin;
 
-use App\Controller\Admin\ReportesProgramasController;
+use SPC\Controller\Admin\ReportesProgramasController;
 use Cake\TestSuite\IntegrationTestTrait;
 use Cake\TestSuite\TestCase;
 
 /**
  * App\Controller\Admin\ReportesProgramasController Test Case
  *
- * @uses \App\Controller\Admin\ReportesProgramasController
+ * @uses \SPC\Controller\Admin\ReportesProgramasController
  */
 class ReportesProgramasControllerTest extends TestCase
 {
@@ -31,7 +31,7 @@ class ReportesProgramasControllerTest extends TestCase
      * Test index method
      *
      * @return void
-     * @uses \App\Controller\Admin\ReportesProgramasController::index()
+     * @uses \SPC\Controller\Admin\ReportesProgramasController::index()
      */
     public function testIndex(): void
     {
@@ -42,7 +42,7 @@ class ReportesProgramasControllerTest extends TestCase
      * Test view method
      *
      * @return void
-     * @uses \App\Controller\Admin\ReportesProgramasController::view()
+     * @uses \SPC\Controller\Admin\ReportesProgramasController::view()
      */
     public function testView(): void
     {
@@ -53,7 +53,7 @@ class ReportesProgramasControllerTest extends TestCase
      * Test add method
      *
      * @return void
-     * @uses \App\Controller\Admin\ReportesProgramasController::add()
+     * @uses \SPC\Controller\Admin\ReportesProgramasController::add()
      */
     public function testAdd(): void
     {
@@ -64,7 +64,7 @@ class ReportesProgramasControllerTest extends TestCase
      * Test edit method
      *
      * @return void
-     * @uses \App\Controller\Admin\ReportesProgramasController::edit()
+     * @uses \SPC\Controller\Admin\ReportesProgramasController::edit()
      */
     public function testEdit(): void
     {
@@ -75,10 +75,11 @@ class ReportesProgramasControllerTest extends TestCase
      * Test delete method
      *
      * @return void
-     * @uses \App\Controller\Admin\ReportesProgramasController::delete()
+     * @uses \SPC\Controller\Admin\ReportesProgramasController::delete()
      */
     public function testDelete(): void
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 }
+

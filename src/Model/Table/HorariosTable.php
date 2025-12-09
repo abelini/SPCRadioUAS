@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Model\Table;
+namespace SPC\Model\Table;
 
 use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
@@ -9,7 +9,8 @@ use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
 
-class HorariosTable extends Table {
+class HorariosTable extends Table
+{
     /**
      * Initialize method
      *
@@ -38,15 +39,19 @@ class HorariosTable extends Table {
         ]);
     }
 
-	#[\Override]
-	public function findList(SelectQuery $query, \Closure|array|string|null $keyField = null, \Closure|array|string|null $valueField = null, \Closure|array|string|null $g = null, string $s = ';') : SelectQuery {
-		$finder = $query->select(['ID', 'horaInicio', 'horaFin', 'turnoID']);
-					//->matching();
-		return parent::findList($finder, keyField:$this->getPrimaryKey(), valueField:function ($horario) {
-				return $horario->horaInicio .' → '. $horario->horaFin;
-			}
-		);
-	}
+    #[\Override]
+    public function findList(SelectQuery $query, \Closure|array|string|null $keyField = null, \Closure|array|string|null $valueField = null, \Closure|array|string|null $g = null, string $s = ';'): SelectQuery
+    {
+        $finder = $query->select(['ID', 'horaInicio', 'horaFin', 'turnoID']);
+        //->matching();
+        return parent::findList(
+            $finder,
+            keyField: $this->getPrimaryKey(),
+            valueField: function ($horario) {
+                return $horario->horaInicio . ' → ' . $horario->horaFin;
+            }
+        );
+    }
     /**
      * Default validation rules.
      *
@@ -84,3 +89,4 @@ class HorariosTable extends Table {
         return $rules;
     }
 }
+

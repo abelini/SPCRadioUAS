@@ -1,16 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Test\TestCase\Controller\Admin;
+namespace SPC\Test\TestCase\Controller\Admin;
 
-use App\Controller\Admin\DashboardController;
+use SPC\Controller\Admin\DashboardController;
 use Cake\TestSuite\IntegrationTestTrait;
 use Cake\TestSuite\TestCase;
 
 /**
  * App\Controller\Admin\DashboardController Test Case
  *
- * @uses \App\Controller\Admin\DashboardController
+ * @uses \SPC\Controller\Admin\DashboardController
  */
 class DashboardControllerTest extends TestCase
 {
@@ -29,7 +29,7 @@ class DashboardControllerTest extends TestCase
      * Test index method
      *
      * @return void
-     * @uses \App\Controller\Admin\DashboardController::index()
+     * @uses \SPC\Controller\Admin\DashboardController::index()
      */
     public function testIndex(): void
     {
@@ -40,7 +40,7 @@ class DashboardControllerTest extends TestCase
      * Test view method
      *
      * @return void
-     * @uses \App\Controller\Admin\DashboardController::view()
+     * @uses \SPC\Controller\Admin\DashboardController::view()
      */
     public function testView(): void
     {
@@ -51,7 +51,7 @@ class DashboardControllerTest extends TestCase
      * Test add method
      *
      * @return void
-     * @uses \App\Controller\Admin\DashboardController::add()
+     * @uses \SPC\Controller\Admin\DashboardController::add()
      */
     public function testAdd(): void
     {
@@ -62,7 +62,7 @@ class DashboardControllerTest extends TestCase
      * Test edit method
      *
      * @return void
-     * @uses \App\Controller\Admin\DashboardController::edit()
+     * @uses \SPC\Controller\Admin\DashboardController::edit()
      */
     public function testEdit(): void
     {
@@ -73,10 +73,11 @@ class DashboardControllerTest extends TestCase
      * Test delete method
      *
      * @return void
-     * @uses \App\Controller\Admin\DashboardController::delete()
+     * @uses \SPC\Controller\Admin\DashboardController::delete()
      */
     public function testDelete(): void
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 }
+

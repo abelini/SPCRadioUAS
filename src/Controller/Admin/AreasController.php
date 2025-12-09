@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Controller\Admin;
+namespace SPC\Controller\Admin;
 
-use App\Controller\AppController;
+use SPC\Controller\AppController;
 
 /**
  * Areas Controller
@@ -100,3 +100,4 @@ class AreasController extends AppController
         return $this->redirect(['action' => 'index']);
     }
 }
+

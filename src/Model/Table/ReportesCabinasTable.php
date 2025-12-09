@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Model\Table;
+namespace SPC\Model\Table;
 
 use Cake\Event\EventInterface;
 use Cake\ORM\Entity;
@@ -11,40 +11,44 @@ use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
 
-class ReportesCabinasTable extends Table {
+class ReportesCabinasTable extends Table
+{
 
-	public function initialize(array $config): void {
-		parent::initialize($config);
+    public function initialize(array $config): void
+    {
+        parent::initialize($config);
 
-		$this->setTable('reportes_cabinas');
-		$this->setDisplayField('ID');
-		$this->setPrimaryKey('ID');
+        $this->setTable('reportes_cabinas');
+        $this->setDisplayField('ID');
+        $this->setPrimaryKey('ID');
 
-		$this->addBehavior('Timestamp');
+        $this->addBehavior('Timestamp');
 
-		$this->hasMany('ReportesProgramas')->setForeignKey('ReporteCabinaID')->setDependent(true);
-		
-		$this->belongsTo('Locutores')->setForeignKey('locutorID')->setProperty('locutor');
-		
-		$this->belongsTo('BitacoraCabina')->setForeignKey('bitacoraID')->setProperty('bitacora');
+        $this->hasMany('ReportesProgramas')->setForeignKey('ReporteCabinaID')->setDependent(true);
+
+        $this->belongsTo('Locutores')->setForeignKey('locutorID')->setProperty('locutor');
+
+        $this->belongsTo('BitacoraCabina')->setForeignKey('bitacoraID')->setProperty('bitacora');
     }
-	
-	protected function findAllAssociatedData(SelectQuery $query) : SelectQuery {
-		return $query
-					->contain('BitacoraCabina')
-					->contain('Locutores', function(SelectQuery $q) {
-						return $q->select(['ID', 'name'], true);
-					});
-	}
-	
-	/*
-	public function afterMarshal(EventInterface $event, Entity $reporte, \ArrayObject $data, \ArrayObject $options) {
-		if (empty(trim($reporte->reporte))) {
-			$reporte->set('reporte', 'Sin novedad');
-		}
-	}*/
 
-    public function validationDefault(Validator $validator): Validator {
+    protected function findAllAssociatedData(SelectQuery $query): SelectQuery
+    {
+        return $query
+            ->contain('BitacoraCabina')
+            ->contain('Locutores', function (SelectQuery $q) {
+                return $q->select(['ID', 'name'], true);
+            });
+    }
+
+    /*
+    public function afterMarshal(EventInterface $event, Entity $reporte, \ArrayObject $data, \ArrayObject $options) {
+        if (empty(trim($reporte->reporte))) {
+            $reporte->set('reporte', 'Sin novedad');
+        }
+    }*/
+
+    public function validationDefault(Validator $validator): Validator
+    {
         $validator
             ->integer('bitacoraID')
             ->requirePresence('bitacoraID', 'create')
@@ -54,7 +58,7 @@ class ReportesCabinasTable extends Table {
             ->integer('locutorID')
             ->requirePresence('locutorID', 'create')
             ->notEmptyString('locutorID');
-		/*
+        /*
         $validator
             ->time('horaInicio')
             ->requirePresence('horaInicio', 'create')
@@ -64,7 +68,7 @@ class ReportesCabinasTable extends Table {
             ->time('horaFin')
             ->requirePresence('horaFin', 'create')
             ->notEmptyTime('horaFin');
-		*/
+        */
         $validator
             ->scalar('reporte')
             ->allowEmptyString('reporte');
@@ -76,3 +80,4 @@ class ReportesCabinasTable extends Table {
         return $validator;
     }
 }
+

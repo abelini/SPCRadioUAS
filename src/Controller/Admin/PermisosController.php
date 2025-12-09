@@ -1,26 +1,30 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Controller\Admin;
+namespace SPC\Controller\Admin;
 
-use App\Controller\AppController;
+use SPC\Controller\AppController;
 
 
-class PermisosController extends AppController {
+class PermisosController extends AppController
+{
 
-    public function index() {
+    public function index()
+    {
         $query = $this->Permisos->find();
         $permisos = $this->paginate($query);
 
         $this->set(compact('permisos'));
     }
 
-    public function view($id = null) {
+    public function view($id = null)
+    {
         $permiso = $this->Permisos->get($id, contain: ['Usuarios']);
         $this->set(compact('permiso'));
     }
 
-    public function add() {
+    public function add()
+    {
         $permiso = $this->Permisos->newEmptyEntity();
         if ($this->request->is('post')) {
             $permiso = $this->Permisos->patchEntity($permiso, $this->request->getData());
@@ -34,7 +38,8 @@ class PermisosController extends AppController {
         $this->set(compact('permiso'));
     }
 
-    public function edit($id = null) {
+    public function edit($id = null)
+    {
         $permiso = $this->Permisos->get($id, contain: ['Usuarios']);
         if ($this->request->is(['patch', 'post', 'put'])) {
             $permiso = $this->Permisos->patchEntity($permiso, $this->request->getData());
@@ -49,7 +54,8 @@ class PermisosController extends AppController {
         $this->set(compact('permiso', 'usuarios'));
     }
 
-    public function delete($id = null) {
+    public function delete($id = null)
+    {
         $this->request->allowMethod(['post', 'delete']);
         $permiso = $this->Permisos->get($id);
         if ($this->Permisos->delete($permiso)) {
@@ -61,3 +67,4 @@ class PermisosController extends AppController {
         return $this->redirect(['action' => 'index']);
     }
 }
+

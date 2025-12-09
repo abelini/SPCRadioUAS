@@ -1,25 +1,27 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Model\Table;
+namespace SPC\Model\Table;
 
-use App\Model\Entity\Permiso;
+use SPC\Model\Entity\Permiso;
 use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
 
-class LocutoresTable extends Table {
+class LocutoresTable extends Table
+{
 
-	public function initialize(array $config): void {
+	public function initialize(array $config): void
+	{
 		parent::initialize($config);
 
 		$this->setTable('usuarios');
-		
+
 		$this->setDisplayField('name')
-				->setPrimaryKey('ID')
-				->setEntityClass('Locutor');
+			->setPrimaryKey('ID')
+			->setEntityClass('Locutor');
 
 		$this->hasMany('Asignaciones', [
 			'foreignKey' => 'locutorID',
@@ -39,24 +41,27 @@ class LocutoresTable extends Table {
 			'targetForeignKey' => 'permisoID',
 			'joinTable' => 'permisos_usuarios',
 		]);
-    }
-	
-	#[\Override]
-	public function findAll(SelectQuery $query) : SelectQuery {
-		return $query
-				->selectAllExcept($this, ['password'])
-				->orderByAsc('fullname')
-				->matching('Permisos', function(SelectQuery $query) {
-					return $query->where(['Permisos.ID' => Permiso::LOCUTOR]);
-				});
 	}
-	
+
 	#[\Override]
-	public function findList(SelectQuery $query, \Closure|array|string|null $keyField = null, \Closure|array|string|null $valueField = null, \Closure|array|string|null $g = null, string $s = ';') : SelectQuery {
+	public function findAll(SelectQuery $query): SelectQuery
+	{
+		return $query
+			->selectAllExcept($this, ['password'])
+			->orderByAsc('fullname')
+			->matching('Permisos', function (SelectQuery $query) {
+				return $query->where(['Permisos.ID' => Permiso::LOCUTOR]);
+			});
+	}
+
+	#[\Override]
+	public function findList(SelectQuery $query, \Closure|array|string|null $keyField = null, \Closure|array|string|null $valueField = null, \Closure|array|string|null $g = null, string $s = ';'): SelectQuery
+	{
 		$finder = $query->select(['ID', 'name', 'email'])
-					->matching('Permisos', function(SelectQuery $query) {
-						return $query->where(['Permisos.ID' => Permiso::LOCUTOR]);
-					});
-		return parent::findList($finder, keyField:$keyField, valueField:$valueField);
+			->matching('Permisos', function (SelectQuery $query) {
+				return $query->where(['Permisos.ID' => Permiso::LOCUTOR]);
+			});
+		return parent::findList($finder, keyField: $keyField, valueField: $valueField);
 	}
 }
+

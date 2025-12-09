@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Model\Table;
+namespace SPC\Model\Table;
 
 use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
@@ -9,21 +9,24 @@ use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
 
-class TipoSolicitudTable extends Table {
+class TipoSolicitudTable extends Table
+{
 
-	public function initialize(array $config): void {
-		parent::initialize($config);
+    public function initialize(array $config): void
+    {
+        parent::initialize($config);
 
-		$this->setTable('tipo_solicitud');
-		$this->setDisplayField('name');
-		$this->setPrimaryKey('ID');
+        $this->setTable('tipo_solicitud');
+        $this->setDisplayField('name');
+        $this->setPrimaryKey('ID');
 
-		$this->hasMany('Solicitudes', [
-			'foreignKey' => 'tipoSolicitudID',
-		]);
-	}
+        $this->hasMany('Solicitudes', [
+            'foreignKey' => 'tipoSolicitudID',
+        ]);
+    }
 
-	public function validationDefault(Validator $validator): Validator {
+    public function validationDefault(Validator $validator): Validator
+    {
         $validator
             ->scalar('name')
             ->maxLength('name', 255)
@@ -45,3 +48,4 @@ class TipoSolicitudTable extends Table {
         return $validator;
     }
 }
+

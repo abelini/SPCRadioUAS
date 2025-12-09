@@ -1,16 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Test\TestCase\Controller\Admin;
+namespace SPC\Test\TestCase\Controller\Admin;
 
-use App\Controller\Admin\UsuariosController;
+use SPC\Controller\Admin\UsuariosController;
 use Cake\TestSuite\IntegrationTestTrait;
 use Cake\TestSuite\TestCase;
 
 /**
  * App\Controller\Admin\UsuariosController Test Case
  *
- * @uses \App\Controller\Admin\UsuariosController
+ * @uses \SPC\Controller\Admin\UsuariosController
  */
 class UsuariosControllerTest extends TestCase
 {
@@ -34,7 +34,7 @@ class UsuariosControllerTest extends TestCase
      * Test index method
      *
      * @return void
-     * @uses \App\Controller\Admin\UsuariosController::index()
+     * @uses \SPC\Controller\Admin\UsuariosController::index()
      */
     public function testIndex(): void
     {
@@ -45,7 +45,7 @@ class UsuariosControllerTest extends TestCase
      * Test view method
      *
      * @return void
-     * @uses \App\Controller\Admin\UsuariosController::view()
+     * @uses \SPC\Controller\Admin\UsuariosController::view()
      */
     public function testView(): void
     {
@@ -56,7 +56,7 @@ class UsuariosControllerTest extends TestCase
      * Test add method
      *
      * @return void
-     * @uses \App\Controller\Admin\UsuariosController::add()
+     * @uses \SPC\Controller\Admin\UsuariosController::add()
      */
     public function testAdd(): void
     {
@@ -67,7 +67,7 @@ class UsuariosControllerTest extends TestCase
      * Test edit method
      *
      * @return void
-     * @uses \App\Controller\Admin\UsuariosController::edit()
+     * @uses \SPC\Controller\Admin\UsuariosController::edit()
      */
     public function testEdit(): void
     {
@@ -78,10 +78,11 @@ class UsuariosControllerTest extends TestCase
      * Test delete method
      *
      * @return void
-     * @uses \App\Controller\Admin\UsuariosController::delete()
+     * @uses \SPC\Controller\Admin\UsuariosController::delete()
      */
     public function testDelete(): void
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 }
+

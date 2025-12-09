@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Test\TestCase\Model\Table;
+namespace SPC\Test\TestCase\Model\Table;
 
-use App\Model\Table\ProgramasTable;
+use SPC\Model\Table\ProgramasTable;
 use Cake\TestSuite\TestCase;
 
 /**
@@ -14,7 +14,7 @@ class ProgramasTableTest extends TestCase
     /**
      * Test subject
      *
-     * @var \App\Model\Table\ProgramasTable
+     * @var \SPC\Model\Table\ProgramasTable
      */
     protected $Programas;
 
@@ -57,10 +57,11 @@ class ProgramasTableTest extends TestCase
      * Test validationDefault method
      *
      * @return void
-     * @uses \App\Model\Table\ProgramasTable::validationDefault()
+     * @uses \SPC\Model\Table\ProgramasTable::validationDefault()
      */
     public function testValidationDefault(): void
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 }
+

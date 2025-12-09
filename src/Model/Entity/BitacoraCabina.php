@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Model\Entity;
+namespace SPC\Model\Entity;
 
 use Cake\ORM\Entity;
 use Cake\ORM\TableRegistry;
@@ -30,3 +30,4 @@ class BitacoraCabina extends Entity implements \Stringable {
 		return TableRegistry::getTableLocator()->get($this->getSource())->find('next', $this)->first();
 	}
 }
+

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Test\Fixture;
+namespace SPC\Test\Fixture;
 
 use Cake\TestSuite\Fixture\TestFixture;
 
@@ -42,3 +42,4 @@ class SolicitudesFixture extends TestFixture
         parent::init();
     }
 }
+

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Mailer;
+namespace SPC\Mailer;
 
-use App\Mailer\Transport\GoogleTransport;
+use SPC\Mailer\Transport\GoogleTransport;
 use Cake\Mailer\Mailer;
 use Cake\Mailer\TransportFactory;
 

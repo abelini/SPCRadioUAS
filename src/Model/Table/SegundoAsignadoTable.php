@@ -1,18 +1,20 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Model\Table;
+namespace SPC\Model\Table;
 
-use App\Model\Entity\Permiso;
+use SPC\Model\Entity\Permiso;
 use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
 
-class SegundoAsignadoTable extends Table {
+class SegundoAsignadoTable extends Table
+{
 
-	public function initialize(array $config): void {
+	public function initialize(array $config): void
+	{
 		parent::initialize($config);
 
 		$this->setTable('usuarios');
@@ -28,14 +30,16 @@ class SegundoAsignadoTable extends Table {
 			'targetForeignKey' => 'permisoID',
 			'joinTable' => 'permisos_usuarios',
 		]);
-    }
+	}
 
 	#[\Override]
-	public function findList(SelectQuery $query, \Closure|array|string|null $keyField = null, \Closure|array|string|null $valueField = null, \Closure|array|string|null $g = null, string $s = ';') : SelectQuery {
+	public function findList(SelectQuery $query, \Closure|array|string|null $keyField = null, \Closure|array|string|null $valueField = null, \Closure|array|string|null $g = null, string $s = ';'): SelectQuery
+	{
 		$finder = $query->select(['ID', 'name'])
-					->matching('Permisos', function(SelectQuery $query) {
-						return $query->where(['Permisos.ID' => Permiso::CORRESPONSALES]);
-					});
-		return parent::findList($finder, keyField:$keyField, valueField:$valueField);
+			->matching('Permisos', function (SelectQuery $query) {
+				return $query->where(['Permisos.ID' => Permiso::CORRESPONSALES]);
+			});
+		return parent::findList($finder, keyField: $keyField, valueField: $valueField);
 	}
 }
+

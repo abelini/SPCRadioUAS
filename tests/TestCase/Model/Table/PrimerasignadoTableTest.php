@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Test\TestCase\Model\Table;
+namespace SPC\Test\TestCase\Model\Table;
 
-use App\Model\Table\PrimerasignadoTable;
+use SPC\Model\Table\PrimerasignadoTable;
 use Cake\TestSuite\TestCase;
 
 /**
@@ -14,7 +14,7 @@ class PrimerasignadoTableTest extends TestCase
     /**
      * Test subject
      *
-     * @var \App\Model\Table\PrimerasignadoTable
+     * @var \SPC\Model\Table\PrimerasignadoTable
      */
     protected $Primerasignado;
 
@@ -58,7 +58,7 @@ class PrimerasignadoTableTest extends TestCase
      * Test validationDefault method
      *
      * @return void
-     * @uses \App\Model\Table\PrimerasignadoTable::validationDefault()
+     * @uses \SPC\Model\Table\PrimerasignadoTable::validationDefault()
      */
     public function testValidationDefault(): void
     {
@@ -69,10 +69,11 @@ class PrimerasignadoTableTest extends TestCase
      * Test buildRules method
      *
      * @return void
-     * @uses \App\Model\Table\PrimerasignadoTable::buildRules()
+     * @uses \SPC\Model\Table\PrimerasignadoTable::buildRules()
      */
     public function testBuildRules(): void
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 }
+

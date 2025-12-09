@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Test\TestCase\Model\Table;
+namespace SPC\Test\TestCase\Model\Table;
 
-use App\Model\Table\LocutoresTable;
+use SPC\Model\Table\LocutoresTable;
 use Cake\TestSuite\TestCase;
 
 /**
@@ -14,7 +14,7 @@ class LocutoresTableTest extends TestCase
     /**
      * Test subject
      *
-     * @var \App\Model\Table\LocutoresTable
+     * @var \SPC\Model\Table\LocutoresTable
      */
     protected $Locutores;
 
@@ -61,7 +61,7 @@ class LocutoresTableTest extends TestCase
      * Test validationDefault method
      *
      * @return void
-     * @uses \App\Model\Table\LocutoresTable::validationDefault()
+     * @uses \SPC\Model\Table\LocutoresTable::validationDefault()
      */
     public function testValidationDefault(): void
     {
@@ -72,10 +72,11 @@ class LocutoresTableTest extends TestCase
      * Test buildRules method
      *
      * @return void
-     * @uses \App\Model\Table\LocutoresTable::buildRules()
+     * @uses \SPC\Model\Table\LocutoresTable::buildRules()
      */
     public function testBuildRules(): void
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 }
+

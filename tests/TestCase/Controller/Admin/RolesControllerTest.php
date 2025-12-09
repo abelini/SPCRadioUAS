@@ -1,16 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Test\TestCase\Controller\Admin;
+namespace SPC\Test\TestCase\Controller\Admin;
 
-use App\Controller\Admin\RolesController;
+use SPC\Controller\Admin\RolesController;
 use Cake\TestSuite\IntegrationTestTrait;
 use Cake\TestSuite\TestCase;
 
 /**
  * App\Controller\Admin\RolesController Test Case
  *
- * @uses \App\Controller\Admin\RolesController
+ * @uses \SPC\Controller\Admin\RolesController
  */
 class RolesControllerTest extends TestCase
 {
@@ -30,7 +30,7 @@ class RolesControllerTest extends TestCase
      * Test index method
      *
      * @return void
-     * @uses \App\Controller\Admin\RolesController::index()
+     * @uses \SPC\Controller\Admin\RolesController::index()
      */
     public function testIndex(): void
     {
@@ -41,7 +41,7 @@ class RolesControllerTest extends TestCase
      * Test view method
      *
      * @return void
-     * @uses \App\Controller\Admin\RolesController::view()
+     * @uses \SPC\Controller\Admin\RolesController::view()
      */
     public function testView(): void
     {
@@ -52,7 +52,7 @@ class RolesControllerTest extends TestCase
      * Test add method
      *
      * @return void
-     * @uses \App\Controller\Admin\RolesController::add()
+     * @uses \SPC\Controller\Admin\RolesController::add()
      */
     public function testAdd(): void
     {
@@ -63,7 +63,7 @@ class RolesControllerTest extends TestCase
      * Test edit method
      *
      * @return void
-     * @uses \App\Controller\Admin\RolesController::edit()
+     * @uses \SPC\Controller\Admin\RolesController::edit()
      */
     public function testEdit(): void
     {
@@ -74,10 +74,11 @@ class RolesControllerTest extends TestCase
      * Test delete method
      *
      * @return void
-     * @uses \App\Controller\Admin\RolesController::delete()
+     * @uses \SPC\Controller\Admin\RolesController::delete()
      */
     public function testDelete(): void
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 }
+

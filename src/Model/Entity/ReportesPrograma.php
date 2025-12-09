@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Model\Entity;
+namespace SPC\Model\Entity;
 
 use Cake\ORM\Entity;
 
@@ -66,3 +66,4 @@ class ReportesPrograma extends Entity {
 			return self::STATUS_LONG_OPTIONS[$this->status] ?? '-';
 	}
 }
+

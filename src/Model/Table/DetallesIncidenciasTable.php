@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Model\Table;
+namespace SPC\Model\Table;
 
 use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
@@ -9,20 +9,23 @@ use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
 
-class DetallesIncidenciasTable extends Table {
+class DetallesIncidenciasTable extends Table
+{
 
-	public function initialize(array $config): void {
-		parent::initialize($config);
+    public function initialize(array $config): void
+    {
+        parent::initialize($config);
 
-		$this->setTable('detalles_incidencias');
-		$this->setDisplayField('ID');
-		$this->setPrimaryKey('ID');
-		$this->setEntityClass('DetalleIncidencia');
-		
-		$this->belongsTo('Incidencias')->setForeignKey('incidenciaID');
+        $this->setTable('detalles_incidencias');
+        $this->setDisplayField('ID');
+        $this->setPrimaryKey('ID');
+        $this->setEntityClass('DetalleIncidencia');
+
+        $this->belongsTo('Incidencias')->setForeignKey('incidenciaID');
     }
 
-    public function validationDefault(Validator $validator): Validator {
+    public function validationDefault(Validator $validator): Validator
+    {
 
         $validator
             ->boolean('fire')
@@ -82,12 +85,13 @@ class DetallesIncidenciasTable extends Table {
 
         $validator
             ->integer('blackout_duration');
-           // ->allowEmptyString('blackout_duration');
+        // ->allowEmptyString('blackout_duration');
 
         $validator
             ->integer('lost_signal_duration');
-           // ->allowEmptyString('lost_signal_duration');
+        // ->allowEmptyString('lost_signal_duration');
 
         return $validator;
     }
 }
+

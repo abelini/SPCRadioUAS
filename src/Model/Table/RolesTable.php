@@ -1,22 +1,24 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Model\Table;
+namespace SPC\Model\Table;
 
-use App\Model\Entity\Rol;
+use SPC\Model\Entity\Rol;
 use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
 
-class RolesTable extends Table {
+class RolesTable extends Table
+{
 
-	public function initialize(array $config): void    {
+	public function initialize(array $config): void
+	{
 		parent::initialize($config);
 
 		$this->setTable('roles');
-		
+
 		$this->setDisplayField('fechaInicio')
 			->setPrimaryKey('ID')
 			->setEntityClass('Rol');
@@ -25,45 +27,50 @@ class RolesTable extends Table {
 			'foreignKey' => 'turnoID',
 			'joinType' => 'INNER',
 		]);
-		
+
 		$this->hasMany('Asignaciones', [
-				'sort' => [
-					'diaID' => 'ASC',
-					'horarioID' => 'ASC'
-				]
-			])
+			'sort' => [
+				'diaID' => 'ASC',
+				'horarioID' => 'ASC'
+			]
+		])
 			->setForeignKey('rolID')
 			->setDependent(true);
-    }
+	}
 
-	public function findPrevious(SelectQuery $query, Rol $rol) {
+	public function findPrevious(SelectQuery $query, Rol $rol)
+	{
 		return $query->where(['fechaFin' => $rol->fechaInicio->addDays(-1)]);
 	}
 
-	public function findNext(SelectQuery $query, Rol $rol) {
+	public function findNext(SelectQuery $query, Rol $rol)
+	{
 		return $query->where(['fechaInicio' => $rol->fechaFin->addDays(1)]);
 	}
-	
-	public function validationDefault(Validator $validator): Validator {
-        $validator
-            ->date('fechaInicio')
-            ->requirePresence('fechaInicio', 'create')
-            ->notEmptyDate('fechaInicio');
 
-        $validator
-            ->date('fechaFin')
-            ->requirePresence('fechaFin', 'create')
-            ->notEmptyDate('fechaFin');
+	public function validationDefault(Validator $validator): Validator
+	{
+		$validator
+			->date('fechaInicio')
+			->requirePresence('fechaInicio', 'create')
+			->notEmptyDate('fechaInicio');
 
-        $validator
-            ->integer('turnoID')
-            ->notEmptyString('turnoID');
+		$validator
+			->date('fechaFin')
+			->requirePresence('fechaFin', 'create')
+			->notEmptyDate('fechaFin');
 
-        return $validator;
+		$validator
+			->integer('turnoID')
+			->notEmptyString('turnoID');
+
+		return $validator;
 	}
 
-	public function buildRules(RulesChecker $rules): RulesChecker {
+	public function buildRules(RulesChecker $rules): RulesChecker
+	{
 		$rules->add($rules->existsIn(['turnoID'], 'Turnos'), ['errorField' => 'turnoID']);
 		return $rules;
-    }
+	}
 }
+

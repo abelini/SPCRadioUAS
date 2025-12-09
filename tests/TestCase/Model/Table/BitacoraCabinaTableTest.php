@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Test\TestCase\Model\Table;
+namespace SPC\Test\TestCase\Model\Table;
 
-use App\Model\Table\BitacoraCabinaTable;
+use SPC\Model\Table\BitacoraCabinaTable;
 use Cake\TestSuite\TestCase;
 
 /**
@@ -14,7 +14,7 @@ class BitacoraCabinaTableTest extends TestCase
     /**
      * Test subject
      *
-     * @var \App\Model\Table\BitacoraCabinaTable
+     * @var \SPC\Model\Table\BitacoraCabinaTable
      */
     protected $BitacoraCabina;
 
@@ -55,10 +55,11 @@ class BitacoraCabinaTableTest extends TestCase
      * Test validationDefault method
      *
      * @return void
-     * @uses \App\Model\Table\BitacoraCabinaTable::validationDefault()
+     * @uses \SPC\Model\Table\BitacoraCabinaTable::validationDefault()
      */
     public function testValidationDefault(): void
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 }
+

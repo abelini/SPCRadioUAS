@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Test\TestCase\Model\Table;
+namespace SPC\Test\TestCase\Model\Table;
 
-use App\Model\Table\AsignacionesTable;
+use SPC\Model\Table\AsignacionesTable;
 use Cake\TestSuite\TestCase;
 
 /**
@@ -14,7 +14,7 @@ class AsignacionesTableTest extends TestCase
     /**
      * Test subject
      *
-     * @var \App\Model\Table\AsignacionesTable
+     * @var \SPC\Model\Table\AsignacionesTable
      */
     protected $Asignaciones;
 
@@ -58,7 +58,7 @@ class AsignacionesTableTest extends TestCase
      * Test validationDefault method
      *
      * @return void
-     * @uses \App\Model\Table\AsignacionesTable::validationDefault()
+     * @uses \SPC\Model\Table\AsignacionesTable::validationDefault()
      */
     public function testValidationDefault(): void
     {
@@ -69,10 +69,11 @@ class AsignacionesTableTest extends TestCase
      * Test buildRules method
      *
      * @return void
-     * @uses \App\Model\Table\AsignacionesTable::buildRules()
+     * @uses \SPC\Model\Table\AsignacionesTable::buildRules()
      */
     public function testBuildRules(): void
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 }
+

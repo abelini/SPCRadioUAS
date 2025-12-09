@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Model\Entity;
+namespace SPC\Model\Entity;
 
 use Cake\ORM\Entity;
 use Cake\ORM\TableRegistry;
@@ -25,3 +25,4 @@ class Rol extends Entity {
 		return TableRegistry::getTableLocator()->get($this->getSource())->find('next', rol:$this)->first();
 	}
 }
+

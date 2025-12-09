@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Model\Entity;
+namespace SPC\Model\Entity;
 
 use Cake\I18n\DateTime;
 use Cake\ORM\Entity;
@@ -71,3 +71,4 @@ class Horario extends Entity implements \Stringable {
 		return $this->horaInicio->i18nFormat($format, 'en-US').' <i class="fa-solid fa-arrow-right"></i> '. $this->horaFin->i18nFormat($format, 'en-US');
 	}
 }
+

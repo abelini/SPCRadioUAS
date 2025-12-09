@@ -1,16 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Test\TestCase\Controller\Admin;
+namespace SPC\Test\TestCase\Controller\Admin;
 
-use App\Controller\Admin\BitacoraVigilanciaController;
+use SPC\Controller\Admin\BitacoraVigilanciaController;
 use Cake\TestSuite\IntegrationTestTrait;
 use Cake\TestSuite\TestCase;
 
 /**
  * App\Controller\Admin\BitacoraVigilanciaController Test Case
  *
- * @uses \App\Controller\Admin\BitacoraVigilanciaController
+ * @uses \SPC\Controller\Admin\BitacoraVigilanciaController
  */
 class BitacoraVigilanciaControllerTest extends TestCase
 {
@@ -32,7 +32,7 @@ class BitacoraVigilanciaControllerTest extends TestCase
      * Test index method
      *
      * @return void
-     * @uses \App\Controller\Admin\BitacoraVigilanciaController::index()
+     * @uses \SPC\Controller\Admin\BitacoraVigilanciaController::index()
      */
     public function testIndex(): void
     {
@@ -43,7 +43,7 @@ class BitacoraVigilanciaControllerTest extends TestCase
      * Test view method
      *
      * @return void
-     * @uses \App\Controller\Admin\BitacoraVigilanciaController::view()
+     * @uses \SPC\Controller\Admin\BitacoraVigilanciaController::view()
      */
     public function testView(): void
     {
@@ -54,7 +54,7 @@ class BitacoraVigilanciaControllerTest extends TestCase
      * Test add method
      *
      * @return void
-     * @uses \App\Controller\Admin\BitacoraVigilanciaController::add()
+     * @uses \SPC\Controller\Admin\BitacoraVigilanciaController::add()
      */
     public function testAdd(): void
     {
@@ -65,7 +65,7 @@ class BitacoraVigilanciaControllerTest extends TestCase
      * Test edit method
      *
      * @return void
-     * @uses \App\Controller\Admin\BitacoraVigilanciaController::edit()
+     * @uses \SPC\Controller\Admin\BitacoraVigilanciaController::edit()
      */
     public function testEdit(): void
     {
@@ -76,10 +76,11 @@ class BitacoraVigilanciaControllerTest extends TestCase
      * Test delete method
      *
      * @return void
-     * @uses \App\Controller\Admin\BitacoraVigilanciaController::delete()
+     * @uses \SPC\Controller\Admin\BitacoraVigilanciaController::delete()
      */
     public function testDelete(): void
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 }
+

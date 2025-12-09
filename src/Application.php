@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App;
+namespace SPC;
 /* Auth */
 use Authentication\AuthenticationService;
 use Authentication\AuthenticationServiceInterface;
@@ -30,16 +30,18 @@ use Cake\Routing\Middleware\RoutingMiddleware;
  * This defines the bootstrapping logic and middleware layers you
  * want to use in your application.
  *
- * @extends \Cake\Http\BaseApplication<\App\Application>
+ * @extends \Cake\Http\BaseApplication<\SPC\Application>
  */
-class Application extends BaseApplication implements AuthenticationServiceProviderInterface {
+class Application extends BaseApplication implements AuthenticationServiceProviderInterface
+{
 
-	public function bootstrap(): void {
-        // Call parent to load bootstrap from files.
+	public function bootstrap(): void
+	{
+		// Call parent to load bootstrap from files.
 		parent::bootstrap();
-		
+
 		$this->addPlugin('Authentication');
-		
+
 		if (PHP_SAPI !== 'cli') {
 			FactoryLocator::add(
 				'Table',
@@ -50,7 +52,8 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
 		Configure::write('DebugKit.variablesPanelMaxDepth', 8);
 	}
 
-	public function middleware(MiddlewareQueue $middlewareQueue): MiddlewareQueue {
+	public function middleware(MiddlewareQueue $middlewareQueue): MiddlewareQueue
+	{
 		$middlewareQueue
 			// Catch any exceptions in the lower layers,
 			// and make an error page/response
@@ -74,24 +77,25 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
 			->add(new CsrfProtectionMiddleware([
 				'httponly' => true,
 			]))
-			
+
 			// Add the AuthenticationMiddleware. It should be
 			// after routing and body parser.
 			->add(new AuthenticationMiddleware($this));
-			
+
 		return $middlewareQueue;
 	}
 
-	public function getAuthenticationService(ServerRequestInterface $request): AuthenticationServiceInterface {
+	public function getAuthenticationService(ServerRequestInterface $request): AuthenticationServiceInterface
+	{
 		$service = new AuthenticationService();
 
 		// Define where users should be redirected to when they are not authenticated
 		$service->setConfig([
 			'unauthenticatedRedirect' => Router::url([
-			    'prefix' => 'Admin',
-			    'plugin' => null,
-			    'controller' => 'Usuarios',
-			    'action' => 'auth',
+				'prefix' => 'Admin',
+				'plugin' => null,
+				'controller' => 'Usuarios',
+				'action' => 'auth',
 			]),
 			'queryParam' => 'redirect',
 		]);
@@ -129,6 +133,8 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
 		return $service;
 	}
 
-	public function services(ContainerInterface $container): void {
+	public function services(ContainerInterface $container): void
+	{
 	}
 }
+

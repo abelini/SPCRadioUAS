@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Test\TestCase\Model\Table;
+namespace SPC\Test\TestCase\Model\Table;
 
-use App\Model\Table\HorariosTable;
+use SPC\Model\Table\HorariosTable;
 use Cake\TestSuite\TestCase;
 
 /**
@@ -14,7 +14,7 @@ class HorariosTableTest extends TestCase
     /**
      * Test subject
      *
-     * @var \App\Model\Table\HorariosTable
+     * @var \SPC\Model\Table\HorariosTable
      */
     protected $Horarios;
 
@@ -58,7 +58,7 @@ class HorariosTableTest extends TestCase
      * Test validationDefault method
      *
      * @return void
-     * @uses \App\Model\Table\HorariosTable::validationDefault()
+     * @uses \SPC\Model\Table\HorariosTable::validationDefault()
      */
     public function testValidationDefault(): void
     {
@@ -69,10 +69,11 @@ class HorariosTableTest extends TestCase
      * Test buildRules method
      *
      * @return void
-     * @uses \App\Model\Table\HorariosTable::buildRules()
+     * @uses \SPC\Model\Table\HorariosTable::buildRules()
      */
     public function testBuildRules(): void
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 }
+

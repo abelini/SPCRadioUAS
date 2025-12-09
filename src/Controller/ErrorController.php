@@ -14,7 +14,7 @@ declare(strict_types=1);
  * @since         3.3.4
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
-namespace App\Controller;
+namespace SPC\Controller;
 
 use Cake\Event\EventInterface;
 
@@ -23,7 +23,7 @@ use Cake\Event\EventInterface;
  *
  * Controller used by ExceptionRenderer to render error responses.
  */
-class ErrorController extends AppController
+class ErrorController extends SPCController
 {
     /**
      * Initialization hook method.
@@ -68,3 +68,4 @@ class ErrorController extends AppController
     {
     }
 }
+

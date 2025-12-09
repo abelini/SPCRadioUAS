@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Model\Table;
+namespace SPC\Model\Table;
 
 use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
@@ -9,7 +9,8 @@ use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
 
-class TurnosTable extends Table {
+class TurnosTable extends Table
+{
     /**
      * Initialize method
      *
@@ -49,3 +50,4 @@ class TurnosTable extends Table {
         return $validator;
     }
 }
+

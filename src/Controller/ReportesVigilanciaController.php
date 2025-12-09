@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Controller;
+namespace SPC\Controller;
 
 /**
  * ReportesVigilancia Controller
  *
  * @property \App\Model\Table\ReportesVigilanciaTable $ReportesVigilancia
  */
-class ReportesVigilanciaController extends AppController
+class ReportesVigilanciaController extends SPCController
 {
     /**
      * Index method
@@ -98,3 +98,4 @@ class ReportesVigilanciaController extends AppController
         return $this->redirect(['action' => 'index']);
     }
 }
+

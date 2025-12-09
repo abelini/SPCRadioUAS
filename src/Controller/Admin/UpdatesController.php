@@ -1,26 +1,30 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Controller\Admin;
+namespace SPC\Controller\Admin;
 
-use App\Controller\AppController;
+use SPC\Controller\AppController;
 
 
-class UpdatesController extends AppController {
+class UpdatesController extends AppController
+{
 
-	public function index() {
+	public function index()
+	{
 		$query = $this->Tickets->find()->contain(['BitacoraVigilancia', 'Usuarios']);
 		$tickets = $this->paginate($query);
 
 		$this->set(compact('tickets'));
 	}
 
-	public function view($id = null) {
-	  $ticket = $this->Tickets->get($id, contain: ['BitacoraVigilancia', 'Usuarios']);
-	  $this->set(compact('ticket'));
+	public function view($id = null)
+	{
+		$ticket = $this->Tickets->get($id, contain: ['BitacoraVigilancia', 'Usuarios']);
+		$this->set(compact('ticket'));
 	}
-	
-	public function add() {
+
+	public function add()
+	{
 		$update = $this->Updates->newEmptyEntity();
 		if ($this->request->is('post')) {
 			$update = $this->Updates->patchEntity($update, $this->request->getData());
@@ -34,7 +38,8 @@ class UpdatesController extends AppController {
 		return $this->redirect($this->referer());
 	}
 
-	public function edit($id = null) {
+	public function edit($id = null)
+	{
 		$ticket = $this->Tickets->get($id, contain: []);
 		if ($this->request->is(['patch', 'post', 'put'])) {
 			$ticket = $this->Tickets->patchEntity($ticket, $this->request->getData());
@@ -51,7 +56,8 @@ class UpdatesController extends AppController {
 	}
 
 
-	public function delete($id = null) {
+	public function delete($id = null)
+	{
 		$this->request->allowMethod(['post', 'delete']);
 		$ticketsBitacorasV = $this->Tickets->get($id);
 		if ($this->Tickets->delete($ticketsBitacorasV)) {
@@ -62,3 +68,4 @@ class UpdatesController extends AppController {
 		return $this->redirect(['action' => 'index']);
 	}
 }
+

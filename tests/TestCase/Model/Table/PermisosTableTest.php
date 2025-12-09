@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Test\TestCase\Model\Table;
+namespace SPC\Test\TestCase\Model\Table;
 
-use App\Model\Table\PermisosTable;
+use SPC\Model\Table\PermisosTable;
 use Cake\TestSuite\TestCase;
 
 /**
@@ -14,7 +14,7 @@ class PermisosTableTest extends TestCase
     /**
      * Test subject
      *
-     * @var \App\Model\Table\PermisosTable
+     * @var \SPC\Model\Table\PermisosTable
      */
     protected $Permisos;
 
@@ -63,3 +63,4 @@ class PermisosTableTest extends TestCase
         $this->markTestIncomplete('Not implemented yet.');
     }
 }
+

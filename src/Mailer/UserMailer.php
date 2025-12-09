@@ -1,23 +1,26 @@
 <?php
 
-namespace App\Mailer;
+namespace SPC\Mailer;
 
-use App\Mailer\GoogleMailer;
-use App\Model\Entity\Usuario;
+use SPC\Mailer\GoogleMailer;
+use SPC\Model\Entity\Usuario;
 
 
-class UserMailer extends GoogleMailer {
-	
-	public function welcome($user) {
-        $this
-            ->setTo($user->email)
-            ->setSubject(sprintf('Welcome %s', $user->name));
-			
+class UserMailer extends GoogleMailer
+{
+
+	public function welcome($user)
+	{
+		$this
+			->setTo($user->email)
+			->setSubject(sprintf('Welcome %s', $user->name));
+
 
 	}
 
-    public function resetPassword(Usuario $user, string $password, string $app) : GoogleMailer {
-        $this
+	public function resetPassword(Usuario $user, string $password, string $app): GoogleMailer
+	{
+		$this
 			->setTo($user->email, $user->nombres)
 			->setEmailFormat('html')
 			->setSubject('Recuperación de contraseña')
@@ -27,9 +30,9 @@ class UserMailer extends GoogleMailer {
 				'app' => $app,
 			])
 			->viewBuilder()
-				->setTemplate('reset_password');
-				
+			->setTemplate('reset_password');
+
 		$this->deliver();
 		return $this;
-    }
+	}
 }

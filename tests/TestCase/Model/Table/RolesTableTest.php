@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Test\TestCase\Model\Table;
+namespace SPC\Test\TestCase\Model\Table;
 
-use App\Model\Table\RolesTable;
+use SPC\Model\Table\RolesTable;
 use Cake\TestSuite\TestCase;
 
 /**
@@ -14,7 +14,7 @@ class RolesTableTest extends TestCase
     /**
      * Test subject
      *
-     * @var \App\Model\Table\RolesTable
+     * @var \SPC\Model\Table\RolesTable
      */
     protected $Roles;
 
@@ -56,7 +56,7 @@ class RolesTableTest extends TestCase
      * Test validationDefault method
      *
      * @return void
-     * @uses \App\Model\Table\RolesTable::validationDefault()
+     * @uses \SPC\Model\Table\RolesTable::validationDefault()
      */
     public function testValidationDefault(): void
     {
@@ -67,10 +67,11 @@ class RolesTableTest extends TestCase
      * Test buildRules method
      *
      * @return void
-     * @uses \App\Model\Table\RolesTable::buildRules()
+     * @uses \SPC\Model\Table\RolesTable::buildRules()
      */
     public function testBuildRules(): void
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 }
+

@@ -1,43 +1,45 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Controller;
+namespace SPC\Controller;
 
-use App\Model\Entity\Permiso;
-use App\Model\Entity\Usuario;
+use SPC\Model\Entity\Permiso;
+use SPC\Model\Entity\Usuario;
 use Cake\Controller\Controller;
 //use Cake\Datasource\EntityInterface;
 use Cake\Event\EventInterface;
 use Cake\I18n\DateTime;
 
 
-class AppController extends Controller {
-	
+class AppController extends Controller
+{
+
 	protected Usuario $user;
-	
+
 	protected static DateTime $datetime;
-	
+
 	protected const string APP_NAME = 'SISTEMA DE PRODUCCIÓN Y CABINA';
-	
+
 	protected array $paginate = [
 		'limit' => 40,
 	];
-    
-	public function beforeFilter(EventInterface $event) {
+
+	public function beforeFilter(EventInterface $event)
+	{
 		parent::beforeFilter($event);
-		
+
 		$layout = 'home';
 		self::$datetime = DateTime::now();
 		$auth = $this->Authentication->getResult();
-		if($auth->isValid()) {
+		if ($auth->isValid()) {
 			$this->user = $this->getTableLocator()
-							->get('Usuarios')
-								->find()
-									->where(['ID' => $this->Authentication->getIdentity()->get('ID')])
-									->contain('Permisos')
-									->first();
+				->get('Usuarios')
+				->find()
+				->where(['ID' => $this->Authentication->getIdentity()->get('ID')])
+				->contain('Permisos')
+				->first();
 
-			$layout = match($this->user->permisos[0]->name) {
+			$layout = match ($this->user->permisos[0]->name) {
 				Permiso::ADMINISTRATOR => strtolower(Permiso::ADMINISTRATOR),
 				Permiso::CAPTURISTA => strtolower(Permiso::CAPTURISTA),
 				Permiso::FONOTECARIO => strtolower(Permiso::FONOTECARIO),
@@ -45,16 +47,18 @@ class AppController extends Controller {
 			};
 		}
 		$this->viewBuilder()->setLayout($layout);
-		
+
 		$this->set('AppName', self::APP_NAME);
 		$this->set('datetime', self::$datetime);
-    }
+	}
 
-	public function initialize(): void {
+	public function initialize(): void
+	{
 		parent::initialize();
 
 		$this->loadComponent('Flash');
 		$this->loadComponent('Authentication.Authentication');
 		//$this->loadComponent('FormProtection');
-    }
+	}
 }
+

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Model\Table;
+namespace SPC\Model\Table;
 
 use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
@@ -9,24 +9,26 @@ use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
 
-class DiasProgramasTable extends Table {
+class DiasProgramasTable extends Table
+{
 
-	public function initialize(array $config): void {
-		parent::initialize($config);
+    public function initialize(array $config): void
+    {
+        parent::initialize($config);
 
-		$this->setTable('dias_programas');
-		$this->setDisplayField('ID');
-		$this->setPrimaryKey('ID');
+        $this->setTable('dias_programas');
+        $this->setDisplayField('ID');
+        $this->setPrimaryKey('ID');
 
-		$this->belongsTo('Dias', [
-			'foreignKey' => 'diaID',
-			'joinType' => 'INNER',
-		]);
-		$this->belongsTo('Programas', [
-			'foreignKey' => 'programaID',
-			'joinType' => 'INNER',
-		]);
-	}
+        $this->belongsTo('Dias', [
+            'foreignKey' => 'diaID',
+            'joinType' => 'INNER',
+        ]);
+        $this->belongsTo('Programas', [
+            'foreignKey' => 'programaID',
+            'joinType' => 'INNER',
+        ]);
+    }
 
     /**
      * Default validation rules.
@@ -62,3 +64,4 @@ class DiasProgramasTable extends Table {
         return $rules;
     }
 }
+

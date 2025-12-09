@@ -1,16 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Test\TestCase\Controller;
+namespace SPC\Test\TestCase\Controller;
 
-use App\Controller\ReportesVigilanciaController;
+use SPC\Controller\ReportesVigilanciaController;
 use Cake\TestSuite\IntegrationTestTrait;
 use Cake\TestSuite\TestCase;
 
 /**
  * App\Controller\ReportesVigilanciaController Test Case
  *
- * @uses \App\Controller\ReportesVigilanciaController
+ * @uses \SPC\Controller\ReportesVigilanciaController
  */
 class ReportesVigilanciaControllerTest extends TestCase
 {
@@ -29,7 +29,7 @@ class ReportesVigilanciaControllerTest extends TestCase
      * Test index method
      *
      * @return void
-     * @uses \App\Controller\ReportesVigilanciaController::index()
+     * @uses \SPC\Controller\ReportesVigilanciaController::index()
      */
     public function testIndex(): void
     {
@@ -40,7 +40,7 @@ class ReportesVigilanciaControllerTest extends TestCase
      * Test view method
      *
      * @return void
-     * @uses \App\Controller\ReportesVigilanciaController::view()
+     * @uses \SPC\Controller\ReportesVigilanciaController::view()
      */
     public function testView(): void
     {
@@ -51,7 +51,7 @@ class ReportesVigilanciaControllerTest extends TestCase
      * Test add method
      *
      * @return void
-     * @uses \App\Controller\ReportesVigilanciaController::add()
+     * @uses \SPC\Controller\ReportesVigilanciaController::add()
      */
     public function testAdd(): void
     {
@@ -62,7 +62,7 @@ class ReportesVigilanciaControllerTest extends TestCase
      * Test edit method
      *
      * @return void
-     * @uses \App\Controller\ReportesVigilanciaController::edit()
+     * @uses \SPC\Controller\ReportesVigilanciaController::edit()
      */
     public function testEdit(): void
     {
@@ -73,10 +73,11 @@ class ReportesVigilanciaControllerTest extends TestCase
      * Test delete method
      *
      * @return void
-     * @uses \App\Controller\ReportesVigilanciaController::delete()
+     * @uses \SPC\Controller\ReportesVigilanciaController::delete()
      */
     public function testDelete(): void
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 }
+

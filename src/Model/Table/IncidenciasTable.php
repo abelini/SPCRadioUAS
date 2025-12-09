@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Model\Table;
+namespace SPC\Model\Table;
 
 use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
@@ -9,9 +9,11 @@ use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
 
-class IncidenciasTable extends Table {
+class IncidenciasTable extends Table
+{
 
-	public function initialize(array $config): void {
+	public function initialize(array $config): void
+	{
 		parent::initialize($config);
 
 		$this->setTable('incidencias');
@@ -19,38 +21,40 @@ class IncidenciasTable extends Table {
 		$this->setPrimaryKey('ID');
 
 		$this->addBehavior('Timestamp');
-		
+
 		$this->belongsTo('Areas')
-				->setForeignKey('areaID')
-				->setProperty('area');
+			->setForeignKey('areaID')
+			->setProperty('area');
 
 		$this->hasOne('DetallesIncidencias')
-				->setForeignKey('incidenciaID')
-				->setDependent(true)
-				->setProperty('detalles');
-		
+			->setForeignKey('incidenciaID')
+			->setDependent(true)
+			->setProperty('detalles');
+
 		$this->hasMany('Updates')
-				->setForeignKey('incidenciaID')
-				->setDependent(true)
-				->setProperty('updates');
+			->setForeignKey('incidenciaID')
+			->setDependent(true)
+			->setProperty('updates');
 	}
 
-	public function validationDefault(Validator $validator): Validator {
+	public function validationDefault(Validator $validator): Validator
+	{
 		$validator
-            ->integer('areaID')
-            ->requirePresence('areaID', 'create')
-            ->notEmptyString('areaID');
+			->integer('areaID')
+			->requirePresence('areaID', 'create')
+			->notEmptyString('areaID');
 
-        $validator
-            ->date('fecha')
-            ->requirePresence('fecha', 'create')
-            ->notEmptyDate('fecha');
+		$validator
+			->date('fecha')
+			->requirePresence('fecha', 'create')
+			->notEmptyDate('fecha');
 
-        $validator
-            ->scalar('observaciones')
-            ->requirePresence('observaciones', 'create')
-            ->notEmptyString('observaciones');
+		$validator
+			->scalar('observaciones')
+			->requirePresence('observaciones', 'create')
+			->notEmptyString('observaciones');
 
 		return $validator;
 	}
 }
+

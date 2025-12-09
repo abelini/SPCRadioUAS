@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Model\Entity;
+namespace SPC\Model\Entity;
 
 use Cake\ORM\Entity;
 
@@ -32,3 +32,4 @@ class Permiso extends Entity {
         'usuarios' => true,
     ];
 }
+

@@ -14,7 +14,7 @@ declare(strict_types=1);
  * @since     0.2.9
  * @license   https://opensource.org/licenses/mit-license.php MIT License
  */
-namespace App\Controller;
+namespace SPC\Controller;
 
 use Cake\Core\Configure;
 use Cake\Http\Exception\ForbiddenException;
@@ -29,23 +29,26 @@ use Cake\View\Exception\MissingTemplateException;
  *
  * @link https://book.cakephp.org/4/en/controllers/pages-controller.html
  */
-class PagesController extends AppController {
-    /**
-     * Displays a view
-     *
-     * @param string ...$path Path segments.
-     * @return \Cake\Http\Response|null
-     * @throws \Cake\Http\Exception\ForbiddenException When a directory traversal attempt.
-     * @throws \Cake\View\Exception\MissingTemplateException When the view file could not
-     *   be found and in debug mode.
-     * @throws \Cake\Http\Exception\NotFoundException When the view file could not
-     *   be found and not in debug mode.
-     * @throws \Cake\View\Exception\MissingTemplateException In debug mode.
-     */
-    public function display(string ...$path): Response {
-		$result = $this->Authentication->getResult();
-		if ($result->isValid()) {
-			return $this->redirect('/admin/dashboard');
-		}
+class PagesController extends AppController
+{
+  /**
+   * Displays a view
+   *
+   * @param string ...$path Path segments.
+   * @return \Cake\Http\Response|null
+   * @throws \Cake\Http\Exception\ForbiddenException When a directory traversal attempt.
+   * @throws \Cake\View\Exception\MissingTemplateException When the view file could not
+   *   be found and in debug mode.
+   * @throws \Cake\Http\Exception\NotFoundException When the view file could not
+   *   be found and not in debug mode.
+   * @throws \Cake\View\Exception\MissingTemplateException In debug mode.
+   */
+  public function display(string ...$path): Response
+  {
+    $result = $this->Authentication->getResult();
+    if ($result->isValid()) {
+      return $this->redirect('/admin/dashboard');
     }
+  }
 }
+

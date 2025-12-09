@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Test\Fixture;
+namespace SPC\Test\Fixture;
 
 use Cake\TestSuite\Fixture\TestFixture;
 
@@ -32,3 +32,4 @@ class UsuariosFixture extends TestFixture
         parent::init();
     }
 }
+

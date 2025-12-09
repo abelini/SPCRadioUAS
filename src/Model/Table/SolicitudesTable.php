@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Model\Table;
+namespace SPC\Model\Table;
 
 use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
@@ -9,39 +9,41 @@ use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
 
-class SolicitudesTable extends Table {
+class SolicitudesTable extends Table
+{
 
-	public function initialize(array $config): void {
+    public function initialize(array $config): void
+    {
         parent::initialize($config);
 
-		$this->setTable('solicitudes');
-		$this->setDisplayField('solicitante');
-		$this->setEntityClass('Solicitud');
-		$this->setPrimaryKey('ID');
+        $this->setTable('solicitudes');
+        $this->setDisplayField('solicitante');
+        $this->setEntityClass('Solicitud');
+        $this->setPrimaryKey('ID');
 
-		$this->addBehavior('Timestamp');
-		
-		$this->belongsTo('TipoSolicitud')
-				->setForeignKey('tipoSolicitudID')
-				->setProperty('tipoSolicitud');
-				
-		$this->belongsTo('PrimerAsignado')
-				->setForeignKey('primerAsignadoID')
-				->setProperty('primerAsignado');
-		
-		$this->belongsTo('SegundoAsignado')
-				->setForeignKey('segundoAsignadoID')
-				->setProperty('segundoAsignado');
-		
-		$this->belongsTo('Autorizante')
-				->setForeignKey('autorizanteID')
-				->setclassName('Autorizante')
-				->setProperty('autorizante');
-		
-		$this->belongsTo('ProductorTecnico')
-				->setForeignKey('productorID')
-				->setProperty('productorTecnico');
-	}
+        $this->addBehavior('Timestamp');
+
+        $this->belongsTo('TipoSolicitud')
+            ->setForeignKey('tipoSolicitudID')
+            ->setProperty('tipoSolicitud');
+
+        $this->belongsTo('PrimerAsignado')
+            ->setForeignKey('primerAsignadoID')
+            ->setProperty('primerAsignado');
+
+        $this->belongsTo('SegundoAsignado')
+            ->setForeignKey('segundoAsignadoID')
+            ->setProperty('segundoAsignado');
+
+        $this->belongsTo('Autorizante')
+            ->setForeignKey('autorizanteID')
+            ->setclassName('Autorizante')
+            ->setProperty('autorizante');
+
+        $this->belongsTo('ProductorTecnico')
+            ->setForeignKey('productorID')
+            ->setProperty('productorTecnico');
+    }
 
     /**
      * Default validation rules.
@@ -96,3 +98,4 @@ class SolicitudesTable extends Table {
         return $validator;
     }
 }
+

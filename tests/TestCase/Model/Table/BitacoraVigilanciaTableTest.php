@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Test\TestCase\Model\Table;
+namespace SPC\Test\TestCase\Model\Table;
 
-use App\Model\Table\BitacoraVigilanciaTable;
+use SPC\Model\Table\BitacoraVigilanciaTable;
 use Cake\TestSuite\TestCase;
 
 /**
@@ -14,7 +14,7 @@ class BitacoraVigilanciaTableTest extends TestCase
     /**
      * Test subject
      *
-     * @var \App\Model\Table\BitacoraVigilanciaTable
+     * @var \SPC\Model\Table\BitacoraVigilanciaTable
      */
     protected $BitacoraVigilancia;
 
@@ -55,10 +55,11 @@ class BitacoraVigilanciaTableTest extends TestCase
      * Test validationDefault method
      *
      * @return void
-     * @uses \App\Model\Table\BitacoraVigilanciaTable::validationDefault()
+     * @uses \SPC\Model\Table\BitacoraVigilanciaTable::validationDefault()
      */
     public function testValidationDefault(): void
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 }
+

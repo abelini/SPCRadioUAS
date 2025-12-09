@@ -14,9 +14,9 @@ declare(strict_types=1);
  * @since         3.3.0
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
-namespace App\Test\TestCase;
+namespace SPC\Test\TestCase;
 
-use App\Application;
+use SPC\Application;
 use Cake\Core\Configure;
 use Cake\Error\Middleware\ErrorHandlerMiddleware;
 use Cake\Http\MiddlewareQueue;
@@ -83,3 +83,4 @@ class ApplicationTest extends TestCase
         $this->assertInstanceOf(RoutingMiddleware::class, $middleware->current());
     }
 }
+

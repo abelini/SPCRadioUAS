@@ -1,16 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Test\TestCase\Controller\Admin;
+namespace SPC\Test\TestCase\Controller\Admin;
 
-use App\Controller\Admin\SolicitudesController;
+use SPC\Controller\Admin\SolicitudesController;
 use Cake\TestSuite\IntegrationTestTrait;
 use Cake\TestSuite\TestCase;
 
 /**
  * App\Controller\Admin\SolicitudesController Test Case
  *
- * @uses \App\Controller\Admin\SolicitudesController
+ * @uses \SPC\Controller\Admin\SolicitudesController
  */
 class SolicitudesControllerTest extends TestCase
 {
@@ -33,7 +33,7 @@ class SolicitudesControllerTest extends TestCase
      * Test index method
      *
      * @return void
-     * @uses \App\Controller\Admin\SolicitudesController::index()
+     * @uses \SPC\Controller\Admin\SolicitudesController::index()
      */
     public function testIndex(): void
     {
@@ -44,7 +44,7 @@ class SolicitudesControllerTest extends TestCase
      * Test view method
      *
      * @return void
-     * @uses \App\Controller\Admin\SolicitudesController::view()
+     * @uses \SPC\Controller\Admin\SolicitudesController::view()
      */
     public function testView(): void
     {
@@ -55,7 +55,7 @@ class SolicitudesControllerTest extends TestCase
      * Test add method
      *
      * @return void
-     * @uses \App\Controller\Admin\SolicitudesController::add()
+     * @uses \SPC\Controller\Admin\SolicitudesController::add()
      */
     public function testAdd(): void
     {
@@ -66,7 +66,7 @@ class SolicitudesControllerTest extends TestCase
      * Test edit method
      *
      * @return void
-     * @uses \App\Controller\Admin\SolicitudesController::edit()
+     * @uses \SPC\Controller\Admin\SolicitudesController::edit()
      */
     public function testEdit(): void
     {
@@ -77,10 +77,11 @@ class SolicitudesControllerTest extends TestCase
      * Test delete method
      *
      * @return void
-     * @uses \App\Controller\Admin\SolicitudesController::delete()
+     * @uses \SPC\Controller\Admin\SolicitudesController::delete()
      */
     public function testDelete(): void
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 }
+

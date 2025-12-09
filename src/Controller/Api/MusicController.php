@@ -1,15 +1,15 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Controller;
+namespace SPC\Controller\Api;
 
+use SPC\Controller\ApiController;
 use Cake\Http\Client;
 use Cake\Http\Client\Exception\NetworkException;
-use Cake\Http\Request;
 use Cake\Http\Response;
 
 
-class MusicController extends AppController
+class MusicController extends ApiController
 {
 
 	private const string API_KEY = '2800fcd5956c46dfb55dd2686a96e6e7';
@@ -19,18 +19,15 @@ class MusicController extends AppController
 		'host' => 'emby.radiouas.org',
 		'port' => 8920,
 		'basePath' => 'emby',
+		'ssl_verify_peer' => false, // Whether SSL certificates should be validated.
+		'ssl_verify_peer_name' => false, // Whether peer names should be validated.
+		'ssl_verify_host' => false, // Verify that the certificate and hostname match.
 		'headers' => [
 			'X-Emby-Token' => self::API_KEY,
 		],
 	];
 
 	private int $maxDisplayedSongs = 15;
-
-	public function initialize(): void
-	{
-		parent::initialize();
-		$this->Authentication->allowUnauthenticated(['album', 'artist', 'playlist']);
-	}
 
 	public function album(): Response
 	{
@@ -80,9 +77,7 @@ class MusicController extends AppController
 				'/Items',
 				['ParentId' => $artistID, 'Limit' => $this->maxDisplayedSongs, 'SortBy' => 'Random', 'IncludeItemTypes' => 'Audio', 'Recursive' => 'true']
 			);
-
 			$playlist = json_decode($response->getStringBody());
-
 			$cover = $http->buildURL(
 				'/Items/' . $artistID . '/Images/Primary',
 				['api_key' => self::API_KEY],

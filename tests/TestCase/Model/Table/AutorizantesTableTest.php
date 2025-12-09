@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Test\TestCase\Model\Table;
+namespace SPC\Test\TestCase\Model\Table;
 
-use App\Model\Table\AutorizantesTable;
+use SPC\Model\Table\AutorizantesTable;
 use Cake\TestSuite\TestCase;
 
 /**
@@ -14,7 +14,7 @@ class AutorizantesTableTest extends TestCase
     /**
      * Test subject
      *
-     * @var \App\Model\Table\AutorizantesTable
+     * @var \SPC\Model\Table\AutorizantesTable
      */
     protected $Autorizantes;
 
@@ -60,7 +60,7 @@ class AutorizantesTableTest extends TestCase
      * Test validationDefault method
      *
      * @return void
-     * @uses \App\Model\Table\AutorizantesTable::validationDefault()
+     * @uses \SPC\Model\Table\AutorizantesTable::validationDefault()
      */
     public function testValidationDefault(): void
     {
@@ -71,10 +71,11 @@ class AutorizantesTableTest extends TestCase
      * Test buildRules method
      *
      * @return void
-     * @uses \App\Model\Table\AutorizantesTable::buildRules()
+     * @uses \SPC\Model\Table\AutorizantesTable::buildRules()
      */
     public function testBuildRules(): void
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 }
+

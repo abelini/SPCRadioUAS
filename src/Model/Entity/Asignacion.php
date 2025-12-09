@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Model\Entity;
+namespace SPC\Model\Entity;
 
 use Cake\I18n\Date;
 use Cake\I18n\Time;
@@ -31,3 +31,4 @@ class Asignacion extends Entity {
 	}
 	
 }
+

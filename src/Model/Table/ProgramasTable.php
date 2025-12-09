@@ -1,18 +1,20 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Model\Table;
+namespace SPC\Model\Table;
 
-use App\Model\Entity\Programa;
+use SPC\Model\Entity\Programa;
 use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
 
-class ProgramasTable extends Table {
+class ProgramasTable extends Table
+{
 
-	public function initialize(array $config): void {
+	public function initialize(array $config): void
+	{
 		parent::initialize($config);
 
 		$this->setTable('programas');
@@ -20,10 +22,10 @@ class ProgramasTable extends Table {
 		$this->setPrimaryKey('ID');
 
 		$this->hasMany('ReportesProgramas')
-				->setForeignKey('programaID')
-				->setProperty('reportes')
-				->setDependent(true);
-		
+			->setForeignKey('programaID')
+			->setProperty('reportes')
+			->setDependent(true);
+
 		$this->belongsToMany('Dias', [
 			'foreignKey' => 'programaID',
 			'targetForeignKey' => 'diaID',
@@ -32,20 +34,23 @@ class ProgramasTable extends Table {
 	}
 
 	#[\Override]
-	public function findAll(SelectQuery $query) : SelectQuery {
+	public function findAll(SelectQuery $query): SelectQuery
+	{
 		return $query->whereNotInList('Programas.id', Programa::TEMP_OUT_OF_AIR);
 	}
-	
+
 	#[\Override]
-	public function findList(SelectQuery $query, \Closure|array|string|null $keyField = null, \Closure|array|string|null $valueField = null, \Closure|array|string|null $g = null, string $s = ';') : SelectQuery {
+	public function findList(SelectQuery $query, \Closure|array|string|null $keyField = null, \Closure|array|string|null $valueField = null, \Closure|array|string|null $g = null, string $s = ';'): SelectQuery
+	{
 		return parent::findList(
 			$query->select(['ID', 'name'])->whereNotInList('Programas.id', Programa::TEMP_OUT_OF_AIR)->where(['Programas.reportable' => true]),
 			keyField: $keyField,
 			valueField: $valueField
 		);
 	}
-	
-    public function validationDefault(Validator $validator): Validator {
+
+	public function validationDefault(Validator $validator): Validator
+	{
 		$validator
 			->scalar('name')
 			->maxLength('name', 255)
@@ -72,7 +77,7 @@ class ProgramasTable extends Table {
 			->boolean('uo')
 			->requirePresence('uo', 'create')
 			->notEmptyString('uo');
-			
+
 		$validator
 			->boolean('musical')
 			->requirePresence('musical', 'create')
@@ -80,3 +85,4 @@ class ProgramasTable extends Table {
 		return $validator;
 	}
 }
+

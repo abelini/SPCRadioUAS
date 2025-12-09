@@ -1,16 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Test\TestCase\Controller;
+namespace SPC\Test\TestCase\Controller;
 
-use App\Controller\BitacoraCabinaController;
+use SPC\Controller\BitacoraCabinaController;
 use Cake\TestSuite\IntegrationTestTrait;
 use Cake\TestSuite\TestCase;
 
 /**
  * App\Controller\BitacoraCabinaController Test Case
  *
- * @uses \App\Controller\BitacoraCabinaController
+ * @uses \SPC\Controller\BitacoraCabinaController
  */
 class BitacoraCabinaControllerTest extends TestCase
 {
@@ -29,7 +29,7 @@ class BitacoraCabinaControllerTest extends TestCase
      * Test index method
      *
      * @return void
-     * @uses \App\Controller\BitacoraCabinaController::index()
+     * @uses \SPC\Controller\BitacoraCabinaController::index()
      */
     public function testIndex(): void
     {
@@ -40,7 +40,7 @@ class BitacoraCabinaControllerTest extends TestCase
      * Test view method
      *
      * @return void
-     * @uses \App\Controller\BitacoraCabinaController::view()
+     * @uses \SPC\Controller\BitacoraCabinaController::view()
      */
     public function testView(): void
     {
@@ -51,7 +51,7 @@ class BitacoraCabinaControllerTest extends TestCase
      * Test add method
      *
      * @return void
-     * @uses \App\Controller\BitacoraCabinaController::add()
+     * @uses \SPC\Controller\BitacoraCabinaController::add()
      */
     public function testAdd(): void
     {
@@ -62,7 +62,7 @@ class BitacoraCabinaControllerTest extends TestCase
      * Test edit method
      *
      * @return void
-     * @uses \App\Controller\BitacoraCabinaController::edit()
+     * @uses \SPC\Controller\BitacoraCabinaController::edit()
      */
     public function testEdit(): void
     {
@@ -73,10 +73,11 @@ class BitacoraCabinaControllerTest extends TestCase
      * Test delete method
      *
      * @return void
-     * @uses \App\Controller\BitacoraCabinaController::delete()
+     * @uses \SPC\Controller\BitacoraCabinaController::delete()
      */
     public function testDelete(): void
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 }
+

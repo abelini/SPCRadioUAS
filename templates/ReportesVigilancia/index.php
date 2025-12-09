@@ -34,33 +34,31 @@
             </thead>
             <tbody>
                 <?php foreach ($reportesVigilancia as $reportesVigilancium): ?>
-                    <tr>
-                        <td><?= $this->Number->format($reportesVigilancium->ID) ?></td>
-                        <td><?= $this->Number->format($reportesVigilancium->bitacoraID) ?></td>
-                        <td><?= h($reportesVigilancium->fire) ?></td>
-                        <td><?= h($reportesVigilancium->moist) ?></td>
-                        <td><?= h($reportesVigilancium->ventilation) ?></td>
-                        <td><?= h($reportesVigilancium->locks) ?></td>
-                        <td><?= h($reportesVigilancium->blackout) ?></td>
-                        <td><?= h($reportesVigilancium->lost_signal) ?></td>
-                        <td><?= h($reportesVigilancium->alarm_on) ?></td>
-                        <td><?= h($reportesVigilancium->leds) ?></td>
-                        <td><?= h($reportesVigilancium->burning_smell) ?></td>
-                        <td><?= h($reportesVigilancium->invaded) ?></td>
-                        <td><?= h($reportesVigilancium->walls_cracked) ?></td>
-                        <td><?= h($reportesVigilancium->antenna_bent) ?></td>
-                        <td><?= h($reportesVigilancium->antenna_lights_off) ?></td>
-                        <td><?= h($reportesVigilancium->antenna_anchor_bent) ?></td>
-                        <td><?= $reportesVigilancium->blackout_duration === null ? '' : $this->Number->format($reportesVigilancium->blackout_duration) ?>
-                        </td>
-                        <td><?= $reportesVigilancium->lost_signal_duration === null ? '' : $this->Number->format($reportesVigilancium->lost_signal_duration) ?>
-                        </td>
-                        <td class="actions">
-                            <?= $this->Html->link(__('View'), ['action' => 'view', $reportesVigilancium->ID]) ?>
-                            <?= $this->Html->link(__('Edit'), ['action' => 'edit', $reportesVigilancium->ID]) ?>
-                            <?= $this->Form->deleteLink(__('Delete'), ['action' => 'delete', $reportesVigilancium->ID], ['confirm' => __('Are you sure you want to delete # {0}?', $reportesVigilancium->ID)]) ?>
-                        </td>
-                    </tr>
+                <tr>
+                    <td><?= $this->Number->format($reportesVigilancium->ID) ?></td>
+                    <td><?= $this->Number->format($reportesVigilancium->bitacoraID) ?></td>
+                    <td><?= h($reportesVigilancium->fire) ?></td>
+                    <td><?= h($reportesVigilancium->moist) ?></td>
+                    <td><?= h($reportesVigilancium->ventilation) ?></td>
+                    <td><?= h($reportesVigilancium->locks) ?></td>
+                    <td><?= h($reportesVigilancium->blackout) ?></td>
+                    <td><?= h($reportesVigilancium->lost_signal) ?></td>
+                    <td><?= h($reportesVigilancium->alarm_on) ?></td>
+                    <td><?= h($reportesVigilancium->leds) ?></td>
+                    <td><?= h($reportesVigilancium->burning_smell) ?></td>
+                    <td><?= h($reportesVigilancium->invaded) ?></td>
+                    <td><?= h($reportesVigilancium->walls_cracked) ?></td>
+                    <td><?= h($reportesVigilancium->antenna_bent) ?></td>
+                    <td><?= h($reportesVigilancium->antenna_lights_off) ?></td>
+                    <td><?= h($reportesVigilancium->antenna_anchor_bent) ?></td>
+                    <td><?= $reportesVigilancium->blackout_duration === null ? '' : $this->Number->format($reportesVigilancium->blackout_duration) ?></td>
+                    <td><?= $reportesVigilancium->lost_signal_duration === null ? '' : $this->Number->format($reportesVigilancium->lost_signal_duration) ?></td>
+                    <td class="actions">
+                        <?= $this->Html->link(__('View'), ['action' => 'view', $reportesVigilancium->ID]) ?>
+                        <?= $this->Html->link(__('Edit'), ['action' => 'edit', $reportesVigilancium->ID]) ?>
+                        <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $reportesVigilancium->ID], ['confirm' => __('Are you sure you want to delete # {0}?', $reportesVigilancium->ID)]) ?>
+                    </td>
+                </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
@@ -73,7 +71,6 @@
             <?= $this->Paginator->next(__('next') . ' >') ?>
             <?= $this->Paginator->last(__('last') . ' >>') ?>
         </ul>
-        <p><?= $this->Paginator->counter(__('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')) ?>
-        </p>
+        <p><?= $this->Paginator->counter(__('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')) ?></p>
     </div>
 </div>

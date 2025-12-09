@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Mailer\Transport;
+namespace SPC\Mailer\Transport;
 
 use Cake\Mailer\Transport\SmtpTransport;
 use Cake\Mailer\Message;
