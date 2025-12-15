@@ -5,7 +5,7 @@
 
 ## Radio UAS
 
-![](https://radio.uas.edu.mx/wp-content/media/logo.png)
+<img src="https://radio.uas.edu.mx/wp-content/media/logo.png" alt="Texto alternativo" style="display:block;margin:auto;width:30%;">
 
 ### Descripción
 
