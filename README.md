@@ -20,24 +20,28 @@ Software basado en CakePHP para administrar las tareas operativas del entorno de
 * REST API para solicitar
     * Operador actual
       ```
-      GET /locutores/get
+      GET /api/locutores?ahora
+        ```
+    * Playlists de YouTube
+      ```
+      GET /api/youtube/playlist?list={YouTubePlaylistID}
         ```
     * Programación actual
       ```
-      GET /schedule/daily?day={n}
+      GET /api/schedule/daily?day={DayOfWeek}
         ```
       ```
-      GET /schedule/now
+      GET /api/schedule/now
         ```
     * Música de la Fonoteca Virtual
       ```
-      GET /music/album?ID={EmbyItemID}
+      GET /api/music/album?ID={EmbyItemID}
         ```
       ```
-      GET /music/artist?ID={EmbyItemID}
+      GET /api/music/artist?ID={EmbyItemID}
         ```
       ```
-      GET /music/playlist?ID={EmbyPlaylistID}
+      GET /api/music/playlist?ID={EmbyPlaylistID}
         ```
 * Otras tareas internas propias de la estación
 
