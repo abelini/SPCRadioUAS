@@ -1,0 +1,43 @@
+<?php
+declare(strict_types=1);
+
+namespace SPC\Model\Entity;
+
+use Cake\ORM\Entity;
+
+
+class Usuario extends Worker
+{
+
+	protected array $_accessible = [
+		'empleado' => true,
+		'username' => true,
+		'password' => true,
+		'name' => true,
+		'fullname' => true,
+		'email' => true,
+		'base' => true,
+		'photo' => true,
+		'permisos' => true,
+	];
+
+	public function getProfilePicture(): string
+	{
+		return parent::getProfilePictureUrl();
+	}
+
+	protected function _setPassword($password)
+	{
+		return password_hash($password, PASSWORD_DEFAULT);
+	}
+
+	public function generateAndSetPassword(): string
+	{
+		//$password = substr(password_hash(strval(time()), PASSWORD_DEFAULT), 0, 10);
+		$chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_-=+;:,.?";
+		$password = substr(str_shuffle($chars), 0, 12);
+		$this->password = $password;
+		return $password;
+	}
+}
+
