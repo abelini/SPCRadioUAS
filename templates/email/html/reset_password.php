@@ -2,7 +2,7 @@
 $innerTR = 1; ?>
 
 <div style="padding:16px;color:#000!important;background-color:#dbe1ea !important;min-height:124px;">
-	<?= $this->Html->image($this->Url->image('LogoRolCabinaPDF', ['fullBase' => true]), ['style' => 'display:block;float:right;max-width:96px;padding:12px;']) ?>
+	<?= $this->Html->image($this->Url->image('LogoRolCabinaPDF.png', ['fullBase' => true]), ['style' => 'display:block;float:right;max-width:96px;padding:12px;']) ?>
 	<h2>Hola <?= $user->name ?></h2>
 
 </div>
