@@ -2,9 +2,7 @@
 
 namespace SPC\Mailer;
 
-use SPC\Mailer\Transport\GoogleTransport;
 use Cake\Mailer\Mailer;
-use Cake\Mailer\TransportFactory;
 
 
 class GoogleMailer extends Mailer

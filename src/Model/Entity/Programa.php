@@ -6,27 +6,30 @@ namespace SPC\Model\Entity;
 use Cake\ORM\Entity;
 
 
-class Programa extends Entity implements \Stringable {
-	
+class Programa extends Entity implements \Stringable
+{
+
 	//public string $XtoWord;
-	
+
 	protected const string UO_ICON = '<i class="fa-solid fa-school"></i>';
-	
+
 	protected const string COLABORADOR_ICON = '<i class="fa-solid fa-user"></i>';
-	
+
 	protected const string MUSICAL_ICON = '<i class="fa-solid fa-music"></i>';
-	
-	public const array TEMP_OUT_OF_AIR = [234,456,
+
+	public const array TEMP_OUT_OF_AIR = [
 		2, 	// Sinaloa al dia
 		6, 	// Entre sonidos y silencios
-		11, 50, // Entre universitarios
+		11, // Agenda universitaria (Entre universitarios)
+		50, // Entre universitarios
 		26,	// Nocturama
 		36, // La otra cara del disco
 		40, // Tiempo libre
 		44, // Antes de que se enfrie el cafe
 		48, // Hablemos de musica (repeticion)
+		49, // Cacahuates japoneses
 	];
-	
+
 	protected array $_accessible = [
 		'name' => true,
 		'horaInicio' => true,
@@ -39,7 +42,7 @@ class Programa extends Entity implements \Stringable {
 		'dias' => true,
 		'reportable' => true,
 	];
-	
+
 	protected array $_hidden = [
 		'horaInicio',
 		'horaFin',
@@ -48,27 +51,32 @@ class Programa extends Entity implements \Stringable {
 		'_joinData',
 		'XtoWord',
 	];
-	
-	protected function _getStarts() : string {
+
+	protected function _getStarts(): string
+	{
 		return $this->horaInicio->i18nFormat("h:mm a", 'en-US');
 	}
-	
-	protected function _getEnds() : string {
+
+	protected function _getEnds(): string
+	{
 		return $this->horaFin->i18nFormat("h:mm a", 'en-US');
 	}
-	
-	protected function _getIcon() : string {
-		if($this->_fields['music'])
+
+	protected function _getIcon(): string
+	{
+		if ($this->_fields['music'])
 			return self::MUSICAL_ICON;
 		else
 			return $this->_fields['icon'] ? self::UO_ICON : self::COLABORADOR_ICON;
 	}
-	
-	public function __toString() : string {
+
+	public function __toString(): string
+	{
 		return $this->name;
 	}
-	
-	public function isReportable() : bool {
+
+	public function isReportable(): bool
+	{
 		return (bool) $this->reportable;
 	}
 }

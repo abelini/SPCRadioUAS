@@ -43,7 +43,7 @@ class MusicController extends ApiController
 			);
 
 			$playlist = json_decode($response->getStringBody());
-
+			debug($playlist);
 			$cover = $http->buildURL('/Items/' . $albumID . '/Images/Primary', ['api_key' => self::API_KEY], $http->getConfig());
 
 			$response = $http->get('/Items', ['Ids' => $albumID]);

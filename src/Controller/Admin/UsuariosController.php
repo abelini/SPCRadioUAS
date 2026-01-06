@@ -33,7 +33,6 @@ class UsuariosController extends AppController
 			return $this->redirect($target);
 		}
 		if ($this->request->is('post')) {
-			debug($result->getStatus());
 			$message = match ($result->getStatus()) {
 				ResultInterface::FAILURE_IDENTITY_NOT_FOUND => 'El usuario no existe',
 				ResultInterface::FAILURE_CREDENTIALS_MISSING => 'Por favor rellene todos los campos',
