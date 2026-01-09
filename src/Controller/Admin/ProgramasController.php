@@ -24,61 +24,104 @@ class ProgramasController extends AppController
 
 		$this->set(compact('programas'));
 	}
-
 	public function view($id = null)
 	{
-		$programa = $this->Programas->get($id, contain: ['Dias']);
-		//$this->set(compact('programa'));
-
-		$this->getReportByProgram($programa);
-
-	}
-
-	protected function getReportByProgram(Programa $programa)
-	{
-
-		$programa = $this->Programas->loadInto($programa, [
+		// 1. Una sola consulta para traer todo lo necesario
+		$programa = $this->Programas->get($id, contain: [
+			'Dias',
 			'ReportesProgramas' => function (SelectQuery $query) {
-				return $query->matching('ReportesCabinas', function (SelectQuery $query) {
-					return $query->matching('BitacoraCabina', function (SelectQuery $query) {
-						return $query->where(function (QueryExpression $exp) {
-							return $exp->between('fecha', new DateTime(ReportesPrograma::REPORTING_START_DATE), DateTime::now());
-						});
-					});
+				return $query->matching('ReportesCabinas.BitacoraCabina', function (SelectQuery $query) {
+					return $query->where([
+						'BitacoraCabina.fecha >=' => new DateTime(ReportesPrograma::REPORTING_START_DATE),
+						'BitacoraCabina.fecha <=' => DateTime::now()
+					]);
 				});
 			}
 		]);
-		//$star = $start;
-		$reportes = new Collection($programa->reportes);
-		$groupedReportes = $reportes->groupBy('status')->toArray();
-		$statusLongText = ReportesPrograma::STATUS_LONGTEXT_FOR_1P;
 
-		if (!isset($groupedReportes['V']))
-			$groupedReportes['V'] = [];
-		if (!isset($groupedReportes['G']))
-			$groupedReportes['G'] = [];
-		if (!isset($groupedReportes['S']))
-			$groupedReportes['S'] = [];
-		if (!isset($groupedReportes['X']))
-			$groupedReportes['X'] = [];
+		// 2. Delegamos el procesamiento de reportes a un método privado o a la Entidad
+		$this->set($this->_prepareReportData($programa));
+	}
 
-		$ocurrences = [
-			'V' => $groupedReportes['V'],
-			'G' => $groupedReportes['G'],
-			'S' => $groupedReportes['S'],
-			'X' => $groupedReportes['X']
-		];
-		$programa->set('XtoWord', NumberToWords::transformNumber('es', count($groupedReportes['X'])));
+	protected function _prepareReportData(Programa $programa): array
+	{
+		$reportes = new Collection($programa->reportes ?? []);
+
+		// Agrupamos y aseguramos que todos los estados existan usando un array base
+		$defaultStatuses = ['V' => [], 'G' => [], 'S' => [], 'X' => []];
+		$grouped = $reportes->groupBy('status')->toArray();
+		$ocurrences = array_merge($defaultStatuses, $grouped);
+
+		// XtoWord - Esto idealmente debería ser un método virtual en la Entidad Programa
+		$programa->set('XtoWord', NumberToWords::transformNumber('es', count($ocurrences['X'])));
 
 		$fechaInicial = new DateTime(ReportesPrograma::REPORTING_START_DATE);
 		$fechaFinal = DateTime::now();
 
-		$diff = $this->getDateDiffString($fechaFinal->diff($fechaInicial));
-
-		$this->set(compact('programa', 'reportes', 'ocurrences', 'statusLongText', 'fechaInicial', 'diff'));
-
+		return [
+			'programa' => $programa,
+			'reportes' => $reportes,
+			'ocurrences' => $ocurrences,
+			'statusLongText' => ReportesPrograma::STATUS_LONGTEXT_FOR_1P,
+			'fechaInicial' => $fechaInicial,
+			'diff' => $this->getDateDiffString($fechaFinal->diff($fechaInicial))
+		];
 	}
+	/*
+		public function view($id = null)
+		{
+			$programa = $this->Programas->get($id, contain: ['Dias']);
+			//$this->set(compact('programa'));
 
+			$this->getReportByProgram($programa);
+
+		}
+
+		protected function getReportByProgram(Programa $programa)
+		{
+
+			$programa = $this->Programas->loadInto($programa, [
+				'ReportesProgramas' => function (SelectQuery $query) {
+					return $query->matching('ReportesCabinas', function (SelectQuery $query) {
+						return $query->matching('BitacoraCabina', function (SelectQuery $query) {
+							return $query->where(function (QueryExpression $exp) {
+								return $exp->between('fecha', new DateTime(ReportesPrograma::REPORTING_START_DATE), DateTime::now());
+							});
+						});
+					});
+				}
+			]);
+			//$star = $start;
+			$reportes = new Collection($programa->reportes);
+			$groupedReportes = $reportes->groupBy('status')->toArray();
+			$statusLongText = ReportesPrograma::STATUS_LONGTEXT_FOR_1P;
+
+			if (!isset($groupedReportes['V']))
+				$groupedReportes['V'] = [];
+			if (!isset($groupedReportes['G']))
+				$groupedReportes['G'] = [];
+			if (!isset($groupedReportes['S']))
+				$groupedReportes['S'] = [];
+			if (!isset($groupedReportes['X']))
+				$groupedReportes['X'] = [];
+
+			$ocurrences = [
+				'V' => $groupedReportes['V'],
+				'G' => $groupedReportes['G'],
+				'S' => $groupedReportes['S'],
+				'X' => $groupedReportes['X']
+			];
+			$programa->set('XtoWord', NumberToWords::transformNumber('es', count($groupedReportes['X'])));
+
+			$fechaInicial = new DateTime(ReportesPrograma::REPORTING_START_DATE);
+			$fechaFinal = DateTime::now();
+
+			$diff = $this->getDateDiffString($fechaFinal->diff($fechaInicial));
+
+			$this->set(compact('programa', 'reportes', 'ocurrences', 'statusLongText', 'fechaInicial', 'diff'));
+
+		}
+	*/
 	protected function getDateDiffString(\DateInterval $diff): string
 	{
 		return $diff->y . ' años, ' . $diff->m . ' meses y ' . $diff->d . ' días';
@@ -94,7 +137,7 @@ class ProgramasController extends AppController
 
 				return $this->redirect(['action' => 'index']);
 			}
-			debug($programa->getErrors());
+			//debug($programa->getErrors());
 			$this->Flash->error(__('The programa could not be saved. Please, try again.'));
 		}
 		$dias = $this->Programas->Dias->find('list', limit: 200)->all();

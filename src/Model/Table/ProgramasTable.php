@@ -36,21 +36,29 @@ class ProgramasTable extends Table
 	#[\Override]
 	public function findAll(SelectQuery $query): SelectQuery
 	{
-		return $query->whereNotInList('Programas.id', Programa::TEMP_OUT_OF_AIR);
+		return $query->whereNotInList('Programas.ID', Programa::TEMP_OUT_OF_AIR);
 	}
 
 	#[\Override]
 	public function findList(SelectQuery $query, \Closure|array|string|null $keyField = null, \Closure|array|string|null $valueField = null, \Closure|array|string|null $g = null, string $s = ';'): SelectQuery
 	{
+		$query->select(['ID', 'name'])
+			->whereNotInList('Programas.ID', Programa::TEMP_OUT_OF_AIR)
+			->where(['Programas.reportable' => true]);
+
 		return parent::findList(
-			$query->select(['ID', 'name'])->whereNotInList('Programas.id', Programa::TEMP_OUT_OF_AIR)->where(['Programas.reportable' => true]),
-			keyField: $keyField,
-			valueField: $valueField
+			$query,
+			keyField: $keyField ?? 'ID',
+			valueField: $valueField ?? 'name'
 		);
 	}
 
 	public function validationDefault(Validator $validator): Validator
 	{
+		$validator
+			->allowEmptyString('ID', 'update')
+			->add('ID', 'valid', ['rule' => 'numeric']);
+
 		$validator
 			->scalar('name')
 			->maxLength('name', 255)
@@ -82,6 +90,27 @@ class ProgramasTable extends Table
 			->boolean('musical')
 			->requirePresence('musical', 'create')
 			->notEmptyString('musical');
+
+		$validator
+			->add('horaFin', 'afterStart', [
+				'rule' => function ($value, $context) {
+					if (isset($context['data']['horaInicio'])) {
+						return $value > $context['data']['horaInicio'];
+					}
+					return true;
+				},
+				'message' => 'La hora de fin no puede ser menor o igual a la hora de inicio.'
+			]);
+
+		$validator
+			->add('dias', 'atLeastOne', [
+				'rule' => function ($value, $context) {
+					// Verificamos si vienen datos en el array de 'dias'
+					return !empty($value) && isset($value['_ids']) && !empty($value['_ids']);
+				},
+				'message' => 'Debes seleccionar al menos un día de transmisión para el programa.'
+			]);
+
 		return $validator;
 	}
 }
