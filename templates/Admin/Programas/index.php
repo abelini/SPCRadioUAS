@@ -9,8 +9,8 @@
 				<th>ID</th>
 				<th>Nombre</th>
 				<th>Horario</th>
+				<th>Conducción</th>
 				<th>Producción</th>
-				<th>UO</th>
 				<th>Reportable</th>
 
 			</tr>
@@ -20,8 +20,9 @@
 				<td><?= $programa->ID ?></td>
 				<td><?= $this->Html->link($programa->name, ['action' => 'view', $programa->ID]) ?></td>
 				<td><?= $programa->horaInicio ?> <i class="fa-solid fa-arrow-right-long"></i> <?= $programa->horaFin ?></td>
+				<td><?= $programa->conduccion ?></td>
 				<td><?= $programa->produccion ?></td>
-				<td><?= $programa->uo ? 'Sí' : '-' ?></td>
+
 				<td><?= $programa->isReportable() ? 'Sí' : 'No' ?></td>
 			</tr>
 		<?php endforeach; ?>

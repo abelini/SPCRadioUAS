@@ -52,6 +52,10 @@ return function (RouteBuilder $routes): void {
         $builder->connect('/pages/*', 'Pages::display');
         $builder->connect('/bitacora/cabina/*', 'BitacoraCabina::display');
         $builder->connect('/bitacora/vigilancia/*', 'Incidencias::add');
+
+        $builder->connect('/topics', 'TemasProgramas::index');
+        $builder->connect('/topics/add', 'TemasProgramas::add');
+
         /*
          * Connect catchall routes for all controllers.
          *

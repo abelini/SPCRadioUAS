@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace SPC\Model\Table;
 
-use SPC\Model\Entity\Programa;
+//use SPC\Model\Entity\Programa;
 use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -21,6 +21,11 @@ class ProgramasTable extends Table
 		$this->setDisplayField('name');
 		$this->setPrimaryKey('ID');
 
+		$this->hasOne('TemasProgramas')
+			->setForeignKey('ProgramaID')
+			->setProperty('tema')
+			->setDependent(true);
+
 		$this->hasMany('ReportesProgramas')
 			->setForeignKey('programaID')
 			->setProperty('reportes')
@@ -36,15 +41,17 @@ class ProgramasTable extends Table
 	#[\Override]
 	public function findAll(SelectQuery $query): SelectQuery
 	{
-		return $query->whereNotInList('Programas.ID', Programa::TEMP_OUT_OF_AIR);
+		return $query->where(['Programas.outOfAir' => false]);
 	}
 
 	#[\Override]
 	public function findList(SelectQuery $query, \Closure|array|string|null $keyField = null, \Closure|array|string|null $valueField = null, \Closure|array|string|null $g = null, string $s = ';'): SelectQuery
 	{
 		$query->select(['ID', 'name'])
-			->whereNotInList('Programas.ID', Programa::TEMP_OUT_OF_AIR)
-			->where(['Programas.reportable' => true]);
+			->where([
+				'Programas.outOfAir' => false,
+				'Programas.reportable' => true
+			]);
 
 		return parent::findList(
 			$query,
@@ -82,9 +89,10 @@ class ProgramasTable extends Table
 			->notEmptyString('produccion');
 
 		$validator
-			->boolean('uo')
-			->requirePresence('uo', 'create')
-			->notEmptyString('uo');
+			->scalar('conduccion')
+			->maxLength('conduccion', 255)
+			->requirePresence('conduccion', 'create')
+			->notEmptyString('conduccion');
 
 		$validator
 			->boolean('musical')
@@ -94,6 +102,8 @@ class ProgramasTable extends Table
 		$validator
 			->add('horaFin', 'afterStart', [
 				'rule' => function ($value, $context) {
+					if ($value == '00:00:00')
+						return true;
 					if (isset($context['data']['horaInicio'])) {
 						return $value > $context['data']['horaInicio'];
 					}
@@ -105,7 +115,6 @@ class ProgramasTable extends Table
 		$validator
 			->add('dias', 'atLeastOne', [
 				'rule' => function ($value, $context) {
-					// Verificamos si vienen datos en el array de 'dias'
 					return !empty($value) && isset($value['_ids']) && !empty($value['_ids']);
 				},
 				'message' => 'Debes seleccionar al menos un día de transmisión para el programa.'

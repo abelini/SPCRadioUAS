@@ -88,6 +88,157 @@
 
 </div>
 
+<div class="w3-container w3-white w3-padding"
+	style="position: fixed; bottom: 40px; right: 20px; z-index: 100;width:340px;">
+	<h6><i class="fa-brands fa-facebook" style="color:#1877F2"></i> Generación de publicación para redes sociales</h6>
+	<button class="w3-button w3- w3-blue w3-card-4 w3-large" style=" margin-right: 5px;"
+		onclick="abrirModal('live_show')" title="Generar publicación para Programa">
+		<b>Programas</b>
+	</button>
+
+	<button class="w3-button w3- w3-green w3-card-4 w3-large" style="" onclick="abrirModal('live_broadcast')"
+		title="Generar publicación para Controles Remotos">
+		<b>Controles Remotos</b>
+	</button>
+</div>
+
+<div id="miSidebar" class="w3-sidebar w3-card w3-animate-right"
+	style="display:none; right:0; top:0; width:40%; height:100%; z-index:999 !important;">
+
+	<button onclick="cerrarModal()" class="w3-button w3-large w3-display-topright w3-galaxy-blue w3-hover-red">
+		<i class="fa-solid fa-xmark"></i>
+	</button>
+
+	<div class="w3-container w3-galaxy-blue">
+		<h4 class="w3-text-light-blue">Generación de Publicación para Facebook</h4>
+	</div>
+
+	<div id="contenido-ajax" class="w3-container w3-padding-16">
+	</div>
+</div>
+
+<div id="miOverlay" class="w3-overlay" style="z-index:998;"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<script>
+	function abrirModal(tipoContenido) {
+		// 1. Mostrar sidebar y overlay
+		document.getElementById("miSidebar").style.display = "block";
+		document.getElementById("miOverlay").style.display = "block";
+
+		// 2. Referencia al contenedor y mostrar "Cargando"
+		const contenedor = document.getElementById("contenido-ajax");
+		contenedor.innerHTML = '<div class="w3-center w3-padding-32"><i class="fa fa-spinner w3-spin w3-xxlarge"></i><p>Cargando...</p></div>';
+
+		// 3. Petición AJAX
+		const url = `<?= $this->Url->build(['controller' => 'Cabina', 'action' => 'social', 'prefix' => 'Api']) ?>?type=${tipoContenido}`;
+
+		fetch(url)
+			.then(response => {
+				if (!response.ok) throw new Error("Error red");
+				return response.text();
+			})
+			.then(html => {
+				contenedor.innerHTML = html;
+			})
+			.catch(error => {
+				console.error(error);
+				contenedor.innerHTML = '<div class="w3-panel w3-red"><p>Error al cargar contenido.</p></div>';
+			});
+	}
+
+	function cerrarModal() {
+		document.getElementById("miSidebar").style.display = "none";
+		document.getElementById("miOverlay").style.display = "none";
+	}
+</script>
+<script>
+	document.addEventListener('change', function (e) {
+		if (e.target && e.target.id === 'select-programa') {
+			const select = e.target;
+			const inputConduccion = document.getElementById('input-conduccion');
+			const inputTema = document.getElementById('input-tema');
+			const programaSeleccionado = select.value;
+			const urlBase = "<?= $this->Url->build(['controller' => 'Cabina', 'action' => 'getProgramInfo', 'prefix' => 'Api']) ?>";
+
+			if (!programaSeleccionado) {
+				return;
+			}
+
+			fetch(`${urlBase}?name=${encodeURIComponent(programaSeleccionado)}`)
+				.then(response => {
+					if (!response.ok) throw new Error('Error en la red');
+					return response.json();
+				})
+				.then(data => {
+					inputConduccion.value = data.programa.conduccion || '';
+					if (data.programa.tema != null) {
+						inputTema.value = data.programa.tema.tema || '';
+					} else {
+						inputTema.value = '';
+					}
+				})
+				.catch(error => {
+					console.error('Error:', error);
+					//inputParticipantes.value = ''; // Limpiar si hay error
+				})
+				.finally(() => {
+					//inputParticipantes.style.opacity = '1'; // Restaurar opacidad
+				});
+		}
+	});
+</script>
+<script>
+	function generateSocialContent(event, form) {
+		event.preventDefault();
+
+		const btn = event.submitter || form.querySelector('button[type="submit"]');
+		const textoOriginal = btn.innerHTML;
+
+		btn.disabled = true;
+		btn.innerHTML = '<i class="fa fa-circle-o-notch w3-spin"></i> Generando respuesta...';
+		const contenedor = document.getElementById("ai-generated-social-content");
+		contenedor.innerHTML = `
+			<div class="w3-panel w3-animate-opacity">
+				<p class="w3-text-gray">Gemini está pensando...</p>
+				<div class="w3-round-xlarge">
+					<div class="w3-container w3-center">
+						<i class="fa-solid fa-spinner w3-spin w3-text-gray" style="font-size:64px"></i>
+					</div>
+				</div>
+			</div>`;
+		const url = form.action;
+		const datos = new FormData(form);
+
+		fetch(url, {
+			method: 'POST',
+			body: datos,
+			headers: {
+				'X-Requested-With': 'XMLHttpRequest'
+			}
+		})
+			.then(response => {
+				if (!response.ok) throw new Error("Error de red");
+				return response.text();
+			})
+			.then(markdownTexto => {
+				const html = marked.parse(markdownTexto);
+				contenedor.innerHTML = html;
+				btn.disabled = false;
+				btn.innerHTML = textoOriginal;
+			})
+			.catch(error => {
+				console.error('Error:', error);
+				contenedor.innerHTML = '<p>Límite de peticiones excedido. Intenta de nuevo en 1 minuto.</p>';
+				btn.disabled = false;
+				btn.innerHTML = textoOriginal;
+			});
+
+		return false;
+	}
+</script>
+
 <style>
 	.w3-row-padding {
 		background-color: #fafafa;
@@ -140,5 +291,8 @@
 		color: #dbdbdb;
 	}
 </style>
+
+
+
 
 <?php $this->assign('title', $bitacora); ?>

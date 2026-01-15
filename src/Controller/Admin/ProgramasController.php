@@ -26,7 +26,6 @@ class ProgramasController extends AppController
 	}
 	public function view($id = null)
 	{
-		// 1. Una sola consulta para traer todo lo necesario
 		$programa = $this->Programas->get($id, contain: [
 			'Dias',
 			'ReportesProgramas' => function (SelectQuery $query) {
@@ -39,7 +38,6 @@ class ProgramasController extends AppController
 			}
 		]);
 
-		// 2. Delegamos el procesamiento de reportes a un método privado o a la Entidad
 		$this->set($this->_prepareReportData($programa));
 	}
 
@@ -155,7 +153,9 @@ class ProgramasController extends AppController
 	{
 		$programa = $this->Programas->get($id, contain: ['Dias']);
 		if ($this->request->is(['patch', 'post', 'put'])) {
+			//debug($this->request->getData());
 			$programa = $this->Programas->patchEntity($programa, $this->request->getData());
+			//dd($programa->getErrors());
 			if ($this->Programas->save($programa)) {
 				$this->Flash->success(__('The programa has been saved.'));
 

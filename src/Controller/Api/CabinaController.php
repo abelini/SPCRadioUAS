@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace SPC\Controller\Api;
 
 use SPC\Controller\ApiController;
+use Cake\Core\Configure;
 use Cake\Http\Client;
 use Cake\Http\Response;
 use Cake\I18n\DateTime;
@@ -11,6 +12,7 @@ use Cake\I18n\Time;
 use Cake\ORM\Query\SelectQuery;
 use ScheduleController;
 use SPC\Model\Entity\DefaultComment;
+use SPC\Service\GeminiService;
 
 
 class CabinaController extends ApiController
@@ -41,6 +43,107 @@ class CabinaController extends ApiController
 	{
 		$this->viewBuilder()->setLayout('live_stream');
 		return $this->render();
+	}
+
+	public function social(): Response
+	{
+		if (!$this->request->is('ajax')) {
+			// return $this->redirect(['action' => 'index']);
+		}
+
+		$this->viewBuilder()->setLayout('ajax');
+
+		$tipo = $this->request->getQuery('type');
+
+		switch ($tipo) {
+			case 'live_show':
+				return $this->_liveShowForm();
+
+			case 'live_broadcast':
+				return $this->_liveBroadcastForm();
+
+			default:
+				$this->set('mensaje', 'Contenido no encontrado');
+				return $this->render('error_ajax');
+		}
+	}
+	protected function _liveShowForm(): Response
+	{
+		$programas = $this->getTableLocator()
+			->get('Programas')
+			->find()
+			//->select(['Programas.ID', 'Programas.name', 'Programas.produccion'])
+			->where([
+				'Programas.reportable' => true,
+			])
+			->matching('Dias', function (SelectQuery $query) {
+				return $query->where(['Dias.ID' => (new DateTime())->dayOfWeek]);
+			})
+			->contain(['TemasProgramas'])
+			->orderByAsc('horaInicio')
+			->all();
+
+		$nextPrograms = $programas->filter(function ($programa, $key) {
+			$now = Time::now();
+			return ($programa->horaInicio >= $now);
+		});
+		debug($nextPrograms);
+		$this->set('programas', $programas);
+		$this->set('nextPrograms', $nextPrograms);
+		return $this->render('live_show');
+	}
+
+	protected function _liveBroadcastForm(): Response
+	{
+		$fecha = date('Y-m-d');
+		$this->set('fechaActual', $fecha);
+
+		return $this->render('live_broadcast');
+	}
+
+	public function getProgramInfo()
+	{
+		$this->request->allowMethod(['ajax', 'get']);
+		$nombrePrograma = $this->request->getQuery('name');
+
+		$programa = $this->getTableLocator()->get('Programas')
+			->find()
+			->where(['name' => $nombrePrograma])
+			->contain(['TemasProgramas'])
+			->first();
+
+		return $this->response
+			->withType('application/json')
+			->withStringBody(json_encode(['programa' => $programa]));
+	}
+
+	public function generateSocialContent(): Response
+	{
+		$type = $this->request->getData('type');
+		$prompt = Configure::read('Prompts.' . $type);
+
+		if ($type == 'liveShow') {
+			$programa = $this->request->getData('programa');
+			$tema = $this->request->getData('tema') ? 'El tema a abordar es: «' . $this->request->getData('tema') . '».' : '';
+			$conduccion = $this->request->getData('conduccion') ? $this->request->getData('conduccion') : '';
+			$invitados = $this->request->getData('invitados') ? 'El|La|Los invitado(s) es|son: «' . $this->request->getData('invitados') . '».' : '';
+
+			$prompt = str_replace(['%programa%', '%conduccion%', '%invitados%', '%tema%'], [$programa, $conduccion, $invitados, $tema], $prompt);
+		} else {
+			$evento = $this->request->getData('evento');
+			$participantes = $this->request->getData('participantes') ? 'Los participantes son: «' . $this->request->getData('participantes') . '».' : '';
+
+			$prompt = str_replace(['%evento%', '%participantes%'], [$evento, $participantes], $prompt);
+		}
+
+		$respuesta = $prompt;
+		$gemini = new GeminiService();
+		$respuesta = $gemini->generateText($prompt);
+
+		$this->set(compact('respuesta'));
+		$this->viewBuilder()->setLayout('ajax');
+
+		return $this->render('social_content');
 	}
 
 	public function isNowBroadcasting(): bool

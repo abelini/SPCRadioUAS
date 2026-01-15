@@ -16,31 +16,33 @@ class Programa extends Entity implements \Stringable
 	protected const string COLABORADOR_ICON = '<i class="fa-solid fa-user"></i>';
 
 	protected const string MUSICAL_ICON = '<i class="fa-solid fa-music"></i>';
-
-	public const array TEMP_OUT_OF_AIR = [
-		2, 	// Sinaloa al dia
-		6, 	// Entre sonidos y silencios
-		11, // Agenda universitaria (Entre universitarios)
-		50, // Entre universitarios
-		26,	// Nocturama
-		36, // La otra cara del disco
-		40, // Tiempo libre
-		44, // Antes de que se enfrie el cafe
-		48, // Hablemos de musica (repeticion)
-		49, // Cacahuates japoneses
-	];
+	/*
+		public const array TEMP_OUT_OF_AIR = [
+			2, 	// Sinaloa al dia
+			6, 	// Entre sonidos y silencios
+			11, // Agenda universitaria (Entre universitarios)
+			50, // Entre universitarios
+			26,	// Nocturama
+			36, // La otra cara del disco
+			40, // Tiempo libre
+			44, // Antes de que se enfrie el cafe
+			48, // Hablemos de musica (repeticion)
+			49, // Cacahuates japoneses
+		];*/
 
 	protected array $_accessible = [
 		'name' => true,
 		'horaInicio' => true,
 		'horaFin' => true,
 		'produccion' => true,
+		'conduccion' => true,
 		'uo' => true,
 		'musical' => true,
 		'XtoWord' => true,
 		'reportes' => true,
 		'dias' => true,
 		'reportable' => true,
+		'outOfAir' => true,
 	];
 
 	protected array $_hidden = [
