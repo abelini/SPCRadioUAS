@@ -11,8 +11,11 @@ use Cake\ORM\Entity;
  * @property int $ID
  * @property int $ProgramaID
  * @property string $tema
+ * @property string $invitados
+ *
+ * @property \SPC\Model\Entity\Programa $programa
  */
-class TemasPrograma extends Entity implements \Stringable
+class TemasPrograma extends Entity
 {
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
@@ -26,10 +29,7 @@ class TemasPrograma extends Entity implements \Stringable
     protected array $_accessible = [
         'ProgramaID' => true,
         'tema' => true,
+        'invitados' => true,
+        'programa' => true,
     ];
-
-    public function __toString(): string
-    {
-        return $this->tema;
-    }
 }

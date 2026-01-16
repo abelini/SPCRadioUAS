@@ -27,6 +27,10 @@
                     <td><?= h($temasPrograma->tema) ?></td>
                 </tr>
                 <tr>
+                    <th><?= __('Invitados') ?></th>
+                    <td><?= h($temasPrograma->invitados) ?></td>
+                </tr>
+                <tr>
                     <th><?= __('ID') ?></th>
                     <td><?= $this->Number->format($temasPrograma->ID) ?></td>
                 </tr>

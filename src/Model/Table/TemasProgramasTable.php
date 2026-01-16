@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace SPC\Model\Table;
 
 use ArrayObject;
-use Cake\Event\EventInterface;
 use Cake\Datasource\EntityInterface;
+use Cake\Event\EventInterface;
 use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -36,32 +36,25 @@ class TemasProgramasTable extends Table
 
     public function beforeSave(EventInterface $event, EntityInterface $entity, ArrayObject $options)
     {
-        // Solo nos importa si estamos asignando un programa
         if ($entity->has('ProgramaID') && !empty($entity->ProgramaID)) {
-
-            // Buscamos si ya existe UN conductor para este programa
             $conductorExistente = $this->find()
                 ->select(['ID'])
                 ->where(['ProgramaID' => $entity->ProgramaID])
                 ->first();
 
             if ($conductorExistente) {
-                // OPCIÓN A: "Modificar el registro existente" (Recomendada)
                 $entity->ID = $conductorExistente->ID;
-                $entity->setNew(false); // Le decimos a Cake: "No es nuevo, actualiza"
-
-                // OPCIÓN B: "Eliminar antes de guardar"
-                // $this->delete($conductorExistente);
+                $entity->setNew(false);
             }
         }
     }
-
     public function validationDefault(Validator $validator): Validator
     {
         $validator
             ->integer('ProgramaID')
             ->requirePresence('ProgramaID', 'create')
-            ->notEmptyString('ProgramaID');
+            ->notEmptyString('ProgramaID')
+            ->add('ProgramaID', 'unique', ['rule' => 'validateUnique', 'provider' => 'table']);
 
         $validator
             ->scalar('tema')
@@ -69,6 +62,19 @@ class TemasProgramasTable extends Table
             ->requirePresence('tema', 'create')
             ->notEmptyString('tema');
 
+        $validator
+            ->scalar('invitados')
+            ->maxLength('invitados', 255)
+            ->requirePresence('invitados', 'create')
+            ->notEmptyString('invitados');
+
         return $validator;
+    }
+
+    public function buildRules(RulesChecker $rules): RulesChecker
+    {
+        $rules->add($rules->isUnique(['ProgramaID']), ['errorField' => 'ProgramaID']);
+
+        return $rules;
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace SPC\Controller\Api;
 
 use SPC\Controller\ApiController;
+use Cake\Core\Configure;
 use Cake\Http\Client;
 use Cake\Http\Client\Exception\NetworkException;
 use Cake\Http\Response;
@@ -12,22 +13,29 @@ use Cake\Http\Response;
 class MusicController extends ApiController
 {
 
-	private const string API_KEY = '2800fcd5956c46dfb55dd2686a96e6e7';
+	private string $EmbyAPIKey;
 
-	private const array EMBY_CONFIG = [
-		'scheme' => 'https',
-		'host' => 'emby.radiouas.org',
-		'port' => 8920,
-		'basePath' => 'emby',
-		'ssl_verify_peer' => false, // Whether SSL certificates should be validated.
-		'ssl_verify_peer_name' => false, // Whether peer names should be validated.
-		'ssl_verify_host' => false, // Verify that the certificate and hostname match.
-		'headers' => [
-			'X-Emby-Token' => self::API_KEY,
-		],
-	];
+	private array $EmbyConfig;
 
 	private int $maxDisplayedSongs = 15;
+
+	public function initialize(): void
+	{
+		parent::initialize();
+		$this->EmbyAPIKey = Configure::read('SensitiveData.Emby.APIKey');
+		$this->EmbyConfig = [
+			'scheme' => 'https',
+			'host' => 'emby.radiouas.org',
+			'port' => 8920,
+			'basePath' => 'emby',
+			'ssl_verify_peer' => false,
+			'ssl_verify_peer_name' => false,
+			'ssl_verify_host' => false,
+			'headers' => [
+				'X-Emby-Token' => $this->EmbyAPIKey,
+			],
+		];
+	}
 
 	public function album(): Response
 	{
@@ -35,7 +43,7 @@ class MusicController extends ApiController
 		$albumID = $this->request->getQuery('ID');
 		$tracklist = boolval($this->request->getQuery('hide_tracklist'));
 
-		$http = new Client(self::EMBY_CONFIG);
+		$http = new Client($this->EmbyConfig);
 		try {
 			$response = $http->get(
 				'/Items',
@@ -43,8 +51,7 @@ class MusicController extends ApiController
 			);
 
 			$playlist = json_decode($response->getStringBody());
-			debug($playlist);
-			$cover = $http->buildURL('/Items/' . $albumID . '/Images/Primary', ['api_key' => self::API_KEY], $http->getConfig());
+			$cover = $http->buildURL('/Items/' . $albumID . '/Images/Primary', ['api_key' => $this->EmbyAPIKey], $http->getConfig());
 
 			$response = $http->get('/Items', ['Ids' => $albumID]);
 
@@ -52,7 +59,7 @@ class MusicController extends ApiController
 
 
 			$this->set(compact('http', 'playlist', 'albumInfo', 'cover', 'index'));
-			$this->set('api_key', self::API_KEY);
+			$this->set('api_key', $this->EmbyAPIKey);
 			$this->set('bgColor', $this->request->getQuery('bgColor'));
 			$this->set('txtColor', $this->request->getQuery('txtColor'));
 
@@ -70,7 +77,7 @@ class MusicController extends ApiController
 	{
 		$index = 1;
 		$artistID = $this->request->getQuery('ID');
-		$http = new Client(self::EMBY_CONFIG);
+		$http = new Client($this->EmbyConfig);
 
 		try {
 			$response = $http->get(
@@ -80,12 +87,12 @@ class MusicController extends ApiController
 			$playlist = json_decode($response->getStringBody());
 			$cover = $http->buildURL(
 				'/Items/' . $artistID . '/Images/Primary',
-				['api_key' => self::API_KEY],
+				['api_key' => $this->EmbyAPIKey],
 				$http->getConfig()
 			);
 
 			$this->set(compact('http', 'playlist', 'cover', 'index'));
-			$this->set('api_key', self::API_KEY);
+			$this->set('api_key', $this->EmbyAPIKey);
 			$template = 'artist';
 		} catch (NetworkException $e) {
 			$template = 'widget_error';
@@ -101,7 +108,7 @@ class MusicController extends ApiController
 	{
 		$index = 1;
 		$playlistID = $this->request->getQuery('ID');
-		$http = new Client(self::EMBY_CONFIG);
+		$http = new Client($this->EmbyConfig);
 
 		$response = $http->get(
 			'/Playlists/' . $playlistID . '/Items',
@@ -113,7 +120,7 @@ class MusicController extends ApiController
 		$cover = $http->get('/Items/' . $playlistID . '/Images/Primary');
 
 		$this->set(compact('http', 'playlist', 'cover', 'index'));
-		$this->set('api_key', self::API_KEY);
+		$this->set('api_key', $this->EmbyAPIKey);
 
 		$this->viewBuilder()->setLayout('widget');
 

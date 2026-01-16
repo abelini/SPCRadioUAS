@@ -14,6 +14,7 @@
                     <th><?= $this->Paginator->sort('ID') ?></th>
                     <th><?= $this->Paginator->sort('ProgramaID') ?></th>
                     <th><?= $this->Paginator->sort('tema') ?></th>
+                    <th><?= $this->Paginator->sort('invitados') ?></th>
                     <th class="actions"><?= __('Actions') ?></th>
                 </tr>
             </thead>
@@ -23,6 +24,7 @@
                     <td><?= $this->Number->format($temasPrograma->ID) ?></td>
                     <td><?= $temasPrograma->hasValue('programa') ? $this->Html->link($temasPrograma->programa->name, ['controller' => 'Programas', 'action' => 'view', $temasPrograma->programa->ID]) : '' ?></td>
                     <td><?= h($temasPrograma->tema) ?></td>
+                    <td><?= h($temasPrograma->invitados) ?></td>
                     <td class="actions">
                         <?= $this->Html->link(__('View'), ['action' => 'view', $temasPrograma->ID]) ?>
                         <?= $this->Html->link(__('Edit'), ['action' => 'edit', $temasPrograma->ID]) ?>

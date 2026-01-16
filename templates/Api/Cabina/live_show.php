@@ -11,16 +11,16 @@
         $programas->combine('name', 'name')->toArray(),
         [
             'empty' => 'Selecciona un programa',
-            'default' => $nextPrograms->first()->name,
+            'default' => $nextProgram->name,
             'class' => 'w3-select',
             'id' => 'select-programa',
         ]
     ) ?>
-    <?php if ($nextPrograms->first()->isUO): ?>
+    <?php if ($nextProgram->isUO): ?>
 
         <?= $this->Form->label('uo', 'Unidad Organizacional') ?>
         <?= $this->Form->text('uo', [
-            'value' => $nextPrograms->first()->UO,
+            'value' => $nextProgram->UO,
             'class' => 'w3-input',
             'id' => 'input-uo'
         ]) ?>
@@ -28,21 +28,21 @@
 
     <?= $this->Form->label('Conducción') ?>
     <?= $this->Form->text('conduccion', [
-        'value' => $nextPrograms->first()->conduccion,
+        'value' => $nextProgram->conduccion,
         'class' => 'w3-input',
         'id' => 'input-conduccion'
     ]) ?>
 
     <?= $this->Form->label('Invitados') ?>
     <?= $this->Form->text('invitados', [
-        'value' => '',
+        'value' => $nextProgram->tema->invitados ?? '',
         'class' => 'w3-input',
         'id' => 'input-invitados'
     ]) ?>
 
     <?= $this->Form->label('tema', 'Tema a tratar') ?>
     <?= $this->Form->text('tema', [
-        'value' => $nextPrograms->first()->tema,
+        'value' => $nextProgram->tema ?? '',
         'class' => 'w3-input',
         'id' => 'input-tema'
     ]) ?>

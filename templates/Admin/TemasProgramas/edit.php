@@ -25,6 +25,7 @@
                 <?php
                     echo $this->Form->control('ProgramaID', ['options' => $programas]);
                     echo $this->Form->control('tema');
+                    echo $this->Form->control('invitados');
                 ?>
             </fieldset>
             <?= $this->Form->button(__('Submit')) ?>

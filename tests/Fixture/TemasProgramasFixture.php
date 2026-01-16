@@ -22,6 +22,7 @@ class TemasProgramasFixture extends TestFixture
                 'ID' => 1,
                 'ProgramaID' => 1,
                 'tema' => 'Lorem ipsum dolor sit amet',
+                'invitados' => 'Lorem ipsum dolor sit amet',
             ],
         ];
         parent::init();

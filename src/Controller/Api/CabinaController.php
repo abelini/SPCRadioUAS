@@ -87,9 +87,9 @@ class CabinaController extends ApiController
 			$now = Time::now();
 			return ($programa->horaInicio >= $now);
 		});
-		debug($nextPrograms);
+		//debug($nextPrograms->first());
 		$this->set('programas', $programas);
-		$this->set('nextPrograms', $nextPrograms);
+		$this->set('nextProgram', $nextPrograms->first());
 		return $this->render('live_show');
 	}
 
@@ -109,7 +109,7 @@ class CabinaController extends ApiController
 		$programa = $this->getTableLocator()->get('Programas')
 			->find()
 			->where(['name' => $nombrePrograma])
-			->contain(['TemasProgramas'])
+			->contain('TemasProgramas')
 			->first();
 
 		return $this->response
@@ -126,7 +126,7 @@ class CabinaController extends ApiController
 			$programa = $this->request->getData('programa');
 			$tema = $this->request->getData('tema') ? 'El tema a abordar es: «' . $this->request->getData('tema') . '».' : '';
 			$conduccion = $this->request->getData('conduccion') ? $this->request->getData('conduccion') : '';
-			$invitados = $this->request->getData('invitados') ? 'El|La|Los invitado(s) es|son: «' . $this->request->getData('invitados') . '».' : '';
+			$invitados = $this->request->getData('invitados') ? 'El|La|Los invitado(s) es|son: ' . $this->request->getData('invitados') . '.' : '';
 
 			$prompt = str_replace(['%programa%', '%conduccion%', '%invitados%', '%tema%'], [$programa, $conduccion, $invitados, $tema], $prompt);
 		} else {

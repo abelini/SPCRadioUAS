@@ -25,6 +25,7 @@ class TemasProgramasTableTest extends TestCase
      */
     protected array $fixtures = [
         'app.TemasProgramas',
+        'app.Programas',
     ];
 
     /**
@@ -49,6 +50,17 @@ class TemasProgramasTableTest extends TestCase
         unset($this->TemasProgramas);
 
         parent::tearDown();
+    }
+
+    /**
+     * Test beforeSave method
+     *
+     * @return void
+     * @link \SPC\Model\Table\TemasProgramasTable::beforeSave()
+     */
+    public function testBeforeSave(): void
+    {
+        $this->markTestIncomplete('Not implemented yet.');
     }
 
     /**

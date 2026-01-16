@@ -158,6 +158,7 @@
 		if (e.target && e.target.id === 'select-programa') {
 			const select = e.target;
 			const inputConduccion = document.getElementById('input-conduccion');
+			const inputInvitados = document.getElementById('input-invitados');
 			const inputTema = document.getElementById('input-tema');
 			const programaSeleccionado = select.value;
 			const urlBase = "<?= $this->Url->build(['controller' => 'Cabina', 'action' => 'getProgramInfo', 'prefix' => 'Api']) ?>";
@@ -175,6 +176,7 @@
 					inputConduccion.value = data.programa.conduccion || '';
 					if (data.programa.tema != null) {
 						inputTema.value = data.programa.tema.tema || '';
+						inputInvitados.value = data.programa.tema.invitados || '';
 					} else {
 						inputTema.value = '';
 					}
