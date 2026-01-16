@@ -73,4 +73,15 @@ class TemasProgramasTableTest extends TestCase
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
+
+    /**
+     * Test buildRules method
+     *
+     * @return void
+     * @link \SPC\Model\Table\TemasProgramasTable::buildRules()
+     */
+    public function testBuildRules(): void
+    {
+        $this->markTestIncomplete('Not implemented yet.');
+    }
 }

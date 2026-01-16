@@ -72,6 +72,7 @@ class TemasProgramasController extends AppController
         $temasPrograma = $this->TemasProgramas->get($id, contain: []);
         if ($this->request->is(['patch', 'post', 'put'])) {
             $temasPrograma = $this->TemasProgramas->patchEntity($temasPrograma, $this->request->getData());
+            debug($temasPrograma->getErrors());
             if ($this->TemasProgramas->save($temasPrograma)) {
                 $this->Flash->success(__('The temas programa has been saved.'));
 

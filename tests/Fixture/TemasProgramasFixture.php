@@ -23,6 +23,8 @@ class TemasProgramasFixture extends TestFixture
                 'ProgramaID' => 1,
                 'tema' => 'Lorem ipsum dolor sit amet',
                 'invitados' => 'Lorem ipsum dolor sit amet',
+                'created' => '2026-01-16 10:26:11',
+                'modified' => '2026-01-16 10:26:11',
             ],
         ];
         parent::init();

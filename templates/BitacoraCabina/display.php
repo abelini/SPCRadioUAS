@@ -71,7 +71,7 @@
 
 
 	<?= $this->Form->hidden('ID') ?>
-	<?php //= $this->Form->hidden('fecha', ['value' => $bitacora->fecha->toIso8601String()]) ?>
+	<?= $this->Form->hidden('fecha', ['value' => $bitacora->fecha->toIso8601String()]) ?>
 
 	<div class="w3-row w3-padding w3-low-blue w3-center">
 		Valores: <span style="font-weight:normal">(V) Programa en vivo, (G) Programa grabado, (S) Programa suspendido
@@ -242,6 +242,21 @@
 </script>
 
 <style>
+	@media screen and (max-width: 600px) {
+		#miSidebar {
+			width: 100% !important;
+			/* Fuerza el ancho total */
+			min-width: 100% !important;
+			right: 0 !important;
+			top: 0 !important;
+			height: 100% !important;
+		}
+
+		.ai-generated-social-content {
+			padding: 0 16px !important;
+		}
+	}
+
 	.w3-row-padding {
 		background-color: #fafafa;
 	}

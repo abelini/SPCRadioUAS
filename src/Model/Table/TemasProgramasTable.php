@@ -3,23 +3,15 @@ declare(strict_types=1);
 
 namespace SPC\Model\Table;
 
-use ArrayObject;
-use Cake\Datasource\EntityInterface;
-use Cake\Event\EventInterface;
-use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
-
+use Cake\Event\EventInterface;
+use Cake\Datasource\EntityInterface;
+use ArrayObject;
 
 class TemasProgramasTable extends Table
 {
-    /**
-     * Initialize method
-     *
-     * @param array<string, mixed> $config The configuration for the Table.
-     * @return void
-     */
     public function initialize(array $config): void
     {
         parent::initialize($config);
@@ -27,6 +19,8 @@ class TemasProgramasTable extends Table
         $this->setTable('temas_programas');
         $this->setDisplayField('tema');
         $this->setPrimaryKey('ID');
+
+        $this->addBehavior('Timestamp');
 
         $this->belongsTo('Programas', [
             'foreignKey' => 'ProgramaID',
@@ -36,18 +30,19 @@ class TemasProgramasTable extends Table
 
     public function beforeSave(EventInterface $event, EntityInterface $entity, ArrayObject $options)
     {
-        if ($entity->has('ProgramaID') && !empty($entity->ProgramaID)) {
+        if ($entity->has('ProgramaID') && !empty($entity->get('ProgramaID'))) {
             $conductorExistente = $this->find()
                 ->select(['ID'])
-                ->where(['ProgramaID' => $entity->ProgramaID])
+                ->where(['ProgramaID' => $entity->get('ProgramaID')])
                 ->first();
 
             if ($conductorExistente) {
-                $entity->ID = $conductorExistente->ID;
+                $entity->set('ID', $conductorExistente->get('ID'));
                 $entity->setNew(false);
             }
         }
     }
+
     public function validationDefault(Validator $validator): Validator
     {
         $validator
@@ -59,17 +54,19 @@ class TemasProgramasTable extends Table
         $validator
             ->scalar('tema')
             ->maxLength('tema', 255)
-            ->requirePresence('tema', 'create')
-            ->notEmptyString('tema');
+            //->requirePresence('tema', 'create')
+            ->allowEmptyString('tema');
 
         $validator
             ->scalar('invitados')
             ->maxLength('invitados', 255)
-            ->requirePresence('invitados', 'create')
-            ->notEmptyString('invitados');
+            //->requirePresence('invitados', 'create')
+            ->allowEmptyString('invitados');
+
 
         return $validator;
     }
+
 
     public function buildRules(RulesChecker $rules): RulesChecker
     {
