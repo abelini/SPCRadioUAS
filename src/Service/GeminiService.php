@@ -11,10 +11,11 @@ class GeminiService
     protected Client $engine;
     protected string $APIKey;
     protected array $models = [
+        'gemini-2.5-flash',
         'gemini-2.5-flash-lite',
-        'gemini-2.0-flash-exp',
         'gemini-2.0-flash',
         'gemini-2.0-flash-lite',
+        'gemini-2.0-flash-exp',
         'gemini-flash-lite-latest',
         'gemini-pro-latest',
         'gemini-3-flash-preview'
@@ -26,41 +27,35 @@ class GeminiService
         $this->engine = Gemini::client($this->APIKey);
     }
 
-    public function generateText(string $prompt, string $model = 'gemini-2.5-flash'): string
+    public function generateText(string $prompt): string
     {
-        $models = array_merge([$model], $this->models);
-
-        foreach ($models as $currentModel) {
+        foreach ($this->models as $model) {
             $maxRetries = 2;
             $retryCount = 0;
             $waitTime = 2;
 
             while ($retryCount < $maxRetries) {
                 try {
-                    // Intentamos generar el contenido
-                    $result = $this->engine->generativeModel(model: $currentModel)->generateContent($prompt);
-                    return $result->text() . '<br><br><br><p class="w3-text-light-gray">Generado con el modelo: ' . $currentModel . '</p>';
+                    $result = $this->engine->generativeModel(model: $model)->generateContent($prompt);
+                    return $result->text() . '<br><br><br><p class="w3-text-light-gray">Generado con el modelo: ' . $model . '</p>';
 
                 } catch (\Exception $e) {
                     $errorMessage = $e->getMessage();
 
-                    // Si es un error de cuota o límite de velocidad (429)
                     if (str_contains($errorMessage, 'quota') || str_contains($errorMessage, '429')) {
                         $retryCount++;
                         if ($retryCount < $maxRetries) {
                             sleep($waitTime);
                             $waitTime *= 2;
-                            continue; // Reintenta con el mismo modelo
+                            continue;
                         }
-                        // Si agotamos reintentos de este modelo, el "foreach" pasará al siguiente modelo
                     } else {
-                        // Si es un error distinto (ej. error de sintaxis), fallamos rápido
-                        \Cake\Log\Log::error("Error crítico en Gemini ($currentModel): " . $errorMessage);
+                        \Cake\Log\Log::error("Error crítico en Gemini ($model): " . $errorMessage);
                         break;
                     }
                 }
             }
-            \Cake\Log\Log::warning("Cambiando de modelo a $currentModel por exceso de cuota.");
+            \Cake\Log\Log::warning("Cambiando de modelo a $model por exceso de cuota.");
         }
         return 'Todos los modelos fallaron...';
     }

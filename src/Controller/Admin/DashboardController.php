@@ -11,15 +11,11 @@ use SPC\Controller\AppController;
 use SPC\Model\Entity\Permiso;
 use SPC\Model\Entity\TipoSolicitud;
 
-use Cake\Collection\CollectionInterface;
+//use Cake\Collection\CollectionInterface;
 use Cake\Http\Response;
 use Cake\I18n\DateTime;
-//use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 
-/**
- * Dashboard Controller
- *
- */
 class DashboardController extends AppController
 {
 
@@ -39,26 +35,26 @@ class DashboardController extends AppController
 
 		switch ($this->user->permisos[0]->name) {
 			case Permiso::ADMINISTRATOR:
-				$this->solicitudes = $this->getSolicitudesStats();
-				$this->bitacoras = $this->getBitacorasStats();
-				$this->programas = $this->getProgramasStats();
+				$this->solicitudes = $this->_getSolicitudesStats();
+				$this->bitacoras = $this->_getBitacorasStats();
+				$this->programas = $this->_getProgramasStats();
 				break;
 			case Permiso::CAPTURISTA:
-				$this->solicitudes = $this->getSolicitudesStats();
-				$this->bitacoras = $this->getBitacorasStats();
-				$this->programas = $this->getProgramasStats();
+				$this->solicitudes = $this->_getSolicitudesStats();
+				$this->bitacoras = $this->_getBitacorasStats();
+				$this->programas = $this->_getProgramasStats();
 				break;
 
 			case Permiso::FONOTECARIO:
-				$this->solicitudes = $this->getSolicitudesStats();
-				$this->bitacoras = $this->getBitacorasStats();
-				$this->programas = $this->getProgramasStats();
+				$this->solicitudes = $this->_getSolicitudesStats();
+				$this->bitacoras = $this->_getBitacorasStats();
+				$this->programas = $this->_getProgramasStats();
 				break;
 			default:
 
 		}
 
-		$diff = $this->getDateDiffString($datetime->diff(DateTime::createFromFormat(\DateTimeInterface::ISO8601, $this->bitacoras['FirstOne']->format(\DateTimeInterface::ISO8601))));
+		$diff = $this->_getDateDiffString($datetime->diff(DateTime::createFromFormat(\DateTimeInterface::ISO8601, $this->bitacoras['FirstOne']->format(\DateTimeInterface::ISO8601))));
 
 		$this->set('bitacorasDiff', $diff);
 		$this->set('solicitudes', $this->solicitudes);
@@ -69,7 +65,7 @@ class DashboardController extends AppController
 		return $this->render();
 	}
 
-	protected function getSolicitudesStats(): array
+	protected function _getSolicitudesStats(): array
 	{
 		$query = $this->getTableLocator()->get('Solicitudes')->find();
 		$stats = $query
@@ -92,22 +88,26 @@ class DashboardController extends AppController
 		return $stats->toArray()[0];
 	}
 
-	protected function getBitacorasStats(): array
+	protected function _getBitacorasStats(): array
 	{
-		$query = $this->getTableLocator()->get('BitacoraCabina')->find();
-		$stats = $query
-			->select([
-				'Total' => $query->func()->count('*'),
-				'FirstOne' => $query->func()->min('fecha', ['date']),
-				'LastOne' => $query->func()->max('fecha', ['date']),
-			])
+		$stats = $this->getTableLocator()->get('BitacoraCabina')
+			->find()
+			->select(
+				function (SelectQuery $query) {
+					return [
+						'Total' => $query->func()->count('*'),
+						'FirstOne' => $query->func()->min('fecha', ['date']),
+						'LastOne' => $query->func()->max('fecha', ['date']),
+					];
+				}
+			)
+			->orderByAsc('fecha')
 			->disableHydration()
 			->all();
-
 		return $stats->toArray()[0];
 	}
 
-	protected function getProgramasStats(): array
+	protected function _getProgramasStats(): array
 	{
 		$query = $this->getTableLocator()->get('Programas')->find();
 		$stats = $query
@@ -120,7 +120,7 @@ class DashboardController extends AppController
 		return $stats->toArray()[0];
 	}
 
-	protected function getDateDiffString(\DateInterval $diff): string
+	protected function _getDateDiffString(\DateInterval $diff): string
 	{
 		return $diff->y . ' años, ' . $diff->m . ' meses y ' . $diff->d . ' días';
 	}

@@ -1,28 +1,25 @@
-<?php
-/**
- * @var \SPC\View\AppView $this
- * @var iterable<\SPC\Model\Entity\TemasPrograma> $temasProgramas
- */
-?>
-<div class="temasProgramas index content">
-    <?= $this->Html->link(__('New Temas Programa'), ['action' => 'add'], ['class' => 'button float-right']) ?>
-    <h3><?= __('Temas Programas') ?></h3>
-    <div class="table-responsive">
-        <table>
-            <thead>
-                <tr>
-                    <th><?= $this->Paginator->sort('ID') ?></th>
-                    <th><?= $this->Paginator->sort('ProgramaID') ?></th>
-                    <th><?= $this->Paginator->sort('tema') ?></th>
-                    <th><?= $this->Paginator->sort('invitados') ?></th>
-                    <th class="actions"><?= __('Actions') ?></th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($temasProgramas as $temasPrograma): ?>
+<div class="content">
+    <div class="w3-deep-blue w3-padding">
+        <h5>Temas de programas</h5>
+    </div>
+
+    <table class="w3-table w3-table-all ">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Programa</th>
+                <th>Tema</th>
+                <th>Iinvitados</th>
+                <th class="actions">Acciones</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <?php foreach ($temasProgramas as $temasPrograma): ?>
                 <tr>
                     <td><?= $this->Number->format($temasPrograma->ID) ?></td>
-                    <td><?= $temasPrograma->hasValue('programa') ? $this->Html->link($temasPrograma->programa->name, ['controller' => 'Programas', 'action' => 'view', $temasPrograma->programa->ID]) : '' ?></td>
+                    <td><?= $temasPrograma->hasValue('programa') ? $this->Html->link($temasPrograma->programa->name, ['controller' => 'Programas', 'action' => 'view', $temasPrograma->programa->ID]) : '' ?>
+                    </td>
                     <td><?= h($temasPrograma->tema) ?></td>
                     <td><?= h($temasPrograma->invitados) ?></td>
                     <td class="actions">
@@ -38,10 +35,10 @@
                         ) ?>
                     </td>
                 </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    </div>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+
     <div class="paginator">
         <ul class="pagination">
             <?= $this->Paginator->first('<< ' . __('first')) ?>
@@ -50,6 +47,10 @@
             <?= $this->Paginator->next(__('next') . ' >') ?>
             <?= $this->Paginator->last(__('last') . ' >>') ?>
         </ul>
-        <p><?= $this->Paginator->counter(__('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')) ?></p>
+        <p><?= $this->Paginator->counter(__('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')) ?>
+        </p>
     </div>
+
+    <?= $this->Html->link('<i class="fa-solid fa-plus"></i>', ['action' => 'add'], ['class' => 'w3-button w3-circle w3-xxlarge w3-golden w3-hover-dark-golden add', 'escape' => false]) ?>
+
 </div>

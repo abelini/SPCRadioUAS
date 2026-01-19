@@ -9,18 +9,20 @@ use Cake\Core\Configure;
 class GoogleTransport extends SmtpTransport
 {
 
-	private const array CONFIG = [
+	private array $googleSmtpConfig = [
 		'host' => 'smtp.gmail.com',
 		'port' => 587,
-		'username' => Configure::read('SensitiveData.GoogleMail.username'),
-		'password' => Configure::read('SensitiveData.GoogleMail.password'),
 		'className' => 'Smtp',
 		'tls' => true,
 	];
 
 	public function __construct()
 	{
-		parent::__construct(self::CONFIG);
+		$config = array_merge($this->googleSmtpConfig, [
+			'username' => Configure::read('SensitiveData.GoogleMail.username'),
+			'password' => Configure::read('SensitiveData.GoogleMail.password'),
+		]);
+		parent::__construct($config);
 	}
 
 	public function send(Message $message): array

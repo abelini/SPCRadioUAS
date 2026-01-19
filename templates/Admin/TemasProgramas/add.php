@@ -1,30 +1,18 @@
-<?php
-/**
- * @var \SPC\View\AppView $this
- * @var \SPC\Model\Entity\TemasPrograma $temasPrograma
- * @var \Cake\Collection\CollectionInterface|string[] $programas
- */
-?>
-<div class="row">
-    <aside class="column">
-        <div class="side-nav">
-            <h4 class="heading"><?= __('Actions') ?></h4>
-            <?= $this->Html->link(__('List Temas Programas'), ['action' => 'index'], ['class' => 'side-nav-item']) ?>
-        </div>
-    </aside>
-    <div class="column column-80">
-        <div class="temasProgramas form content">
-            <?= $this->Form->create($temasPrograma) ?>
-            <fieldset>
-                <legend><?= __('Add Temas Programa') ?></legend>
-                <?php
-                    echo $this->Form->control('ProgramaID', ['options' => $programas]);
-                    echo $this->Form->control('tema');
-                    echo $this->Form->control('invitados');
-                ?>
-            </fieldset>
-            <?= $this->Form->button(__('Submit')) ?>
-            <?= $this->Form->end() ?>
-        </div>
+<div class="content">
+
+    <div class="w3-deep-blue w3-padding">
+        <h5><i class="fa-solid fa-table-list"></i> Agregar un tema para programa</h5>
     </div>
+
+    <?= $this->Form->create($temasPrograma) ?>
+
+    <?= $this->Form->control('ProgramaID', ['options' => $programas, 'label' => 'Programa']) ?>
+
+    <?= $this->Form->control('tema', ['label' => 'Tema']) ?>
+
+    <?= $this->Form->control('invitados', ['label' => 'Invitados']) ?>
+
+    <?= $this->Form->button(__('Agregar')) ?>
+
+    <?= $this->Form->end() ?>
 </div>

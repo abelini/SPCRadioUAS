@@ -5,7 +5,6 @@ namespace SPC\Model\Table;
 
 use SPC\Model\Entity\BitacoraCabina;
 use Cake\ORM\Query\SelectQuery;
-use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
@@ -47,7 +46,6 @@ class BitacoraCabinaTable extends Table
 			return 'Bitácora #' . $bitacora->ID . ' - ' . $bitacora->fecha->i18nFormat(\IntlDateFormatter::FULL);
 		});
 	}
-
 
 	public function validationDefault(Validator $validator): Validator
 	{

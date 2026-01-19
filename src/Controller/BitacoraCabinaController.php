@@ -6,13 +6,13 @@ namespace SPC\Controller;
 use SPC\Model\Entity\Horario;
 use SPC\Model\Entity\ReportesPrograma;
 use Cake\Collection\Collection;
-use Cake\Database\Expression\QueryExpression;
-use Cake\Datasource\EntityInterface;
+//use Cake\Database\Expression\QueryExpression;
+//use Cake\Datasource\EntityInterface;
 use Cake\Event\EventInterface;
 use Cake\Http\Response;
 use Cake\I18n\Date;
-use Cake\I18n\Time;
-use Cake\I18n\DateTime;
+//use Cake\I18n\Time;
+//use Cake\I18n\DateTime;
 use Cake\ORM\Query\SelectQuery;
 
 
@@ -33,7 +33,7 @@ class BitacoraCabinaController extends AppController
 	{
 		$bitacora = $this->BitacoraCabina->findOrCreate(['fecha' => $this->requestedDate()]);
 		$bitacora = $this->BitacoraCabina->loadInto($bitacora, ['ReportesCabinas', 'ReportesCabinas.Locutores', 'ReportesCabinas.ReportesProgramas']);
-		$bitacora->setNew(false);
+		//$bitacora->setNew(false);
 
 		$asignaciones = $this->getAsignacionesForTheDay($bitacora->fecha);
 
@@ -131,13 +131,12 @@ class BitacoraCabinaController extends AppController
 		$bitacora = $this->BitacoraCabina->get($this->request->getData('ID'));
 		if ($this->request->is('put')) {
 			$bitacora = $this->BitacoraCabina->patchEntity($bitacora, $this->request->getData(), ['validate' => false, 'associated' => ['ReportesCabinas' => ['associated' => ['ReportesProgramas']]]]);
-			debug($bitacora->fecha);
 			if ($this->BitacoraCabina->save($bitacora)) {
 				$this->Flash->success('Bitácora actualizada...');
 				return $this->redirect($this->referer());
 			}
 
-			$this->Flash->error('Error al intentar guardar los cambios. Intenta más tarde.');//debug($bitacora->getErrors());
+			$this->Flash->error('Error al intentar guardar los cambios. Intenta más tarde.');
 			return $this->redirect($this->referer());
 		}
 		$this->set(compact('bitacora'));

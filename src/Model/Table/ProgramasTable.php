@@ -51,7 +51,8 @@ class ProgramasTable extends Table
 			->where([
 				'Programas.outOfAir' => false,
 				'Programas.reportable' => true
-			]);
+			])
+			->orderByAsc('name');
 
 		return parent::findList(
 			$query,
