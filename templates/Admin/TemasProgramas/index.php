@@ -9,7 +9,8 @@
                 <th>ID</th>
                 <th>Programa</th>
                 <th>Tema</th>
-                <th>Iinvitados</th>
+                <th>Invitados</th>
+                <th>Palabras clave</th>
                 <th class="actions">Acciones</th>
             </tr>
         </thead>
@@ -20,8 +21,9 @@
                     <td><?= $this->Number->format($temasPrograma->ID) ?></td>
                     <td><?= $temasPrograma->hasValue('programa') ? $this->Html->link($temasPrograma->programa->name, ['controller' => 'Programas', 'action' => 'view', $temasPrograma->programa->ID]) : '' ?>
                     </td>
-                    <td><?= h($temasPrograma->tema) ?></td>
-                    <td><?= h($temasPrograma->invitados) ?></td>
+                    <td><?= $temasPrograma->tema ?></td>
+                    <td><?= $temasPrograma->invitados ?></td>
+                    <td><?= $temasPrograma->tags ?></td>
                     <td class="actions">
                         <?= $this->Html->link(__('View'), ['action' => 'view', $temasPrograma->ID]) ?>
                         <?= $this->Html->link(__('Edit'), ['action' => 'edit', $temasPrograma->ID]) ?>

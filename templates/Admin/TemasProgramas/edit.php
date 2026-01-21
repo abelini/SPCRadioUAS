@@ -13,8 +13,10 @@
     echo $this->Form->control('tema');
     echo $this->Form->control('invitados');
     ?>
+    <?= $this->Form->control('tags', ['label' => 'Palabras clave']) ?>
 
-    <?= $this->Form->button(__('Submit')) ?>
+    <?= $this->Form->button(__('Actualizar'), ['class' => 'w3-section']) ?>
+
     <?= $this->Form->end() ?>
 
 </div>

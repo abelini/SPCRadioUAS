@@ -12,6 +12,7 @@ class TemasPrograma extends Entity implements \Stringable
         'ProgramaID' => true,
         'tema' => true,
         'invitados' => true,
+        'tags' => true,
         'created' => true,
         'modified' => true,
         'programa' => true,
