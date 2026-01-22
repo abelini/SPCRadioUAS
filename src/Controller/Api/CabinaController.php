@@ -76,7 +76,7 @@ class CabinaController extends ApiController
 		return $this->render('live_broadcast');
 	}
 
-	public function getProgramInfo()
+	public function getProgramInfo(): Response
 	{
 		$this->request->allowMethod(['ajax', 'get']);
 		$nombrePrograma = $this->request->getQuery('name');
@@ -153,12 +153,12 @@ class CabinaController extends ApiController
 				'host' => 'graph.facebook.com',
 				'basePath' => Configure::read('SensitiveData.Facebook.APIv'),
 			]);
-			$endpoint = Configure::read('SensitiveData.Facebook.RadioUASAppID') . '/live_videos';
+			$liveVideos = Configure::read('SensitiveData.Facebook.RadioUASAppID') . '/live_videos';
 
 			$accessTokens = Configure::read('SensitiveData.Facebook.AccessTokens');
 
 			for ($i = 0; $i < count($accessTokens); $i++) {
-				$response = $http->get($endpoint, [
+				$response = $http->get($liveVideos, [
 					'broadcast_status[]' => 'LIVE',
 					'access_token' => $accessTokens[$i],
 				]);
@@ -169,8 +169,7 @@ class CabinaController extends ApiController
 					$videoID = $body->data[0]->id;
 					$title = $body->data[0]->title;
 
-					$endpoint = $videoID;
-					$response = $http->get($endpoint, [
+					$response = $http->get($videoID, [
 						'fields' => 'comments{from,message,parent,created_time}',
 						'access_token' => $accessTokens[$i],
 					]);
