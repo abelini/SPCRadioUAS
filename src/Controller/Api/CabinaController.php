@@ -10,35 +10,12 @@ use Cake\Http\Response;
 use Cake\I18n\DateTime;
 use Cake\I18n\Time;
 use Cake\ORM\Query\SelectQuery;
-use ScheduleController;
 use SPC\Model\Entity\DefaultComment;
 use SPC\Service\GeminiService;
 
 
 class CabinaController extends ApiController
 {
-
-	private const string FB_GRAPH_API_HOST = 'https://graph.facebook.com';
-
-	private const string FB_GRAPH_API_VERSION = 'v21.0';
-
-	private const int FB_RADIOUAS_ID = 181192951922545;
-
-	private const string ACCESS_TOKEN = 'EAAD9svI5jeEBOZCzgLEJqJXz1HJ0R5jQagDu7dAzdKDhmZA5xa7exLG36Jy3uefUI3PIGa1LPgCuc61TQ9ph8twO2ZAqQVZCeRrtX6UCnn31QT0fTzV0ydbywG6XafES6FyjyICbUDtZCKWRkKgfBX078V3HM3w6RVIIJIWZBROkY6fZCPCBevgFTdZAmA8USjEhyVh41YRt';
-
-	private const array ACCESS_TOKENS = [
-
-		// Abel Botello
-		'EAAD9svI5jeEBOZCzgLEJqJXz1HJ0R5jQagDu7dAzdKDhmZA5xa7exLG36Jy3uefUI3PIGa1LPgCuc61TQ9ph8twO2ZAqQVZCeRrtX6UCnn31QT0fTzV0ydbywG6XafES6FyjyICbUDtZCKWRkKgfBX078V3HM3w6RVIIJIWZBROkY6fZCPCBevgFTdZAmA8USjEhyVh41YRt',
-
-		// Carlos Rangel
-		'EAAD9svI5jeEBO1HrAhXrZCyjlbsdFFtOgwQDlOCwZB76iEhTcQol48xzgiUbebmdFZCZCQttg6fJmSd3HWhNzuIZCgqHsiTMuJA7TPdtpshpPkQbBKPdktif2jMMYwFw5CfP4TkVT2pM5AnsvmI9jahlTMlD2SXEwrYo79MZBYmICdhSwxIswSJlKpcPGRrGIZD',
-
-		// Alethia Perez
-		// Tania
-		'EAAD9svI5jeEBO1lKrMJbkTIj0MVchBqnAtdDZBptZCK1naoDEvz9VX9Rd2ZCb8Oyum0YiU6mdWTLu3CdfLhSO3XZBx1CUPAZCQmyrhAKydhbNkPEGIKPAPpCSDu8j6a5oRmaGu7kPZBuysoPav7dRTLImvSZBZCdQ60QrIlxj440qQOpfOrmdESjyRtEOTIq',
-	];
-
 	public function comments(): Response
 	{
 		$this->viewBuilder()->setLayout('live_stream');
@@ -48,7 +25,7 @@ class CabinaController extends ApiController
 	public function social(): Response
 	{
 		if (!$this->request->is('ajax')) {
-			// return $this->redirect(['action' => 'index']);
+			return $this->render('error_ajax');
 		}
 
 		$this->viewBuilder()->setLayout('ajax');
@@ -72,7 +49,6 @@ class CabinaController extends ApiController
 		$programas = $this->getTableLocator()
 			->get('Programas')
 			->find()
-			//->select(['Programas.ID', 'Programas.name', 'Programas.produccion'])
 			->where([
 				'Programas.reportable' => true,
 			])
@@ -87,7 +63,6 @@ class CabinaController extends ApiController
 			$now = Time::now();
 			return ($programa->horaInicio >= $now);
 		});
-		//debug($nextPrograms->first());
 		$this->set('programas', $programas);
 		$this->set('nextProgram', $nextPrograms->first());
 		return $this->render('live_show');
@@ -173,14 +148,20 @@ class CabinaController extends ApiController
 
 		if ($this->isNowBroadcasting()) {
 
-			$http = new Client();
-			$endpoint = self::FB_GRAPH_API_HOST . DS . self::FB_GRAPH_API_VERSION . DS;
+			$http = new Client([
+				'scheme' => 'https',
+				'host' => 'graph.facebook.com',
+				'basePath' => Configure::read('SensitiveData.Facebook.APIv'),
+			]);
+			$endpoint = Configure::read('SensitiveData.Facebook.RadioUASAppID') . '/live_videos';
 
-			$query = 'live_videos?broadcast_status[]=LIVE&access_token=';
+			$accessTokens = Configure::read('SensitiveData.Facebook.AccessTokens');
 
-			for ($i = 0; $i < count(self::ACCESS_TOKENS); $i++) {
-
-				$response = $http->get($endpoint . self::FB_RADIOUAS_ID . DS . $query . self::ACCESS_TOKENS[$i]);
+			for ($i = 0; $i < count($accessTokens); $i++) {
+				$response = $http->get($endpoint, [
+					'broadcast_status[]' => 'LIVE',
+					'access_token' => $accessTokens[$i],
+				]);
 				$body = json_decode($response->getStringBody());
 
 				if (isset($body->data) && !empty($body->data)) {
@@ -188,9 +169,11 @@ class CabinaController extends ApiController
 					$videoID = $body->data[0]->id;
 					$title = $body->data[0]->title;
 
-					$query = '?fields=comments{from,message,parent,created_time}&access_token=';
-					$response = $http->get($endpoint . $videoID . DS . $query . self::ACCESS_TOKENS[$i]);
-
+					$endpoint = $videoID;
+					$response = $http->get($endpoint, [
+						'fields' => 'comments{from,message,parent,created_time}',
+						'access_token' => $accessTokens[$i],
+					]);
 					$body = json_decode($response->getStringBody());
 
 					if (isset($body->comments->data)) {
