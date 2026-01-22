@@ -24,10 +24,6 @@ class CabinaController extends ApiController
 
 	public function social(): Response
 	{
-		if (!$this->request->is('ajax')) {
-			return $this->render('error_ajax');
-		}
-
 		$this->viewBuilder()->setLayout('ajax');
 
 		$tipo = $this->request->getQuery('type');
@@ -98,12 +94,20 @@ class CabinaController extends ApiController
 		$prompt = Configure::read('Prompts.' . $type);
 
 		if ($type == 'liveShow') {
-			$programa = $this->request->getData('programa');
+			$programa = $this->getTableLocator()->get('Programas')
+				->find()
+				->select(['ID', 'name'])
+				->where(['name' => $this->request->getData('programa')])
+				->contain('TemasProgramas', function (SelectQuery $query) {
+					return $query->select(['ID', 'ProgramaID', 'tags']);
+				})
+				->first();
+
 			$tema = $this->request->getData('tema') ? 'El tema a abordar es: «' . $this->request->getData('tema') . '».' : '';
 			$conduccion = $this->request->getData('conduccion') ? $this->request->getData('conduccion') : '';
 			$invitados = $this->request->getData('invitados') ? 'El|La|Los invitado(s) es|son: ' . $this->request->getData('invitados') . '.' : '';
-
-			$prompt = str_replace(['%programa%', '%conduccion%', '%invitados%', '%tema%'], [$programa, $conduccion, $invitados, $tema], $prompt);
+			$keywords = ($programa->tema !== null) ? $programa->tema->has('tags') ? 'Algunas palabras claves que puedes usar para conocer el estilo o contenido del programa son: «' . $programa->tema->get('tags') . '».' : '' : '';
+			$prompt = str_replace(['%programa%', '%conduccion%', '%invitados%', '%tema%', '%keywords%'], [$programa->get('name'), $conduccion, $invitados, $tema, $keywords], $prompt);
 		} else {
 			$evento = $this->request->getData('evento');
 			$participantes = $this->request->getData('participantes') ? 'Los participantes son: «' . $this->request->getData('participantes') . '».' : '';
