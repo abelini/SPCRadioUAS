@@ -256,16 +256,16 @@
         },
         {
             "name": "cakephp/migrations",
-            "version": "4.9.3",
+            "version": "4.9.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/cakephp/migrations.git",
-                "reference": "cd1e47d36c09a767ab264f10103b240c6cac7678"
+                "reference": "94500dac5b4e0650f3c32c04650ca46b9cd5c038"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cakephp/migrations/zipball/cd1e47d36c09a767ab264f10103b240c6cac7678",
-                "reference": "cd1e47d36c09a767ab264f10103b240c6cac7678",
+                "url": "https://api.github.com/repos/cakephp/migrations/zipball/94500dac5b4e0650f3c32c04650ca46b9cd5c038",
+                "reference": "94500dac5b4e0650f3c32c04650ca46b9cd5c038",
                 "shasum": ""
             },
             "require": {
@@ -314,7 +314,7 @@
                 "issues": "https://github.com/cakephp/migrations/issues",
                 "source": "https://github.com/cakephp/migrations"
             },
-            "time": "2026-01-08T17:36:38+00:00"
+            "time": "2026-01-21T00:56:33+00:00"
         },
         {
             "name": "cakephp/plugin-installer",
@@ -6661,5 +6661,5 @@
         "php": ">=8.4"
     },
     "platform-dev": {},
-    "plugin-api-version": "2.9.0"
+    "plugin-api-version": "2.6.0"
 }
