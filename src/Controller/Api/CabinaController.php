@@ -134,7 +134,7 @@ class CabinaController extends ApiController
 			->matching('Dias', function (SelectQuery $query) {
 				return $query->where(['Dias.ID' => (new DateTime())->dayOfWeek]);
 			})
-			->orderAsc('horaInicio')
+			->orderByAsc('horaInicio')
 			->all();
 
 		$programa = $programas->filter(function ($programa, $key) {
