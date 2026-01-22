@@ -227,7 +227,8 @@ class ReportesCabinasController extends AppController
 				return $results->map(function ($programa) {
 					$programa['reportes'] = (new Collection($programa['reportes']))
 						->reject(function ($reporte) {
-							return empty($reporte['status']); })
+							return empty($reporte['status']);
+						})
 						->groupBy('status')
 						->toArray();
 					if (!isset($programa['reportes']['V']))
@@ -374,6 +375,30 @@ class ReportesCabinasController extends AppController
 	{
 		$reporte = $this->ReportesCabinas->get($id, contain: ['Locutores', 'ReportesProgramas', 'ReportesProgramas.Programas', 'BitacoraCabina']);
 		$this->set(compact('reporte'));
+	}
+	public function orphans()
+	{
+		$reportesHuerfanos = $this->ReportesCabinas->find('orphans')->all();
+		$this->set(compact('reportesHuerfanos'));
+	}
+
+	public function deleteOrphans()
+	{
+		$tablaReportes = $this->fetchTable('ReportesCabinas');
+		$tablaBitacora = $this->fetchTable('BitacoraCabina');
+
+		// 1. Creamos una subconsulta que obtenga todos los IDs reales de BitacoraCabina
+		$idsValidosQuery = $tablaBitacora->find()->select(['ID']);
+
+		// 2. Ejecutamos deleteAll
+		// "Borrar reportes donde bitacora_cabina_id NO ES NULO y NO ESTÁ en la lista de IDs válidos"
+		$cantidadEliminados = $tablaReportes->deleteAll([
+			'bitacoraID IS NOT' => null,
+			'bitacoraID NOT IN' => $idsValidosQuery
+		]);
+
+		$this->Flash->success("Se eliminaron {$cantidadEliminados} reportes huérfanos correctamente.");
+		return $this->redirect(['action' => 'index']);
 	}
 
 	public function edit($id = null)

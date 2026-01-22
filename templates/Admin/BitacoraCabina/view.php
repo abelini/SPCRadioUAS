@@ -58,7 +58,7 @@
 								<tr>
 									<td style="width:10%">#<?= $reportePrograma->ID ?></td>
 									<td style="width:40%"><i class="fa-solid fa-radio"></i>
-										<?= $this->Html->link($reportePrograma->programa, ['controller' => 'Programas', 'action' => 'view', $reportePrograma->programa->ID]) ?>
+										<?= $this->Html->link($reportePrograma->programa ?? 'Unknown', ['controller' => 'Programas', 'action' => 'view', $reportePrograma->programa->ID]) ?>
 									</td>
 									<td style="width:40%"><?= $reportePrograma->getStatusText(icons: true) ?></td>
 									<td style="width:10%">

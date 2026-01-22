@@ -3,7 +3,7 @@
 
 <audio id="audio" preload="none" tabindex="0">
 <?php foreach($playlist->Items as $song) {	?>
-	<source src="<?= $http->buildURL('/Audio/'.$song->Id.'/stream.mp3', ['api_key' => $api_key], $http->getConfig())?>" data-track-number="<?= $index++ ?>" />
+	<source src="<?= $http->buildURL('/Audio/'.$song->Id.'/stream.mp3', ['static' => 'true', 'api_key' => $api_key], $http->getConfig())?>" data-track-number="<?= $index++ ?>" type="audio/mpeg"/>
 <?php } ?>
 </audio>
 	

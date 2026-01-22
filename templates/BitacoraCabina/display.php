@@ -71,6 +71,7 @@
 
 
 	<?= $this->Form->hidden('ID') ?>
+	<?php //= $this->Form->hidden('fecha', ['value' => $bitacora->fecha->toIso8601String()]) ?>
 
 	<div class="w3-row w3-padding w3-low-blue w3-center">
 		Valores: <span style="font-weight:normal">(V) Programa en vivo, (G) Programa grabado, (S) Programa suspendido

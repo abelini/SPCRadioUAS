@@ -91,6 +91,51 @@ class ReportesProgramasController extends AppController
 		return $this->render();
 	}
 
+	public function incomplete()
+	{
+		$reportesIncompletos = $this->ReportesProgramas->find()
+			->where(['status' => ''])
+			->contain([
+				'Programas',
+				'ReportesCabinas',
+				'ReportesCabinas.Locutores',
+				'ReportesCabinas.BitacoraCabina'
+			])
+			->matching('ReportesCabinas.BitacoraCabina', function (SelectQuery $query) {
+				return $query->where(['BitacoraCabina.fecha <=' => new \DateTime('-1 day')]);
+			})
+			->all();
+		$this->set(compact('reportesIncompletos'));
+	}
+
+	public function orphans()
+	{
+		$reportesHuerfanos = $this->ReportesProgramas->find('orphans')->all();
+		$this->set(compact('reportesHuerfanos'));
+	}
+
+	public function deleteOrphans()
+	{
+		$this->request->allowMethod(['post', 'delete']);
+		$tablaReportes = $this->fetchTable('ReportesProgramas');
+		$tablaReportesCabinas = $this->fetchTable('ReportesCabinas');
+
+		$idsValidosQuery = $tablaReportesCabinas->find()->select(['ID']);
+
+		$cantidadEliminados = $tablaReportes->deleteAll([
+			'ReporteCabinaID IS NOT' => null,
+			'ReporteCabinaID NOT IN' => $idsValidosQuery
+		]);
+
+		$this->Flash->success("Se eliminaron {$cantidadEliminados} reportes huérfanos correctamente.");
+		return $this->redirect(['action' => 'index']);
+		/*
+		$reportesHuerfanos = $this->ReportesProgramas->find('orphans')->all();
+		$this->ReportesProgramas->deleteAll(['ID IN' => $reportesHuerfanos->extract('ID')]);
+		$this->Flash->success('Reportes huérfanos eliminados');
+		return $this->redirect(['action' => 'orphans']);*/
+	}
+
 	public function delete($id = null): Response
 	{
 		$this->request->allowMethod(['delete']);

@@ -12,7 +12,9 @@
 
     <?= $this->Form->control('invitados', ['label' => 'Invitados']) ?>
 
-    <?= $this->Form->button(__('Agregar')) ?>
+    <?= $this->Form->control('tags', ['label' => 'Palabras clave']) ?>
+
+    <?= $this->Form->button(__('Agregar'), ['class' => 'w3-section']) ?>
 
     <?= $this->Form->end() ?>
 </div>

@@ -94,7 +94,7 @@ class BitacoraCabinaController extends AppController
 				return $query->select(['ID', 'horaInicio', 'horaFin', 'turnoID']);
 			})
 			->contain('Asignaciones.Dias.Programas', function (SelectQuery $query) {
-				return $query->orderByAsc('horaInicio');
+				return $query->where(['Programas.outOfAir' => false])->orderByAsc('horaInicio');
 			})
 			->first();
 

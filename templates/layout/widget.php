@@ -204,10 +204,14 @@
 					let durationBox = document.querySelector(".player .info-box .track-info-box .audio-time .duration");
 					let trackCurrentTime = _trackTime(currentTime);
 					let trackDuration = _trackTime(duration);
-					currentTimeBox.innerHTML = null;
-					currentTimeBox.innerHTML = trackCurrentTime;
-					durationBox.innerHTML = null;
-					durationBox.innerHTML = trackDuration;
+					if(currentTimeBox){
+						currentTimeBox.innerHTML = null;
+						currentTimeBox.innerHTML = trackCurrentTime;
+					}
+					if(durationBox){
+						durationBox.innerHTML = null;
+						durationBox.innerHTML = trackDuration;
+					}
 					_updateProgressIndicator(audio);
 					_bufferProgress(audio);
 				};

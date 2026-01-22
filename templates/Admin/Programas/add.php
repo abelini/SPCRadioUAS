@@ -35,6 +35,9 @@
 		<?= $this->Form->label('dias', 'Días en que se transmite') ?>
 		<?= $this->Form->control('dias._ids', ['options' => $dias, 'size' => 7, 'label' => false]); ?>
 
+		<?= $this->Form->label('outOfAir', '¿Salió del aire?') ?>
+		<?= $this->Form->control('outOfAir', ['label' => false]) ?>
+
 		<?= $this->Form->button('Guardar') ?>
 
 		<?= $this->Form->end() ?>

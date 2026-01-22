@@ -40,6 +40,16 @@ class ReportesCabinasTable extends Table
             });
     }
 
+    /**
+     * Finder para encontrar 'ReportesCabinas' que apuntan a una 'BitacoraCabina' que no existe.
+     */
+    public function findOrphans(SelectQuery $query, array $options = []): SelectQuery
+    {
+        return $query->where(['ReportesCabinas.bitacoraID IS NOT' => null])
+            ->leftJoinWith('BitacoraCabina')
+            ->where(['BitacoraCabina.ID IS' => null]);
+    }
+
     /*
     public function afterMarshal(EventInterface $event, Entity $reporte, \ArrayObject $data, \ArrayObject $options) {
         if (empty(trim($reporte->reporte))) {

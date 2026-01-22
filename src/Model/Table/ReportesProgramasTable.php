@@ -28,6 +28,12 @@ class ReportesProgramasTable extends Table
 			->setForeignKey('programaID');
 	}
 
+	public function findOrphans(SelectQuery $query, array $options = []): SelectQuery
+	{
+		return $query->where(['ReportesProgramas.ReporteCabinaID IS NOT' => null])
+			->leftJoinWith('ReportesCabinas')
+			->where(['ReportesCabinas.ID IS' => null]);
+	}
 
 	public function validationDefault(Validator $validator): Validator
 	{
