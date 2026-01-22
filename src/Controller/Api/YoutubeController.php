@@ -21,7 +21,7 @@ class YoutubeController extends ApiController
 	public function initialize(): void
 	{
 		parent::initialize();
-		$this->YoutubeAPIKey = Configure::read('SensitiveData.Youtube.APIKey');
+		$this->YoutubeAPIKey = Configure::read('SensitiveData.YouTube.APIKey');
 	}
 
 	public function playlist(): Response
