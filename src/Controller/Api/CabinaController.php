@@ -104,9 +104,9 @@ class CabinaController extends ApiController
 				->first();
 
 			$conduccion = 'Conductor/a: ' . $programa->conduccion;
-			$invitados = $programa->tema->invitados ? 'Invitado(s): ' . $programa->tema->invitados : '';
+			$invitados = $this->request->getData('invitados') ? 'Invitado(s): ' . $this->request->getData('invitados') : 'Invitado(s): ' . $programa->tema->invitados;
 			$keywords = $programa->tema->tags ? 'Palabras clave/Estilo: ' . $programa->tema->tags : '';
-			$tema = $programa->tema ? 'Tema del día: ' . $programa->tema->tema : '';
+			$tema = $this->request->getData('tema') ? 'Tema del día: ' . $this->request->getData('tema') : 'Tema del día: ' . $programa->tema->tema;
 			$programa = 'Programa: ' . $programa->name;
 
 			$prompt = str_replace(['%programa%', '%conduccion%', '%invitados%', '%tema%', '%keywords%'], [$programa, $conduccion, $invitados, $tema, $keywords], $prompt);
@@ -118,8 +118,8 @@ class CabinaController extends ApiController
 		}
 
 		$respuesta = $prompt;
-		$gemini = new GeminiService();
-		$respuesta = $gemini->generateText($prompt);
+		//$gemini = new GeminiService();
+		//$respuesta = $gemini->generateText($prompt);
 
 		$this->set(compact('respuesta'));
 		$this->viewBuilder()->setLayout('ajax');
