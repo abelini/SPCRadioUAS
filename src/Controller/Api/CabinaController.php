@@ -96,18 +96,20 @@ class CabinaController extends ApiController
 		if ($type == 'liveShow') {
 			$programa = $this->getTableLocator()->get('Programas')
 				->find()
-				->select(['ID', 'name'])
+				->select(['ID', 'name', 'conduccion'])
 				->where(['name' => $this->request->getData('programa')])
 				->contain('TemasProgramas', function (SelectQuery $query) {
-					return $query->select(['ID', 'ProgramaID', 'tags']);
+					return $query->select(['ID', 'ProgramaID', 'invitados', 'tags']);
 				})
 				->first();
 
-			$tema = $this->request->getData('tema') ? 'El tema a abordar es: «' . $this->request->getData('tema') . '».' : '';
-			$conduccion = $this->request->getData('conduccion') ? $this->request->getData('conduccion') : '';
-			$invitados = $this->request->getData('invitados') ? 'El|La|Los invitado(s) es|son: ' . $this->request->getData('invitados') . '.' : '';
-			$keywords = ($programa->tema !== null) ? $programa->tema->has('tags') ? 'Algunas palabras claves que puedes usar para conocer el estilo o contenido del programa son: «' . $programa->tema->get('tags') . '».' : '' : '';
-			$prompt = str_replace(['%programa%', '%conduccion%', '%invitados%', '%tema%', '%keywords%'], [$programa->get('name'), $conduccion, $invitados, $tema, $keywords], $prompt);
+			$conduccion = 'Conductor/a: ' . $programa->conduccion;
+			$invitados = $programa->tema->invitados ? 'Invitado(s): ' . $programa->tema->invitados : '';
+			$keywords = $programa->tema->tags ? 'Palabras clave/Estilo: ' . $programa->tema->tags : '';
+			$tema = $programa->tema ? 'Tema del día: ' . $programa->tema->tema : '';
+			$programa = 'Programa: ' . $programa->name;
+
+			$prompt = str_replace(['%programa%', '%conduccion%', '%invitados%', '%tema%', '%keywords%'], [$programa, $conduccion, $invitados, $tema, $keywords], $prompt);
 		} else {
 			$evento = $this->request->getData('evento');
 			$participantes = $this->request->getData('participantes') ? 'Los participantes son: «' . $this->request->getData('participantes') . '».' : '';

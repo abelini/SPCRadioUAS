@@ -5,7 +5,8 @@ namespace SPC\Controller\Admin;
 
 use SPC\Controller\AppController;
 use Cake\Core\Configure;
-use Cake\ORM\Query\SelectQuery;
+use SPC\Service\GeminiService;
+use Cake\Http\Response;
 
 class TemasProgramasController extends AppController
 {
@@ -20,44 +21,34 @@ class TemasProgramasController extends AppController
     }
 
 
-    // Asegúrate de importar esto arriba si no lo tienes
-
-
-    // ... dentro de tu clase TemasProgramasController
-
-    public function generarIa($id = null)
+    public function executePrompt($id = null): Response
     {
         $this->request->allowMethod(['post', 'ajax']);
 
         $prompt = Configure::read('Prompts.liveShow');
 
-        // 1. Obtener datos (igual que antes)
-        /* $tema = $this->TemasProgramas->get($id, [
-             'contain' => ['Programas']
-         ]);*/
         $tema = $this->getTableLocator()->get('TemasProgramas')
             ->find()
             ->where(['TemasProgramas.ID' => $id])
             ->contain('Programas')
             ->first();
 
-        // 2. Tu lógica de Prompt (Ya la tienes)
+        $programa = 'Programa: ' . $tema->programa->name;
+        $conduccion = 'Conductor/a: ' . $tema->programa->conduccion;
+        $invitados = $tema->invitados ? 'Invitado(s): ' . $tema->invitados : '';
+        $keywords = $tema->tags ? 'Palabras clave/Estilo: ' . $tema->tags : '';
+        $tema = $tema->tema ? 'Tema del día: ' . $tema->tema : '';
 
-        $conduccion = $tema->programa->conduccion;
-        $invitados = 'El|La|Los invitado(s) es|son: ' . $tema->invitados;
-        $keywords = 'Algunas palabras claves que puedes usar para conocer el estilo o contenido del programa son: «' . $tema->tags . '».';
-        // $tema = 'El tema a abordar es: «' . $tema->tema . '».';
-        $prompt = str_replace(['%programa%', '%conduccion%', '%invitados%', '%tema%', '%keywords%'], [$tema->programa->name, $conduccion, $invitados, $tema->tema, $keywords], $prompt);
+        $prompt = str_replace(
+            ['%programa%', '%conduccion%', '%invitados%', '%tema%', '%keywords%'],
+            [$programa, $conduccion, $invitados, $tema, $keywords],
+            $prompt
+        );
 
+        $gemini = new GeminiService();
+        $respuesta = $gemini->generateText($prompt);
 
-        // 3. Llamada al servicio (Simulación)
-        // $respuestaIa = $this->GeminiService->ejecutar($prompt);
-
-        // Suponemos que $respuestaIa es el string que devolvió Gemini
-        // Si tu servicio devuelve un objeto, asegúrate de sacar solo el texto aquí.
-
-        // 4. Devolución de String Puro
-        return $this->response->withStringBody($prompt);
+        return $this->response->withStringBody($respuesta);
     }
 
 
