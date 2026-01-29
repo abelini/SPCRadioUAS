@@ -16,7 +16,7 @@ class ScheduleController extends ApiController
 
 	protected const string DEFAULT_RADIOFEED_TEXT = 'Fonoteca - Paisajes sonoros';
 
-	protected const array DEFAULT_PROGRAM = ['name' => 'Paisajes sonoros', 'produccion' => 'Fonoteca'];
+	protected const array DEFAULT_PROGRAM = ['programa' => 'Paisajes sonoros', 'produccion' => 'Fonoteca'];
 
 	protected const string RADIOUAS_URI = 'https://radio.uas.edu.mx';
 
