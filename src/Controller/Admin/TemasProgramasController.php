@@ -14,7 +14,8 @@ class TemasProgramasController extends AppController
     public function index()
     {
         $query = $this->TemasProgramas->find()
-            ->contain(['Programas']);
+            ->contain(['Programas'])
+            ->orderByAsc('Programas.name');
         $temasProgramas = $this->paginate($query);
 
         $this->set(compact('temasProgramas'));

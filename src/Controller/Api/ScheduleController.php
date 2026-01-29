@@ -16,6 +16,8 @@ class ScheduleController extends ApiController
 
 	protected const string DEFAULT_RADIOFEED_TEXT = 'Fonoteca - Paisajes sonoros';
 
+	protected const array DEFAULT_PROGRAM = ['name' => 'Paisajes sonoros', 'produccion' => 'Fonoteca'];
+
 	protected const string RADIOUAS_URI = 'https://radio.uas.edu.mx';
 
 	public function now(): Response
@@ -36,6 +38,19 @@ class ScheduleController extends ApiController
 			return ($programa->horaInicio <= $now && $programa->horaFin >= $now);
 		});
 
+		if (($this->request->getQuery('format')) !== null && $this->request->getQuery('format') == 'json') {
+			if ($programa->count() == 0) {
+				$feed = self::DEFAULT_PROGRAM;
+			} else {
+				$feed = ['programa' => $programa->first()->get('name'), 'produccion' => $programa->first()->get('produccion')];
+			}
+
+			return $this->render()
+				->withHeader('Access-Control-Allow-Origin', self::RADIOUAS_URI)
+				->withType('application/json')
+				->withStringBody(json_encode($feed));
+		}
+
 		$feed = ($programa->count() == 0) ? self::DEFAULT_RADIOFEED_TEXT : $programa->first()->produccion . ' - ' . $programa->first()->name;
 
 		$this->viewBuilder()->setLayout(null);
@@ -44,39 +59,6 @@ class ScheduleController extends ApiController
 			->withHeader('Access-Control-Allow-Origin', self::RADIOUAS_URI)
 			->withType('text/plain')
 			->withStringBody($feed);
-	}
-
-	public function currentProgram(): Response
-	{
-		$programas = $this->getTableLocator()
-			->get('Programas')
-			->find()
-			->select([
-				'name',
-				'horaInicio',
-				'horaFin',
-				'produccion',
-				'icon' => 'uo',
-				'music' => 'musical',
-				'starts' => 'horaInicio',
-				'ends' => 'horaFin',
-			])
-			->where(['Programas.outOfAir' => false])
-			->matching('Dias', function (SelectQuery $query) {
-				return $query->where(['Dias.ID' => (new DateTime())->dayOfWeek]);
-			})
-			->orderByAsc('horaInicio')
-			->all();
-
-		$programa = $programas->filter(function ($programa, $key) {
-			$now = Time::now();
-			return ($programa->horaInicio <= $now && $programa->horaFin >= $now);
-		});
-
-		return $this->render()
-			->withHeader('Access-Control-Allow-Origin', self::RADIOUAS_URI)
-			->withType('application/json')
-			->withStringBody(json_encode(['programa' => $programa->first()->get('name'), 'produccion' => $programa->first()->get('produccion')]));
 	}
 
 	public function daily(): Response

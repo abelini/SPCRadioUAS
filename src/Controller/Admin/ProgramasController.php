@@ -20,7 +20,7 @@ class ProgramasController extends AppController
 	{
 		$query = $this->Programas->find()
 			->orderByAsc('name');
-		$programas = $this->paginate($query);
+		$programas = $this->paginate($query, ['limit' => 100, 'maxLimit' => 100]);
 
 		$this->set(compact('programas'));
 	}
@@ -135,27 +135,17 @@ class ProgramasController extends AppController
 
 				return $this->redirect(['action' => 'index']);
 			}
-			//debug($programa->getErrors());
 			$this->Flash->error(__('The programa could not be saved. Please, try again.'));
 		}
 		$dias = $this->Programas->Dias->find('list', limit: 200)->all();
 		$this->set(compact('programa', 'dias'));
 	}
 
-	/**
-	 * Edit method
-	 *
-	 * @param string|null $id Programa id.
-	 * @return \Cake\Http\Response|null|void Redirects on successful edit, renders view otherwise.
-	 * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-	 */
 	public function edit($id = null)
 	{
 		$programa = $this->Programas->get($id, contain: ['Dias']);
 		if ($this->request->is(['patch', 'post', 'put'])) {
-			//debug($this->request->getData());
 			$programa = $this->Programas->patchEntity($programa, $this->request->getData());
-			//dd($programa->getErrors());
 			if ($this->Programas->save($programa)) {
 				$this->Flash->success(__('The programa has been saved.'));
 
@@ -167,13 +157,6 @@ class ProgramasController extends AppController
 		$this->set(compact('programa', 'dias'));
 	}
 
-	/**
-	 * Delete method
-	 *
-	 * @param string|null $id Programa id.
-	 * @return \Cake\Http\Response|null Redirects to index.
-	 * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-	 */
 	public function delete($id = null)
 	{
 		$this->request->allowMethod(['post', 'delete']);
