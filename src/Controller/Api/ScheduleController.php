@@ -46,6 +46,38 @@ class ScheduleController extends ApiController
 			->withStringBody($feed);
 	}
 
+	public function currentProgram(): Response
+	{
+		$programas = $this->getTableLocator()
+			->get('Programas')
+			->find()
+			->select([
+				'name',
+				'horaInicio',
+				'horaFin',
+				'produccion',
+				'icon' => 'uo',
+				'music' => 'musical',
+				'starts' => 'horaInicio',
+				'ends' => 'horaFin',
+			])
+			->where(['Programas.outOfAir' => false])
+			->matching('Dias', function (SelectQuery $query) {
+				return $query->where(['Dias.ID' => (new DateTime())->dayOfWeek]);
+			})
+			->orderByAsc('horaInicio')
+			->all();
+
+		$programa = $programas->filter(function ($programa, $key) {
+			$now = Time::now();
+			return ($programa->horaInicio <= $now && $programa->horaFin >= $now);
+		});
+
+		return $this->render()
+			->withHeader('Access-Control-Allow-Origin', self::RADIOUAS_URI)
+			->withType('application/json')
+			->withStringBody(json_encode(['programa' => $programa->first()->get('name'), 'produccion' => $programa->first()->get('produccion')]));
+	}
 
 	public function daily(): Response
 	{
