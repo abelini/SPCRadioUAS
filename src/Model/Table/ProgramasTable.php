@@ -95,9 +95,9 @@ class ProgramasTable extends Table
 
 		$validator
 			->scalar('conduccion')
-			->maxLength('conduccion', 255)
-			->requirePresence('conduccion', 'create')
-			->notEmptyString('conduccion');
+			->maxLength('conduccion', 255);
+		//->requirePresence('conduccion', 'create')
+		//->notEmptyString('conduccion');
 
 		$validator
 			->boolean('musical')
