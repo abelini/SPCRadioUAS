@@ -70,7 +70,7 @@ class ScheduleController extends ApiController
 				'horaInicio',
 				'horaFin',
 				'subtitle' => 'produccion',
-				'type' => 'uo',
+				'category' => 'uo',
 				'music' => 'musical',
 				'std_starts' => 'horaInicio',
 				'std_ends' => 'horaFin',
