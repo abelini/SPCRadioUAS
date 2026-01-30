@@ -63,11 +63,20 @@ class ScheduleController extends ApiController
 
 	public function daily(): Response
 	{
-		$day = $this->getRequestedDay();
-		$programas = $this->getTableLocator()
-			->get('Programas')
-			->find()
-			->select([
+		if (($this->request->getQuery('source')) !== null && $this->request->getQuery('source') == 'mobile-app') {
+			$select = [
+				'ID',
+				'name',
+				'horaInicio',
+				'horaFin',
+				'subtitle' => 'produccion',
+				'type' => 'uo',
+				'music' => 'musical',
+				'std_starts' => 'horaInicio',
+				'std_ends' => 'horaFin',
+			];
+		} else {
+			$select = [
 				'name',
 				'horaInicio',
 				'horaFin',
@@ -76,7 +85,13 @@ class ScheduleController extends ApiController
 				'music' => 'musical',
 				'starts' => 'horaInicio',
 				'ends' => 'horaFin',
-			])
+			];
+		}
+		$day = $this->getRequestedDay();
+		$programas = $this->getTableLocator()
+			->get('Programas')
+			->find()
+			->select($select)
 			->where(['Programas.outOfAir' => false])
 			->matching('Dias', function (SelectQuery $query) use ($day) {
 				return $query->where(['Dias.ID' => $day]);
@@ -84,10 +99,15 @@ class ScheduleController extends ApiController
 			->orderByAsc('horaInicio')
 			->all();
 
+		$programas = $programas->toArray();
+		foreach ($programas as $id => $programa) {
+			$programas[$id]['dayOfWeek'] = $day;
+		}
+
 		return $this->render()
 			->withHeader('Access-Control-Allow-Origin', self::RADIOUAS_URI)
 			->withType('application/json')
-			->withStringBody(json_encode($programas->toArray()));
+			->withStringBody(json_encode($programas));
 	}
 
 	protected function getRequestedDay(): int

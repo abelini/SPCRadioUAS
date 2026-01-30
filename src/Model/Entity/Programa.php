@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace SPC\Model\Entity;
 
+use Cake\I18n\Time;
 use Cake\ORM\Entity;
 
 
@@ -62,6 +63,25 @@ class Programa extends Entity implements \Stringable
 	protected function _getEnds(): string
 	{
 		return $this->horaFin->i18nFormat("h:mm a", 'en-US');
+	}
+
+	protected function _getStdStarts(): Time
+	{
+		return $this->horaInicio;
+	}
+
+	protected function _getStdEnds(): Time
+	{
+		return $this->horaFin;
+	}
+
+	protected function _getCategory(): string
+	{
+		if ($this->_fields['music'])
+			return 'music';
+		else
+			return 'standard';
+		// culture, science, sports, news, entertainment, children, youth, women, 
 	}
 
 	protected function _getIcon(): string
