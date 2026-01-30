@@ -70,10 +70,10 @@ class ScheduleController extends ApiController
 				'horaInicio',
 				'horaFin',
 				'subtitle' => 'produccion',
-				'category' => 'uo',
+				'categoryID',
 				'music' => 'musical',
-				'std_starts' => 'horaInicio',
-				'std_ends' => 'horaFin',
+				'startTime' => 'horaInicio',
+				'endTime' => 'horaFin',
 			];
 		} else {
 			$select = [
@@ -93,15 +93,20 @@ class ScheduleController extends ApiController
 			->find()
 			->select($select)
 			->where(['Programas.outOfAir' => false])
+			->contain('CategoriasProgramas', function (SelectQuery $query) {
+				return $query->select(['ID', 'slug']);
+			})
 			->matching('Dias', function (SelectQuery $query) use ($day) {
 				return $query->where(['Dias.ID' => $day]);
 			})
 			->orderByAsc('horaInicio')
-			->all();
+			->all()
+			->toArray();
 
-		$programas = $programas->toArray();
 		foreach ($programas as $id => $programa) {
 			$programas[$id]['dayOfWeek'] = $day;
+			$programas[$id]['slug'] = $programa->categoria->slug;
+			unset($programas[$id]['categoria']);
 		}
 
 		return $this->render()

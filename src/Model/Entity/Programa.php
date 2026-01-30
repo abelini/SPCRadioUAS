@@ -48,6 +48,7 @@ class Programa extends Entity implements \Stringable
 	];
 
 	protected array $_hidden = [
+		'categoryID',
 		'horaInicio',
 		'horaFin',
 		'music',
@@ -66,12 +67,12 @@ class Programa extends Entity implements \Stringable
 		return $this->horaFin->i18nFormat("h:mm a", 'en-US');
 	}
 
-	protected function _getStdStarts(): Time
+	protected function _getStartTime(): Time
 	{
 		return $this->horaInicio;
 	}
 
-	protected function _getStdEnds(): Time
+	protected function _getEndTime(): Time
 	{
 		return $this->horaFin;
 	}
