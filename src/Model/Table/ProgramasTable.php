@@ -26,6 +26,10 @@ class ProgramasTable extends Table
 			->setProperty('tema')
 			->setDependent(true);
 
+		$this->belongsTo('CategoriasProgramas')
+			->setForeignKey('categoryID')
+			->setProperty('categoria');
+
 		$this->hasMany('ReportesProgramas')
 			->setForeignKey('programaID')
 			->setProperty('reportes')
@@ -37,12 +41,12 @@ class ProgramasTable extends Table
 			'joinTable' => 'DiasProgramas',
 		]);
 	}
-/*
-	#[\Override]
-	public function findAll(SelectQuery $query): SelectQuery
-	{
-		return $query->where(['Programas.outOfAir' => false]);
-	}*/
+	/*
+		#[\Override]
+		public function findAll(SelectQuery $query): SelectQuery
+		{
+			return $query->where(['Programas.outOfAir' => false]);
+		}*/
 
 	#[\Override]
 	public function findList(SelectQuery $query, \Closure|array|string|null $keyField = null, \Closure|array|string|null $valueField = null, \Closure|array|string|null $g = null, string $s = ';'): SelectQuery

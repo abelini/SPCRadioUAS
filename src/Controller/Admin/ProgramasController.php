@@ -19,7 +19,8 @@ class ProgramasController extends AppController
 	public function index()
 	{
 		$query = $this->Programas->find()
-			->orderByAsc('name');
+			->contain(['CategoriasProgramas'])
+			->orderByAsc('Programas.name');
 		$programas = $this->paginate($query, ['limit' => 100, 'maxLimit' => 100]);
 
 		$this->set(compact('programas'));
@@ -146,15 +147,20 @@ class ProgramasController extends AppController
 		$programa = $this->Programas->get($id, contain: ['Dias']);
 		if ($this->request->is(['patch', 'post', 'put'])) {
 			$programa = $this->Programas->patchEntity($programa, $this->request->getData());
+			//debug($this->request->getData());
+			//debug($programa);
+
 			if ($this->Programas->save($programa)) {
 				$this->Flash->success(__('The programa has been saved.'));
+				//debug($programa->getErrors());
 
 				return $this->redirect(['action' => 'index']);
 			}
 			$this->Flash->error(__('The programa could not be saved. Please, try again.'));
 		}
-		$dias = $this->Programas->Dias->find('list', limit: 200)->all();
-		$this->set(compact('programa', 'dias'));
+		$dias = $this->Programas->Dias->find('list')->all();
+		$categorias = $this->Programas->CategoriasProgramas->find('list')->all();
+		$this->set(compact('programa', 'dias', 'categorias'));
 	}
 
 	public function delete($id = null)

@@ -33,6 +33,7 @@ class Programa extends Entity implements \Stringable
 
 	protected array $_accessible = [
 		'name' => true,
+		'categoryID' => true,
 		'horaInicio' => true,
 		'horaFin' => true,
 		'produccion' => true,
