@@ -5,23 +5,17 @@ namespace SPC\Controller\Admin;
 
 use SPC\Controller\AppController;
 use Cake\Http\Client;
+use Cake\Core\Configure;
 
 class StreamController extends AppController
 {
-    // DATOS DE CONEXIÓN
-    private $panelUrl = 'https://stream8.mexiserver.com:2020';
-    private $streamUrl = 'https://stream8.mexiserver.com:2000/hls/radiouasx/radiouasx.m3u8';
 
-    // TUS CREDENCIALES
-    private $username = 'admin@autumn.ws';
-    private $password = 'UeGMxEASgWPWq3RAkA6k';
+    protected const string STREAM_SOURCE = 'https://stream8.mexiserver.com:2000/hls/radiouasx/radiouasx.m3u8';
 
     public function index()
     {
         $this->viewBuilder()->setOption('serialize', []);
     }
-
-    // --- MÉTODOS AJAX ---
 
     public function proxyStop()
     {
@@ -33,21 +27,15 @@ class StreamController extends AppController
         return $this->executeAction('restart');
     }
 
-    /**
-     * Nuevo método para verificar si el stream ya levantó
-     * Esto evita el error 404/CORS en el frontend
-     */
     public function checkStreamStatus()
     {
         $this->autoRender = false;
         $this->response = $this->response->withType('application/json');
 
-        // Timeout corto porque solo queremos "pinguear" el archivo
         $http = new Client(['ssl_verify_peer' => false, 'timeout' => 5]);
 
         try {
-            // HEAD solo pide los encabezados (es más rápido que bajar el archivo)
-            $response = $http->head($this->streamUrl);
+            $response = $http->head(self::STREAM_SOURCE);
             $status = $response->isOk() ? 'online' : 'offline';
         } catch (\Exception $e) {
             $status = 'offline';
@@ -56,43 +44,38 @@ class StreamController extends AppController
         return $this->response->withStringBody(json_encode(['status' => $status]));
     }
 
-    // --- LÓGICA PRIVADA ---
-
     private function executeAction($type)
     {
         $this->autoRender = false;
         $this->response = $this->response->withType('application/json');
 
         $http = new Client([
+            'scheme' => 'https',
+            'host' => 'stream8.mexiserver.com',
+            'port' => 2020,
             'ssl_verify_peer' => false,
             'timeout' => 15,
             'redirect' => true
         ]);
 
         try {
-            // PASO 1: LOGIN (POST)
-            $loginResponse = $http->post($this->panelUrl . '/index.php', [
-                'username' => $this->username,
-                'user_password' => $this->password, // Nota: usas user_password aquí
+            $loginResponse = $http->post('/index.php', [
+                'username' => Configure::read('SensitiveData.TVStream.Username'),
+                'user_password' => Configure::read('SensitiveData.TVStream.Password'),
                 'language' => 'default'
             ]);
 
-            // Obtenemos la colección de cookies (incluye PHPSESSID)
             $cookies = $loginResponse->getCookieCollection();
 
             if ($cookies->count() === 0) {
                 throw new \Exception('Login fallido: El servidor no devolvió cookies de sesión.');
             }
 
-            // PASO 2: EJECUTAR ACCIÓN (GET con Cookies)
-            $actionUrl = ($type === 'stop')
-                ? "/controller/MediaService/stopService/250"
-                : "/controller/MediaService/restartService/250";
+            $http->setConfig('basePath', '/controller/MediaService');
 
-            $finalUrl = $this->panelUrl . $actionUrl;
+            $action = ($type === 'stop') ? "/stopService/250" : "/restartService/250";
 
-            // IMPORTANTE: Pasamos el objeto $cookies completo
-            $actionResponse = $http->get($finalUrl, [], [
+            $actionResponse = $http->get($action, options: [
                 'cookies' => ['PHPSESSID']
             ]);
 

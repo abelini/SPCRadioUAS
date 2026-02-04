@@ -133,6 +133,7 @@ class CabinaController extends ApiController
 		$programas = $this->getTableLocator()
 			->get('Programas')
 			->find()
+			->where(['reportable' => true])
 			->matching('Dias', function (SelectQuery $query) {
 				return $query->where(['Dias.ID' => (new DateTime())->dayOfWeek]);
 			})
@@ -140,9 +141,13 @@ class CabinaController extends ApiController
 			->all();
 
 		$programa = $programas->filter(function ($programa, $key) {
-			$now = Time::now();
-			return ($programa->horaInicio <= $now && $programa->horaFin >= $now);
+			$now = new Time('09:10:00'); //Time::now();
+			//return ($programa->horaInicio <= $now && $programa->horaFin >= $now);
+			return $now->between($programa->horaInicio, $programa->horaFin);
 		});
+		debug($programas->count());
+		debug($programa->count());
+		debug($programa->first());
 
 		return $programa->count() > 0;
 	}
