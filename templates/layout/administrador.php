@@ -43,9 +43,11 @@
 			<?= $this->Html->link('<i class="fa-solid fa-file-contract"></i>   Bitácora de cabina', ['controller' => 'bitacora_cabina',], ['class' => 'w3-bar-item w3-button w3-border-bottom', 'escape' => false]) ?>
 			<?= $this->Html->link('<i class="fa-solid fa-file-signature"></i> Registro de incidencias', ['controller' => 'incidencias',], ['class' => 'w3-bar-item w3-button w3-border-bottom', 'escape' => false]) ?>
 			<?= $this->Html->link('<i class="fa-solid fa-chart-pie"></i> Reportes de cabina', ['controller' => 'reportes_cabinas', 'action' => 'reportes'], ['class' => 'w3-bar-item w3-button w3-border-bottom', 'escape' => false]) ?>
-			<?= $this->Html->link('<i class="fa-solid fa-chart-simple"></i> Reportes de vigilancia', '#'/*['controller' => 'reportes_vigilancia', 'action' => 'reportes']*/ , ['class' => 'w3-bar-item w3-button w3-border-bottom', 'escape' => false]) ?>
+			<?php //= $this->Html->link('<i class="fa-solid fa-chart-simple"></i> Reportes de vigilancia', ['controller' => 'reportes_vigilancia', 'action' => 'reportes'], ['class' => 'w3-bar-item w3-button w3-border-bottom', 'escape' => false]) ?>
 			<?= $this->Html->link('<i class="fa-solid fa-users"></i> Usuarios', ['controller' => 'usuarios',], ['class' => 'w3-bar-item w3-button w3-border-bottom', 'escape' => false]) ?>
 			<?= $this->Html->link('<i class="fa-solid fa-align-left"></i> Temas de programas', ['controller' => 'TemasProgramas', 'action' => 'index'], ['class' => 'w3-bar-item w3-button w3-border-bottom', 'escape' => false]) ?>
+			<?= $this->Html->link('<i class="fa-solid fa-align-left"></i> Categorías de programas', ['controller' => 'CategoriasProgramas', 'action' => 'index'], ['class' => 'w3-bar-item w3-button w3-border-bottom', 'escape' => false]) ?>
+			<?= $this->Html->link('<i class="fa-solid fa-tv"></i> Control de Streaming', ['controller' => 'stream',], ['class' => 'w3-bar-item w3-button w3-border-bottom', 'escape' => false]) ?>
 
 			<?= $this->Html->link('<i class="fa-solid fa-right-from-bracket"></i> Salir', ['controller' => 'usuarios', 'action' => 'logout'], ['class' => 'w3-bar-item w3-red w3-button', 'escape' => false]) ?>
 
