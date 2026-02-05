@@ -77,13 +77,13 @@ class DashboardController extends AppController
 				'Total' => $query->func()->count('*'),
 
 				'TotalGDS' => $query->func()->count(
-					$query->newExpr()->case()->when(['tipoSolicitudID' => TipoSolicitud::GRABACION_DE_SPOT])->then(1)
+					$query->expr()->case()->when(['tipoSolicitudID' => TipoSolicitud::GRABACION_DE_SPOT])->then(1)
 				),
 				'TotalMDC' => $query->func()->count(
-					$query->newExpr()->case()->when(['tipoSolicitudID' => TipoSolicitud::MAESTRO_DE_CEREMONIA])->then(1)
+					$query->expr()->case()->when(['tipoSolicitudID' => TipoSolicitud::MAESTRO_DE_CEREMONIA])->then(1)
 				),
 				'TotalCR' => $query->func()->count(
-					$query->newExpr()->case()->when(['tipoSolicitudID' => TipoSolicitud::CONTROL_REMOTO])->then(1)
+					$query->expr()->case()->when(['tipoSolicitudID' => TipoSolicitud::CONTROL_REMOTO])->then(1)
 				),
 			])
 			->disableHydration()
@@ -95,19 +95,19 @@ class DashboardController extends AppController
 	protected function getBitacorasStats(): array
 	{
 		$stats = $this->getTableLocator()->get('BitacoraCabina')
-						->find()
-						->select(
-							function(SelectQuery $query) {
-								return [
-									'Total' => $query->func()->count('*'),
-									'FirstOne' => $query->func()->min('fecha', ['date']),
-									'LastOne' => $query->func()->max('fecha', ['date']),
-								];
-							}
-						)
-						->orderByAsc('fecha')
-						->disableHydration()
-						->all();
+			->find()
+			->select(
+				function (SelectQuery $query) {
+					return [
+						'Total' => $query->func()->count('*'),
+						'FirstOne' => $query->func()->min('fecha', ['date']),
+						'LastOne' => $query->func()->max('fecha', ['date']),
+					];
+				}
+			)
+			->orderByAsc('fecha')
+			->disableHydration()
+			->all();
 		return $stats->toArray()[0];
 	}
 
