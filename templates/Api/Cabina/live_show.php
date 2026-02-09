@@ -1,4 +1,9 @@
 <div class="w3-container ai-generated-social-content">
+
+    <h1 class="w3-center" style="font-size:48px;margin:0;"><i class="fa-brands fa-openai" style="color:#000"></i> <i
+            class="fa-solid fa-arrow-right" style="color:#ddd"></i> <i class="fa-brands fa-facebook"
+            style="color:#1877F2"></i></h1>
+
     <?= $this->Form->create(null, [
         'id' => 'formAjaxCabina',
         'url' => ['controller' => 'Cabina', 'action' => 'generateSocialContent', 'prefix' => 'Api'],
@@ -51,8 +56,9 @@
         'value' => 'liveShow'
     ]) ?>
 
-    <?= $this->Form->submit('Gemini, genérame 3 opciones de publicación para Facebook Live', [
-        'class' => 'w3-button w3-blue'
+    <?= $this->Form->button('<i class="fa-solid fa-robot"></i> Generar opciones de publicación para Facebook Live', [
+        'class' => 'w3-button w3-round w3-galaxy-blue',
+        'escapeTitle' => false
     ]) ?>
 
     <?= $this->Form->end() ?>
