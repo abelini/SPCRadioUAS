@@ -18,7 +18,7 @@ class ProgramasController extends AppController
 
 	public function index()
 	{
-		$query = $this->Programas->find()
+		$query = $this->Programas->find(admin: true)
 			->contain(['CategoriasProgramas'])
 			->orderByAsc('Programas.name');
 		$programas = $this->paginate($query, ['limit' => 100, 'maxLimit' => 100]);
@@ -27,17 +27,21 @@ class ProgramasController extends AppController
 	}
 	public function view($id = null)
 	{
-		$programa = $this->Programas->get($id, contain: [
-			'Dias',
-			'ReportesProgramas' => function (SelectQuery $query) {
-				return $query->matching('ReportesCabinas.BitacoraCabina', function (SelectQuery $query) {
-					return $query->where([
-						'BitacoraCabina.fecha >=' => new DateTime(ReportesPrograma::REPORTING_START_DATE),
-						'BitacoraCabina.fecha <=' => DateTime::now()
-					]);
-				});
-			}
-		]);
+		$programa = $this->Programas->get(
+			$id,
+			admin: true,
+			contain: [
+				'Dias',
+				'ReportesProgramas' => function (SelectQuery $query) {
+					return $query->matching('ReportesCabinas.BitacoraCabina', function (SelectQuery $query) {
+						return $query->where([
+							'BitacoraCabina.fecha >=' => new DateTime(ReportesPrograma::REPORTING_START_DATE),
+							'BitacoraCabina.fecha <=' => DateTime::now()
+						]);
+					});
+				}
+			]
+		);
 
 		$this->set($this->_prepareReportData($programa));
 	}
@@ -144,21 +148,17 @@ class ProgramasController extends AppController
 
 	public function edit($id = null)
 	{
-		$programa = $this->Programas->get($id, contain: ['Dias']);
+		$programa = $this->Programas->get($id, admin: true, contain: ['Dias']);
 		if ($this->request->is(['patch', 'post', 'put'])) {
 			$programa = $this->Programas->patchEntity($programa, $this->request->getData());
-			//debug($this->request->getData());
-			//debug($programa);
-
 			if ($this->Programas->save($programa)) {
 				$this->Flash->success(__('The programa has been saved.'));
-				//debug($programa->getErrors());
 
 				return $this->redirect(['action' => 'index']);
 			}
 			$this->Flash->error(__('The programa could not be saved. Please, try again.'));
 		}
-		$dias = $this->Programas->Dias->find('list')->all();
+		$dias = $this->Programas->Dias->find('list', admin: true)->all();
 		$categorias = $this->Programas->CategoriasProgramas->find('list')->all();
 		$this->set(compact('programa', 'dias', 'categorias'));
 	}
@@ -166,7 +166,7 @@ class ProgramasController extends AppController
 	public function delete($id = null)
 	{
 		$this->request->allowMethod(['post', 'delete']);
-		$programa = $this->Programas->get($id);
+		$programa = $this->Programas->get($id, admin: true);
 		if ($this->Programas->delete($programa)) {
 			$this->Flash->success(__('The programa has been deleted.'));
 		} else {

@@ -3,12 +3,11 @@ declare(strict_types=1);
 
 namespace SPC\Model\Table;
 
-//use SPC\Model\Entity\Programa;
 use Cake\ORM\Query\SelectQuery;
-use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
-
+use Cake\Event\EventInterface;
+use ArrayObject;
 
 class ProgramasTable extends Table
 {
@@ -41,12 +40,19 @@ class ProgramasTable extends Table
 			'joinTable' => 'DiasProgramas',
 		]);
 	}
-	/*
-		#[\Override]
-		public function findAll(SelectQuery $query): SelectQuery
-		{
-			return $query->where(['Programas.outOfAir' => false]);
-		}*/
+
+	public function beforeFind(EventInterface $event, SelectQuery $query, ArrayObject $options): void
+	{
+		$options = $query->getOptions();
+
+		if (isset($options['admin']) && $options['admin'] === true) {
+			return;
+		}
+
+		if (!str_contains(serialize($query->clause('where')), 'outOfAir')) {
+			$query->where(['Programas.outOfAir' => false]);
+		}
+	}
 
 	#[\Override]
 	public function findList(SelectQuery $query, \Closure|array|string|null $keyField = null, \Closure|array|string|null $valueField = null, \Closure|array|string|null $g = null, string $s = ';'): SelectQuery
