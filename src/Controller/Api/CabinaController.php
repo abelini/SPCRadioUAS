@@ -26,7 +26,7 @@ class CabinaController extends ApiController
 	{
 		$this->viewBuilder()->setLayout('ajax');
 
-		$tipo = $this->request->getQuery('type');
+		$tipo = $this->request->getQuery('type') ?? 'live_show';
 
 		switch ($tipo) {
 			case 'live_show':
@@ -90,7 +90,7 @@ class CabinaController extends ApiController
 
 	public function generateSocialContent(): Response
 	{
-		$type = $this->request->getData('type');
+		$type = $this->request->getData('type') ?? 'liveShow';
 		$prompt = Configure::read('Prompts.' . $type);
 
 		if ($type == 'liveShow') {

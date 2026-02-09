@@ -17,6 +17,11 @@ class StreamController extends AppController
         $this->viewBuilder()->setOption('serialize', []);
     }
 
+    public function radio()
+    {
+    }
+
+
     public function proxyStop()
     {
         return $this->executeAction('stop');

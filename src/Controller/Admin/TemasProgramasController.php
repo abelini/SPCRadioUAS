@@ -52,7 +52,33 @@ class TemasProgramasController extends AppController
         return $this->response->withStringBody($respuesta);
     }
 
+    public function generateSocialContent($id = null): Response
+    {
+        $prompt = Configure::read('Prompts.liveShow');
 
+        $tema = $this->TemasProgramas->find()
+            ->where(['TemasProgramas.programaID' => $id])
+            ->contain('Programas')
+            ->first();
+
+        $programa = $tema->programa->name;
+        $conduccion = $tema->programa->conduccion;
+        $invitados = $tema->invitados ? 'Invitado(s): ' . $tema->invitados : '';
+        $keywords = $tema->tags ? 'Palabras clave/Estilo: ' . $tema->tags : '';
+        $tema = $tema->tema ? 'Tema del día: ' . $tema->tema : '';
+
+        $prompt = str_replace(
+            ['%programa%', '%conduccion%', '%invitados%', '%tema%', '%keywords%'],
+            [$programa, $conduccion, $invitados, $tema, $keywords],
+            $prompt
+        );
+
+        $gemini = new GeminiService();
+        $respuesta = $gemini->generateText($prompt);
+        $this->set('prompt', $respuesta);
+
+        return $this->render();
+    }
 
     public function view($id = null)
     {

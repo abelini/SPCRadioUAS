@@ -7,13 +7,17 @@
 
     <?= $this->Form->create($temasPrograma) ?>
 
+    <?= $this->Form->label('Programa') ?>
+    <?= $this->Form->control('ProgramaID', ['options' => $programas, 'label' => false]) ?>
 
-    <?php
-    echo $this->Form->control('ProgramaID', ['options' => $programas]);
-    echo $this->Form->control('tema');
-    echo $this->Form->control('invitados');
-    ?>
-    <?= $this->Form->control('tags', ['label' => 'Palabras clave']) ?>
+    <?= $this->Form->label('Tema') ?>
+    <?= $this->Form->control('tema', ['label' => false]) ?>
+
+    <?= $this->Form->label('Invitados') ?>
+    <?= $this->Form->control('invitados', ['label' => false]) ?>
+
+    <?= $this->Form->label('Palabras clave') ?>
+    <?= $this->Form->control('tags', ['label' => false]) ?>
 
     <?= $this->Form->button(__('Actualizar'), ['class' => 'w3-section']) ?>
 

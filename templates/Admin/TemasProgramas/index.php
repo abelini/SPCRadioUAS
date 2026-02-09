@@ -19,22 +19,13 @@
             <?php foreach ($temasProgramas as $temasPrograma): ?>
                 <tr>
                     <td><?= $this->Number->format($temasPrograma->ID) ?></td>
-                    <td><?= $temasPrograma->hasValue('programa') ? $this->Html->link($temasPrograma->programa->name, ['controller' => 'Programas', 'action' => 'view', $temasPrograma->programa->ID]) : '' ?>
+                    <td><?= $temasPrograma->hasValue('programa') ? $this->Html->link($temasPrograma->programa->name, ['action' => 'edit', $temasPrograma->ID]) : '' ?>
                     </td>
                     <td><?= $temasPrograma->tema ?></td>
                     <td><?= $temasPrograma->invitados ?></td>
                     <td><?= $temasPrograma->tags ?></td>
                     <td class="actions">
-                        <?= $this->Html->link(__('View'), ['action' => 'view', $temasPrograma->ID]) ?>
-                        <?= $this->Html->link(__('Edit'), ['action' => 'edit', $temasPrograma->ID]) ?>
-                        <?= $this->Form->postLink(
-                            __('Delete'),
-                            ['action' => 'delete', $temasPrograma->ID],
-                            [
-                                'method' => 'delete',
-                                'confirm' => __('Are you sure you want to delete # {0}?', $temasPrograma->ID),
-                            ]
-                        ) ?>
+                        <?= $this->Html->link('<i class="fa-brands fa-openai"></i> <i class="fa-solid fa-arrow-right"></i> <i class="fa-brands fa-facebook"></i>', ['action' => 'generateSocialContent', $temasPrograma->programa->ID], ['escape' => false]) ?>
                     </td>
                 </tr>
             <?php endforeach; ?>
