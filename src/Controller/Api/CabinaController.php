@@ -141,13 +141,9 @@ class CabinaController extends ApiController
 			->all();
 
 		$programa = $programas->filter(function ($programa, $key) {
-			$now = new Time('09:10:00'); //Time::now();
-			//return ($programa->horaInicio <= $now && $programa->horaFin >= $now);
+			$now = Time::now();
 			return $now->between($programa->horaInicio, $programa->horaFin);
 		});
-		debug($programas->count());
-		debug($programa->count());
-		debug($programa->first());
 
 		return $programa->count() > 0;
 	}
