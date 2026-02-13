@@ -7,17 +7,16 @@ use Cake\Command\Command;
 use Cake\Console\Arguments;
 use Cake\Console\ConsoleIo;
 use Cake\Http\Client;
+use Cake\I18n\DateTime;
 use Cake\Core\Configure;
 
 class ResetStreamCommand extends Command
 {
-    protected $panelUrl = 'https://stream8.mexiserver.com:2020';
-    //protected $username = Configure::read('SensitiveData.TVStream.Username');
-    //protected $password = Configure::read('SensitiveData.TVStream.Password');
+    protected string $panelUrl = 'https://stream8.mexiserver.com:2020';
 
     public function execute(Arguments $args, ConsoleIo $io): int
     {
-        $io->out('--- Iniciando Ciclo de Reinicio Automático ---');
+
 
         $http = new Client([
             'scheme' => 'https',
@@ -28,10 +27,14 @@ class ResetStreamCommand extends Command
             'redirect' => true
         ]);
 
+        $io->out('Proceso iniciado: ' . DateTime::now()->i18nFormat(\IntlDateFormatter::FULL));
+
+        $io->out('--- Reinicio Automático ---');
+
         // ---------------------------------------------------------
         // PASO 1: INICIAR SESIÓN (Obtener Cookies)
         // ---------------------------------------------------------
-        $io->out('1. Autenticando en el panel...');
+        $io->out('1. CP AUTHENTICATION');
 
         try {
             $loginResponse = $http->post('/index.php', [
@@ -58,7 +61,7 @@ class ResetStreamCommand extends Command
         // ---------------------------------------------------------
         // PASO 2: DETENER SERVICIO
         // ---------------------------------------------------------
-        $io->out('2. Deteniendo el servicio...');
+        $io->out('2. SERVICE STOP');
 
         $http->setConfig('basePath', '/controller/MediaService');
 
@@ -80,13 +83,13 @@ class ResetStreamCommand extends Command
         // ---------------------------------------------------------
         // PASO 3: ESPERA DE SEGURIDAD
         // ---------------------------------------------------------
-        $io->out('3. Esperando 10 segundos...');
+        $io->out('3. HOLD (10s)');
         sleep(10);
 
         // ---------------------------------------------------------
         // PASO 4: REINICIAR SERVICIO
         // ---------------------------------------------------------
-        $io->out('4. Reiniciando el servicio...');
+        $io->out('4. SERVICE RESTART');
 
         try {
             // Reutilizamos las mismas cookies de la sesión
@@ -107,6 +110,8 @@ class ResetStreamCommand extends Command
         }
 
         $io->success('--- Proceso completado exitosamente ---');
+        $io->success("\n");
+
         return static::CODE_SUCCESS;
     }
 }
