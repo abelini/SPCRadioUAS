@@ -30,6 +30,12 @@
 .DS_Store
 Thumbs.db
 
+# --- Archivos de Configuración ---
+# Ignorar archivos de configuración locales
+php.ini
+.htaccess
+phpinfo.php
+robots.txt
 
 # OS generated files #
 ######################
