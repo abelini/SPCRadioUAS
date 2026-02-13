@@ -7,110 +7,75 @@ use Cake\Command\Command;
 use Cake\Console\Arguments;
 use Cake\Console\ConsoleIo;
 use Cake\Http\Client;
-use Cake\I18n\DateTime;
 use Cake\Core\Configure;
+use Cake\I18n\DateTime;
 
 class ResetStreamCommand extends Command
 {
-    protected string $panelUrl = 'https://stream8.mexiserver.com:2020';
+    private const SERVICE_ID = 250;
 
     public function execute(Arguments $args, ConsoleIo $io): int
     {
+        $startTime = DateTime::now();
+        $io->out('Proceso iniciado: ' . $startTime->i18nFormat(\IntlDateFormatter::FULL));
+        $io->out('--- Iniciando Reset Automático via API (MediaCP) ---');
 
+        $apiKey = Configure::read('SensitiveData.MediaCP.APIKey');
 
         $http = new Client([
             'scheme' => 'https',
             'host' => 'stream8.mexiserver.com',
             'port' => 2020,
+            'basePath' => '/api/' . self::SERVICE_ID . '/media-service/',
             'ssl_verify_peer' => false,
             'timeout' => 30,
-            'redirect' => true
+            'headers' => [
+                'Authorization' => 'Bearer ' . $apiKey,
+                'Accept' => 'application/json'
+            ]
         ]);
 
-        $io->out('Proceso iniciado: ' . DateTime::now()->i18nFormat(\IntlDateFormatter::FULL));
-
-        $io->out('--- Reinicio Automático ---');
-
-        // ---------------------------------------------------------
-        // PASO 1: INICIAR SESIÓN (Obtener Cookies)
-        // ---------------------------------------------------------
-        $io->out('1. CP AUTHENTICATION');
+        $io->out('1. SERVICE STOP');
 
         try {
-            $loginResponse = $http->post('/index.php', [
-                'username' => Configure::read('SensitiveData.TVStream.Username'),
-                'user_password' => Configure::read('SensitiveData.TVStream.Password'),
-                'language' => 'default'
-            ]);
+            $responseStop = $http->post('stop-service');
 
-            // Capturamos las cookies de sesión (PHPSESSID)
-            $cookies = $loginResponse->getCookieCollection();
-
-            if ($cookies->count() === 0) {
-                $io->err('Error: No se recibieron cookies de sesión. Revisa usuario/pass.');
-                return static::CODE_ERROR;
-            }
-
-            $io->success('Login correcto. Cookies obtenidas.');
-
-        } catch (\Exception $e) {
-            $io->err('Excepción al intentar login: ' . $e->getMessage());
-            return static::CODE_ERROR;
-        }
-
-        // ---------------------------------------------------------
-        // PASO 2: DETENER SERVICIO
-        // ---------------------------------------------------------
-        $io->out('2. SERVICE STOP');
-
-        $http->setConfig('basePath', '/controller/MediaService');
-
-        try {
-            $stopResponse = $http->get('/stopService/250', options: [
-                'cookies' => ['PHPSESSID']
-            ]);
-
-            if ($stopResponse->isOk()) {
-                $io->success('Orden de STOP enviada correctamente.');
+            if ($responseStop->isOk()) {
+                $io->success(' Servicio detenido correctamente.');
             } else {
-                $io->err('El servidor respondió error al detener: ' . $stopResponse->getStatusCode());
+                $io->warning('!!! Alerta al detener (Código ' . $responseStop->getStatusCode() . '). Puede que ya estuviera detenido.');
+                $io->out(' Respuesta: ' . $responseStop->getStringBody());
             }
 
         } catch (\Exception $e) {
-            $io->err('Error de conexión al detener: ' . $e->getMessage());
+            $io->err('!! Error de conexión al detener: ' . $e->getMessage());
         }
 
-        // ---------------------------------------------------------
-        // PASO 3: ESPERA DE SEGURIDAD
-        // ---------------------------------------------------------
-        $io->out('3. HOLD (10s)');
+        $io->out('2. WAIT (10s)');
         sleep(10);
 
-        // ---------------------------------------------------------
-        // PASO 4: REINICIAR SERVICIO
-        // ---------------------------------------------------------
-        $io->out('4. SERVICE RESTART');
+        $io->out('3. SERVICE START');
 
         try {
-            // Reutilizamos las mismas cookies de la sesión
-            $restartResponse = $http->get('/restartService/250', options: [
-                'cookies' => ['PHPSESSID']
-            ]);
+            $responseStart = $http->post('start-service');
 
-            if ($restartResponse->isOk()) {
-                $io->success('Orden de RESTART enviada correctamente.');
+            if ($responseStart->isOk()) {
+                $io->success('¡Servicio INICIADO correctamente!');
+                $io->out(' Respuesta final: ' . $responseStart->getStringBody());
             } else {
-                $io->err('El servidor respondió error al reiniciar: ' . $restartResponse->getStatusCode());
+                $io->err('!! Falló el inicio del servicio. Código: ' . $responseStart->getStatusCode());
+                $io->out('!! Respuesta: ' . $responseStart->getStringBody());
                 return static::CODE_ERROR;
             }
 
         } catch (\Exception $e) {
-            $io->err('Error de conexión al reiniciar: ' . $e->getMessage());
+            $io->err('!! Error de conexión al iniciar: ' . $e->getMessage());
             return static::CODE_ERROR;
         }
 
-        $io->success('--- Proceso completado exitosamente ---');
-        $io->success("\n");
+        $io->out('--- Proceso finalizado ---');
+        $io->out('Tiempo total: ' . (DateTime::now()->getTimestamp() - $startTime->getTimestamp()) . ' segundos.');
+        $io->out();
 
         return static::CODE_SUCCESS;
     }

@@ -9,8 +9,17 @@ use Cake\Core\Configure;
 
 class StreamController extends AppController
 {
-
     protected const string STREAM_SOURCE = 'https://stream8.mexiserver.com:2000/hls/radiouasx/radiouasx.m3u8';
+
+    protected const int SERVICE_ID = 250;
+
+    private string $APIKey;
+
+    public function initialize(): void
+    {
+        parent::initialize();
+        $this->APIKey = (string) Configure::read('SensitiveData.MediaCP.APIKey');
+    }
 
     public function index()
     {
@@ -20,7 +29,6 @@ class StreamController extends AppController
     public function radio()
     {
     }
-
 
     public function proxyStop()
     {
@@ -37,7 +45,7 @@ class StreamController extends AppController
         $this->autoRender = false;
         $this->response = $this->response->withType('application/json');
 
-        $http = new Client(['ssl_verify_peer' => false, 'timeout' => 5]);
+        $http = new Client(['ssl_verify_peer' => false, 'timeout' => 3]);
 
         try {
             $response = $http->head(self::STREAM_SOURCE);
@@ -58,42 +66,50 @@ class StreamController extends AppController
             'scheme' => 'https',
             'host' => 'stream8.mexiserver.com',
             'port' => 2020,
+            'basePath' => '/api/' . self::SERVICE_ID . '/media-service/',
             'ssl_verify_peer' => false,
-            'timeout' => 15,
-            'redirect' => true
+            'timeout' => 30,
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->APIKey,
+                'Accept' => 'application/json'
+            ]
         ]);
 
+        $action = ($type === 'stop') ? 'stop-service' : 'start-service';
+
         try {
-            $loginResponse = $http->post('/index.php', [
-                'username' => Configure::read('SensitiveData.TVStream.Username'),
-                'user_password' => Configure::read('SensitiveData.TVStream.Password'),
-                'language' => 'default'
-            ]);
+            $response = $http->post($action);
+            $json = $response->getJson();
 
-            $cookies = $loginResponse->getCookieCollection();
+            if ($response->isOk()) {
+                if (isset($json['status']) && $json['status'] === 'error') {
+                    return $this->response->withStatus(400)
+                        ->withStringBody(json_encode([
+                            'status' => 'error',
+                            'message' => 'API Error: ' . ($json['message'] ?? 'Desconocido')
+                        ]));
+                }
 
-            if ($cookies->count() === 0) {
-                throw new \Exception('Login fallido: El servidor no devolvió cookies de sesión.');
-            }
-
-            $http->setConfig('basePath', '/controller/MediaService');
-
-            $action = ($type === 'stop') ? "/stopService/250" : "/restartService/250";
-
-            $actionResponse = $http->get($action, options: [
-                'cookies' => ['PHPSESSID']
-            ]);
-
-            if ($actionResponse->isOk()) {
                 return $this->response->withStringBody(json_encode([
                     'status' => 'success',
-                    'message' => ($type === 'stop') ? "Servicio detenido correctamente." : "Servicio reiniciado correctamente."
+                    'message' => ($type === 'stop') ? "Servicio detenido via API." : "Servicio reiniciado via API.",
+                    'api_response' => $json,
                 ]));
             } else {
-                return $this->response->withStatus(400)
+                $statusCode = $response->getStatusCode();
+                $message = 'Error desconocido';
+
+                if ($statusCode === 401) {
+                    $message = 'Error 401: API Key rechazada o permisos insuficientes.';
+                } elseif ($statusCode === 404) {
+                    $message = 'Error 404: No se encuentra el servicio ID 250 o la ruta API cambió.';
+                }
+
+                return $this->response->withStatus($statusCode)
                     ->withStringBody(json_encode([
                         'status' => 'error',
-                        'message' => 'Login correcto, pero error en la acción: ' . $actionResponse->getStatusCode()
+                        'message' => $message,
+                        'raw_response' => $response->getStringBody()
                     ]));
             }
 
@@ -101,7 +117,7 @@ class StreamController extends AppController
             return $this->response->withStatus(500)
                 ->withStringBody(json_encode([
                     'status' => 'error',
-                    'message' => $e->getMessage()
+                    'message' => 'Excepción de conexión: ' . $e->getMessage()
                 ]));
         }
     }
