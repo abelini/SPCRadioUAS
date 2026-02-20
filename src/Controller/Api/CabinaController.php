@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace SPC\Controller\Api;
 
 use SPC\Controller\ApiController;
+use Cake\Cache\Cache;
 use Cake\Core\Configure;
 use Cake\Http\Client;
 use Cake\Http\Response;
@@ -115,11 +116,21 @@ class CabinaController extends ApiController
 			$participantes = $this->request->getData('participantes') ? 'Los participantes son: «' . $this->request->getData('participantes') . '».' : '';
 
 			$prompt = str_replace(['%evento%', '%participantes%'], [$evento, $participantes], $prompt);
+
+			$controlActual = Cache::read('control_remoto_activo');
+
+			if (!$controlActual || $controlActual['programa'] !== $evento) {
+				Cache::write('control_remoto_activo', [
+					'programa' => $evento,
+					'produccion' => 'Transmisión remota',
+					'inicio' => DateTime::now()->getTimestamp()
+				]);
+			}
 		}
 
 		$respuesta = $prompt;
-		$gemini = new GeminiService();
-		$respuesta = $gemini->generateText($prompt);
+		//$gemini = new GeminiService();
+		//$respuesta = $gemini->generateText($prompt);
 
 		$this->set(compact('respuesta'));
 		$this->viewBuilder()->setLayout('ajax');

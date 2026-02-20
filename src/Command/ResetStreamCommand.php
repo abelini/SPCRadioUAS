@@ -12,7 +12,7 @@ use Cake\I18n\DateTime;
 
 class ResetStreamCommand extends Command
 {
-    private const SERVICE_ID = 250;
+    private const int SERVICE_ID = 250;
 
     public function execute(Arguments $args, ConsoleIo $io): int
     {

@@ -88,6 +88,35 @@
 
 </div>
 
+<?php if (!empty($controlActivo)): ?>
+	<div id="tarjeta-alerta-remota" class="w3-panel w3-red w3-card-4 w3-animate-right w3-padding alerta-remota-activa">
+		<h2 class="w3-xlarge w3-bold w3-text-black" style="margin-top:10px;">
+			<i class="fa-solid fa-broadcast-tower"></i> ENLACE REMOTO EN VIVO
+		</h2>
+		<p class="w3-large">El sistema RBDS está mostrando al aire:</p>
+		<p id="nombre-evento-remoto" class="w3-xlarge w3-semibold w3-margin-bottom">📻 <?= h($controlActivo['programa']) ?>
+		</p>
+
+		<p class="w3-large w3-margin-bottom">
+			<i class="fa-regular fa-clock"></i> Tiempo al aire: <span id="cronometro-remoto" class="w3-bold">00:00</span>
+		</p>
+
+		<?= $this->Form->create(null, ['url' => ['controller' => 'BitacoraCabina', 'action' => 'stopRemoteStream']]) ?>
+		<?= $this->Form->button('<i class="fa-solid fa-stop"></i> Detener Enlace', [
+			'type' => 'submit',
+			'class' => 'w3-button w3-black w3-block w3-margin-bottom w3-round w3-large w3-hover-dark-gray',
+			'escapeTitle' => false
+		]) ?>
+		<?= $this->Form->end() ?>
+	</div>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			if (typeof iniciarCronometroRemoto === 'function') { iniciarCronometroRemoto(<?= $controlActivo['inicio'] ?>); }
+		});
+	</script>
+<?php endif; ?>
+
 <div class="w3-container w3-white w3-padding"
 	style="position: fixed; bottom: 40px; right: 20px; z-index: 100;width:340px;">
 	<h6><i class="fa-brands fa-facebook" style="color:#1877F2"></i> Generación de publicación para redes sociales</h6>
@@ -190,6 +219,80 @@
 				});
 		}
 	});
+
+	function mostrarTarjetaAjax(nombreEvento) {
+		let tarjetaExistente = document.getElementById('tarjeta-alerta-remota');
+		if (tarjetaExistente) {
+			document.getElementById('nombre-evento-remoto').innerText = '📻 ' + nombreEvento;
+			return;
+		}
+
+		const csrfInput = document.querySelector('input[name="_csrfToken"]');
+		const csrfToken = csrfInput ? csrfInput.value : '';
+
+		const startTimeAjax = Math.floor(Date.now() / 1000);
+
+		const tarjeta = document.createElement('div');
+		tarjeta.id = 'tarjeta-alerta-remota';
+		tarjeta.className = 'w3-panel w3-red w3-card-4 w3-animate-right w3-padding alerta-remota-activa';
+
+		tarjeta.innerHTML = `
+		<h2 class="w3-xlarge w3-bold w3-text-black" style="margin-top:10px;">
+			<i class="fa-solid fa-broadcast-tower"></i> ENLACE REMOTO EN VIVO
+		</h2>
+		<p class="w3-large">El sistema RBDS está mostrando al aire:</p>
+		<p id="nombre-evento-remoto" class="w3-xlarge w3-semibold w3-margin-bottom">📻 ${nombreEvento}</p>
+		
+		<p class="w3-large w3-margin-bottom">
+			<i class="fa-regular fa-clock"></i> Tiempo al aire: <span id="cronometro-remoto" class="w3-bold">00:00</span>
+		</p>
+		
+		<form method="post" action="/bitacora-cabina/stop-remote-stream">
+			<input type="hidden" name="_csrfToken" value="${csrfToken}">
+			<button type="submit" class="w3-button w3-black w3-block w3-margin-bottom w3-round w3-large w3-hover-dark-gray">
+				<i class="fa-solid fa-stop"></i> Detener Enlace
+			</button>
+		</form>
+	`;
+
+		document.body.appendChild(tarjeta);
+
+		if (typeof iniciarCronometroRemoto === 'function') {
+			iniciarCronometroRemoto(startTimeAjax);
+		}
+	}
+
+	let intervaloCronometro;
+
+	function iniciarCronometroRemoto(timestampInicio) {
+		const display = document.getElementById('cronometro-remoto');
+		if (!display) return;
+
+		if (intervaloCronometro) clearInterval(intervaloCronometro);
+
+		function actualizarTiempo() {
+			const ahora = Math.floor(Date.now() / 1000);
+			const diferencia = ahora - timestampInicio;
+
+			if (diferencia < 0) return;
+
+			const horas = Math.floor(diferencia / 3600);
+			const minutos = Math.floor((diferencia % 3600) / 60);
+			const segundos = diferencia % 60;
+
+			let textoTiempo = '';
+			if (horas > 0) {
+				textoTiempo += horas.toString().padStart(2, '0') + ':';
+			}
+			textoTiempo += minutos.toString().padStart(2, '0') + ':' +
+				segundos.toString().padStart(2, '0');
+
+			display.innerText = textoTiempo;
+		}
+
+		actualizarTiempo();
+		intervaloCronometro = setInterval(actualizarTiempo, 1000);
+	}
 </script>
 <script>
 	function generateSocialContent(event, form) {
@@ -229,6 +332,11 @@
 				contenedor.innerHTML = html;
 				btn.disabled = false;
 				btn.innerHTML = textoOriginal;
+
+				if (datos.get('evento')) {
+					const nombreEvento = datos.get('evento');
+					mostrarTarjetaAjax(nombreEvento);
+				}
 			})
 			.catch(error => {
 				console.error('Error:', error);
@@ -307,9 +415,30 @@
 	.created-mod {
 		color: #dbdbdb;
 	}
+
+	@keyframes pulse-red {
+		0% {
+			box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.7);
+		}
+
+		70% {
+			box-shadow: 0 0 0 15px rgba(244, 67, 54, 0);
+		}
+
+		100% {
+			box-shadow: 0 0 0 0 rgba(244, 67, 54, 0);
+		}
+	}
+
+	.alerta-remota-activa {
+		position: fixed;
+		top: 20px;
+		right: 20px;
+		z-index: 998;
+		width: 420px;
+		border: 3px solid #fff;
+		animation: pulse-red 2s infinite;
+	}
 </style>
-
-
-
 
 <?php $this->assign('title', $bitacora); ?>

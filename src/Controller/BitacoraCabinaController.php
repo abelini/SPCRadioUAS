@@ -5,14 +5,11 @@ namespace SPC\Controller;
 
 use SPC\Model\Entity\Horario;
 use SPC\Model\Entity\ReportesPrograma;
+use Cake\Cache\Cache;
 use Cake\Collection\Collection;
-//use Cake\Database\Expression\QueryExpression;
-//use Cake\Datasource\EntityInterface;
 use Cake\Event\EventInterface;
 use Cake\Http\Response;
 use Cake\I18n\Date;
-//use Cake\I18n\Time;
-//use Cake\I18n\DateTime;
 use Cake\ORM\Query\SelectQuery;
 
 
@@ -23,18 +20,18 @@ class BitacoraCabinaController extends AppController
 
 	protected int $disabledReport = 0;
 
+	private const int MAX_REMOTE_CONTROL_TIME = 2 * 60 * 60;
+
 	public function initialize(): void
 	{
 		parent::initialize();
-		$this->Authentication->allowUnauthenticated(['display', 'update']);
+		$this->Authentication->allowUnauthenticated(['display', 'update', 'stopRemoteStream']);
 	}
 
 	public function display(): Response
 	{
 		$bitacora = $this->BitacoraCabina->findOrCreate(['fecha' => $this->requestedDate()]);
 		$bitacora = $this->BitacoraCabina->loadInto($bitacora, ['ReportesCabinas', 'ReportesCabinas.Locutores', 'ReportesCabinas.ReportesProgramas']);
-		//$bitacora->setNew(false);
-
 		$asignaciones = $this->getAsignacionesForTheDay($bitacora->fecha);
 
 		$programStatuses = ReportesPrograma::STATUS_OPTIONS;
@@ -46,6 +43,20 @@ class BitacoraCabinaController extends AppController
 		$this->disabledReport = (int) $this->request->getQuery('update') ?? 0;
 
 		$this->set(compact('bitacora', 'asignaciones', 'programStatuses', 'disabledSubmit', 'checkTimeToDisable', ));
+
+		$controlActivo = Cache::read('control_remoto_activo');
+
+		if ($controlActivo) {
+			$tiempoTranscurrido = time() - $controlActivo['inicio'];
+
+			if ($tiempoTranscurrido > self::MAX_REMOTE_CONTROL_TIME) {
+				Cache::delete('control_remoto_activo');
+				$controlActivo = null;
+			}
+		}
+
+		$this->set('controlActivo', $controlActivo);
+
 		return $this->render();
 	}
 
@@ -75,6 +86,14 @@ class BitacoraCabinaController extends AppController
 		} catch (\DateMalformedStringException $e) {
 			return new Date('now');
 		}
+	}
+
+	public function stopRemoteStream(): Response
+	{
+		$this->request->allowMethod(['post']);
+		Cache::delete('control_remoto_activo');
+		$this->Flash->success('El control remoto ha finalizado. La programación regular ha vuelto a la normalidad.');
+		return $this->redirect($this->referer());
 	}
 
 	protected function getAsignacionesForTheDay(Date $dia): array

@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace SPC\Controller\Api;
 
 use SPC\Controller\ApiController;
-use Cake\Event\EventInterface;
+use Cake\Cache\Cache;
 use Cake\Http\Response;
 use Cake\I18n\DateTime;
 use Cake\I18n\Time;
@@ -20,45 +20,70 @@ class ScheduleController extends ApiController
 
 	protected const string RADIOUAS_URI = 'https://radio.uas.edu.mx';
 
+	private const int MAX_REMOTE_CONTROL_TIME = 2 * 60 * 60;
+
 	public function now(): Response
 	{
-		$today = DateTime::now();
-		$programas = $this->getTableLocator()
-			->get('Programas')
-			->find()
-			->where(['Programas.outOfAir' => false])
-			->matching('Dias', function (SelectQuery $query) {
-				return $query->where(['Dias.ID' => (new DateTime())->dayOfWeek]);
-			})
-			->orderByAsc('horaInicio')
-			->all();
+		$controlRemoto = Cache::read('control_remoto_activo');
+		$feedArray = null;
+		$feedText = null;
 
-		$programa = $programas->filter(function ($programa, $key) {
-			$now = Time::now();
-			return ($programa->horaInicio <= $now && $programa->horaFin >= $now);
-		});
+		if ($controlRemoto) {
+			$tiempoTranscurrido = time() - $controlRemoto['inicio'];
+
+			if ($tiempoTranscurrido > self::MAX_REMOTE_CONTROL_TIME) {
+				Cache::delete('control_remoto_activo');
+			} else {
+				$feedArray = [
+					'programa' => $controlRemoto['programa'],
+					'produccion' => $controlRemoto['produccion']
+				];
+				$feedText = $controlRemoto['produccion'] . ' - ' . $controlRemoto['programa'];
+			}
+		}
+
+		if (!$feedArray) {
+			$today = DateTime::now();
+			$programas = $this->getTableLocator()
+				->get('Programas')
+				->find()
+				->where(['Programas.outOfAir' => false])
+				->matching('Dias', function (SelectQuery $query) {
+					return $query->where(['Dias.ID' => (new DateTime())->dayOfWeek]);
+				})
+				->orderByAsc('horaInicio')
+				->all();
+
+			$programa = $programas->filter(function ($programa, $key) {
+				$now = Time::now();
+				return $now->between($programa->horaInicio, $programa->horaFin);
+			});
+
+			if ($programa->count() == 0) {
+				$feedArray = self::DEFAULT_PROGRAM;
+				$feedText = self::DEFAULT_RADIOFEED_TEXT;
+			} else {
+				$feedArray = [
+					'programa' => $programa->first()->get('name'),
+					'produccion' => $programa->first()->get('produccion')
+				];
+				$feedText = $feedArray['produccion'] . ' - ' . $feedArray['programa'];
+			}
+		}
 
 		if (($this->request->getQuery('format')) !== null && $this->request->getQuery('format') == 'json') {
-			if ($programa->count() == 0) {
-				$feed = self::DEFAULT_PROGRAM;
-			} else {
-				$feed = ['programa' => $programa->first()->get('name'), 'produccion' => $programa->first()->get('produccion')];
-			}
-
 			return $this->render()
 				->withHeader('Access-Control-Allow-Origin', self::RADIOUAS_URI)
 				->withType('application/json')
-				->withStringBody(json_encode($feed));
+				->withStringBody(json_encode($feedArray));
 		}
-
-		$feed = ($programa->count() == 0) ? self::DEFAULT_RADIOFEED_TEXT : $programa->first()->produccion . ' - ' . $programa->first()->name;
 
 		$this->viewBuilder()->setLayout(null);
 
 		return $this->render()
 			->withHeader('Access-Control-Allow-Origin', self::RADIOUAS_URI)
 			->withType('text/plain')
-			->withStringBody($feed);
+			->withStringBody($feedText);
 	}
 
 	public function daily(): Response
