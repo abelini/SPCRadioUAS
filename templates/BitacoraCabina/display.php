@@ -89,22 +89,30 @@
 </div>
 
 <?php if (!empty($controlActivo)): ?>
-	<div id="tarjeta-alerta-remota" class="w3-panel w3-red w3-card-4 w3-animate-right w3-padding alerta-remota-activa">
+	<div id="tarjeta-alerta-remota"
+		class="w3-panel w3-border-red w3-white w3-card-4 w3-animate-right w3-padding alerta-remota-activa"
+		style="border-width:12px;">
+
 		<h2 class="w3-xlarge w3-bold w3-text-black" style="margin-top:10px;">
-			<i class="fa-solid fa-broadcast-tower"></i> ENLACE REMOTO EN VIVO
+			<i class="fa-solid fa-radio"></i> ENLACE REMOTO EN VIVO
 		</h2>
 		<p class="w3-large">El sistema RBDS está mostrando al aire:</p>
-		<p id="nombre-evento-remoto" class="w3-xlarge w3-semibold w3-margin-bottom">📻 <?= h($controlActivo['programa']) ?>
-		</p>
+
+		<div class="marquee-container w3-black w3-margin-bottom w3-padding">
+			<span id="nombre-evento-remoto" class="marquee-text w3-xlarge w3-semibold w3-doto w3-text-orange"
+				style="text-transform: uppercase;">
+				<?= h($controlActivo['programa']) ?>
+			</span>
+		</div>
 
 		<p class="w3-large w3-margin-bottom">
 			<i class="fa-regular fa-clock"></i> Tiempo al aire: <span id="cronometro-remoto" class="w3-bold">00:00</span>
 		</p>
 
 		<?= $this->Form->create(null, ['url' => ['controller' => 'BitacoraCabina', 'action' => 'stopRemoteStream']]) ?>
-		<?= $this->Form->button('<i class="fa-solid fa-stop"></i> Detener Enlace', [
+		<?= $this->Form->button('<i class="fa-solid fa-stop"></i> Detener enlace y volver a la programación', [
 			'type' => 'submit',
-			'class' => 'w3-button w3-black w3-block w3-margin-bottom w3-round w3-large w3-hover-dark-gray',
+			'class' => 'w3-button w3-red w3-block w3-margin-bottom w3-round w3-large w3-hover-dark-gray',
 			'escapeTitle' => false
 		]) ?>
 		<?= $this->Form->end() ?>
@@ -223,7 +231,10 @@
 	function mostrarTarjetaAjax(nombreEvento) {
 		let tarjetaExistente = document.getElementById('tarjeta-alerta-remota');
 		if (tarjetaExistente) {
-			document.getElementById('nombre-evento-remoto').innerText = '📻 ' + nombreEvento;
+			let spanMarquee = document.getElementById('nombre-evento-remoto');
+			if (spanMarquee) {
+				spanMarquee.innerText = nombreEvento;
+			}
 			return;
 		}
 
@@ -234,23 +245,32 @@
 
 		const tarjeta = document.createElement('div');
 		tarjeta.id = 'tarjeta-alerta-remota';
-		tarjeta.className = 'w3-panel w3-red w3-card-4 w3-animate-right w3-padding alerta-remota-activa';
+
+		tarjeta.className = 'w3-panel w3-border-red w3-white w3-card-4 w3-animate-right w3-padding alerta-remota-activa';
+		tarjeta.style.borderWidth = '12px';
 
 		tarjeta.innerHTML = `
 		<h2 class="w3-xlarge w3-bold w3-text-black" style="margin-top:10px;">
-			<i class="fa-solid fa-broadcast-tower"></i> ENLACE REMOTO EN VIVO
+			<i class="fa-solid fa-radio"></i> ENLACE REMOTO EN VIVO
 		</h2>
-		<p class="w3-large">El sistema RBDS está mostrando al aire:</p>
-		<p id="nombre-evento-remoto" class="w3-xlarge w3-semibold w3-margin-bottom">📻 ${nombreEvento}</p>
+		<p class="w3-large w3-text-black">El sistema RBDS está mostrando al aire:</p>
 		
-		<p class="w3-large w3-margin-bottom">
+		<div class="marquee-container w3-black w3-margin-bottom w3-padding">
+			<span id="nombre-evento-remoto" 
+				  class="marquee-text w3-xlarge w3-semibold w3-doto w3-text-orange" 
+				  style="text-transform: uppercase;">
+				${nombreEvento}
+			</span>
+		</div>
+		
+		<p class="w3-large w3-margin-bottom w3-text-black">
 			<i class="fa-regular fa-clock"></i> Tiempo al aire: <span id="cronometro-remoto" class="w3-bold">00:00</span>
 		</p>
 		
 		<form method="post" action="/bitacora-cabina/stop-remote-stream">
 			<input type="hidden" name="_csrfToken" value="${csrfToken}">
-			<button type="submit" class="w3-button w3-black w3-block w3-margin-bottom w3-round w3-large w3-hover-dark-gray">
-				<i class="fa-solid fa-stop"></i> Detener Enlace
+			<button type="submit" class="w3-button w3-red w3-block w3-margin-bottom w3-round w3-large w3-hover-dark-gray">
+				<i class="fa-solid fa-stop"></i> Detener enlace y volver a la programación
 			</button>
 		</form>
 	`;
@@ -353,7 +373,6 @@
 	@media screen and (max-width: 600px) {
 		#miSidebar {
 			width: 100% !important;
-			/* Fuerza el ancho total */
 			min-width: 100% !important;
 			right: 0 !important;
 			top: 0 !important;
@@ -435,9 +454,40 @@
 		top: 20px;
 		right: 20px;
 		z-index: 998;
-		width: 420px;
+		width: 440px;
 		border: 3px solid #fff;
 		animation: pulse-red 2s infinite;
+	}
+
+	.w3-doto {
+		font-family: "Doto", sans-serif;
+		font-optical-sizing: auto;
+		font-weight: 600;
+		font-style: normal;
+		font-variation-settings: "ROND" 0;
+	}
+
+	.marquee-container {
+		width: 100%;
+		overflow: hidden;
+		white-space: nowrap;
+		box-sizing: border-box;
+	}
+
+	.marquee-text {
+		display: inline-block;
+		padding-left: 100%;
+		animation: marquee-scroll 18s linear infinite;
+	}
+
+	@keyframes marquee-scroll {
+		0% {
+			transform: translate(0, 0);
+		}
+
+		100% {
+			transform: translate(-100%, 0);
+		}
 	}
 </style>
 

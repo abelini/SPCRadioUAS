@@ -128,9 +128,9 @@ class CabinaController extends ApiController
 			}
 		}
 
-		//$respuesta = $prompt;
-		$gemini = new GeminiService();
-		$respuesta = $gemini->generateText($prompt);
+		$respuesta = $prompt;
+		//$gemini = new GeminiService();
+		//$respuesta = $gemini->generateText($prompt);
 
 		$this->set(compact('respuesta'));
 		$this->viewBuilder()->setLayout('ajax');
