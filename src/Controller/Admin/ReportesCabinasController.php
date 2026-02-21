@@ -322,7 +322,7 @@ class ReportesCabinasController extends AppController
 	{
 		$programas = $this->ProgramsRepository
 			->find('list')
-			->orderAsc('name')
+			->orderByAsc('name')
 			->all();
 		$end = DateTime::now();
 		$start = new DateTime(self::REPORTING_START_DATE);

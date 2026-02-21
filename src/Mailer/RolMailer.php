@@ -31,7 +31,7 @@ class RolMailer extends GoogleMailer
 
 		$rol = $rolesRepository->get($rolID, contain: [
 			'Asignaciones' => function (SelectQuery $query) {
-				return $query->orderAsc('horaInicio')
+				return $query->orderByAsc('horaInicio')
 					->contain([
 						'Locutores' => function (SelectQuery $query) {
 							return $query->select(['ID', 'name']);

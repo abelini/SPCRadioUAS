@@ -14,31 +14,35 @@ use Cake\ORM\Query\SelectQuery;
 class ScheduleController extends ApiController
 {
 
-	protected const string DEFAULT_RADIOFEED_TEXT = 'Fonoteca - Paisajes sonoros';
+	protected const string DEFAULT_PROGRAM_NAME = 'Paisajes sonoros';
 
-	protected const array DEFAULT_PROGRAM = ['programa' => 'Paisajes sonoros', 'produccion' => 'Fonoteca'];
+	protected const string DEFAULT_PRODUCTION_NAME = 'Fonoteca';
+
+	//protected const string DEFAULT_RADIOFEED_TEXT = self::DEFAULT_PRODUCCION_NAME . ' - ' . self::DEFAULT_PROGRAM_NAME;
+
+	//protected const array DEFAULT_PROGRAM = ['programa' => self::DEFAULT_PROGRAM_NAME, 'produccion' => self::DEFAULT_PRODUCCION_NAME];
 
 	protected const string RADIOUAS_URI = 'https://radio.uas.edu.mx';
 
-	private const int MAX_REMOTE_CONTROL_TIME = 2 * 60 * 60;
+	private const int MAX_REMOTE_BROADCAST_TIME = 2 * 60 * 60;
 
 	public function now(): Response
 	{
-		$controlRemoto = Cache::read('control_remoto_activo');
+		$controlRemoto = Cache::read(parent::CONTROL_REMOTO_CACHE);
 		$feedArray = null;
 		$feedText = null;
 
 		if ($controlRemoto) {
 			$tiempoTranscurrido = time() - $controlRemoto['inicio'];
 
-			if ($tiempoTranscurrido > self::MAX_REMOTE_CONTROL_TIME) {
-				Cache::delete('control_remoto_activo');
+			if ($tiempoTranscurrido > self::MAX_REMOTE_BROADCAST_TIME) {
+				Cache::delete(parent::CONTROL_REMOTO_CACHE);
 			} else {
 				$feedArray = [
-					'programa' => $controlRemoto['programa'],
+					'programa' => $controlRemoto['evento'],
 					'produccion' => $controlRemoto['produccion']
 				];
-				$feedText = $controlRemoto['produccion'] . ' - ' . $controlRemoto['programa'];
+				$feedText = $controlRemoto['produccion'] . ' - ' . $controlRemoto['evento'];
 			}
 		}
 
@@ -56,34 +60,41 @@ class ScheduleController extends ApiController
 
 			$programa = $programas->filter(function ($programa, $key) {
 				$now = Time::now();
+				if ($programa->horaFin->lessThan($programa->horaInicio)) {
+					return $now->greaterThanOrEquals($programa->horaInicio) || $now->lessThanOrEquals($programa->horaFin);
+				}
 				return $now->between($programa->horaInicio, $programa->horaFin);
 			});
 
 			if ($programa->count() == 0) {
-				$feedArray = self::DEFAULT_PROGRAM;
-				$feedText = self::DEFAULT_RADIOFEED_TEXT;
+				$JSONFeed = [
+					'programa' => self::DEFAULT_PROGRAM_NAME,
+					'produccion' => self::DEFAULT_PRODUCTION_NAME
+				];
+				$plainTextFeed = self::DEFAULT_PRODUCTION_NAME . ' - ' . self::DEFAULT_PROGRAM_NAME;
 			} else {
-				$feedArray = [
+				$JSONFeed = [
 					'programa' => $programa->first()->get('name'),
 					'produccion' => $programa->first()->get('produccion')
 				];
-				$feedText = $feedArray['produccion'] . ' - ' . $feedArray['programa'];
+				$plainTextFeed = $programa->first()->get('produccion') . ' - ' . $programa->first()->get('name');
 			}
 		}
 
+		$response = $this->render()
+			->withHeader('Access-Control-Allow-Origin', self::RADIOUAS_URI);
+
 		if (($this->request->getQuery('format')) !== null && $this->request->getQuery('format') == 'json') {
-			return $this->render()
-				->withHeader('Access-Control-Allow-Origin', self::RADIOUAS_URI)
+			return $response
 				->withType('application/json')
-				->withStringBody(json_encode($feedArray));
+				->withStringBody(json_encode($JSONFeed));
 		}
 
 		$this->viewBuilder()->setLayout(null);
 
-		return $this->render()
-			->withHeader('Access-Control-Allow-Origin', self::RADIOUAS_URI)
+		return $response
 			->withType('text/plain')
-			->withStringBody($feedText);
+			->withStringBody($plainTextFeed);
 	}
 
 	public function daily(): Response

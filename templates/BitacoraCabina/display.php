@@ -101,7 +101,7 @@
 		<div class="marquee-container w3-black w3-margin-bottom w3-padding">
 			<span id="nombre-evento-remoto" class="marquee-text w3-xlarge w3-semibold w3-doto w3-text-orange"
 				style="text-transform: uppercase;">
-				<?= h($controlActivo['programa']) ?>
+				<?= h($controlActivo['evento']) ?>
 			</span>
 		</div>
 
