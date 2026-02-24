@@ -26,7 +26,7 @@ class TemasProgramasController extends AppController
     {
         $this->request->allowMethod(['post', 'ajax']);
 
-        $prompt = Configure::read('Prompts.liveShow');
+        $prompt = Configure::read('Prompts.live_show');
 
         $tema = $this->getTableLocator()->get('TemasProgramas')
             ->find()
@@ -54,7 +54,7 @@ class TemasProgramasController extends AppController
 
     public function generateSocialContent($id = null): Response
     {
-        $prompt = Configure::read('Prompts.liveShow');
+        $prompt = Configure::read('Prompts.live_show');
 
         $tema = $this->TemasProgramas->find()
             ->where(['TemasProgramas.programaID' => $id])
