@@ -5,6 +5,7 @@ namespace SPC\Controller;
 
 use SPC\Model\Entity\Horario;
 use SPC\Model\Entity\ReportesPrograma;
+use SPC\Trait\APICacheTrait;
 use Cake\Cache\Cache;
 use Cake\Collection\Collection;
 use Cake\Event\EventInterface;
@@ -15,12 +16,11 @@ use Cake\ORM\Query\SelectQuery;
 
 class BitacoraCabinaController extends AppController
 {
+	use APICacheTrait;
 
 	protected const int TOLERANCIA = 1;
 
 	protected int $disabledReport = 0;
-
-	private const int MAX_REMOTE_CONTROL_TIME = 2 * 60 * 60;
 
 	public function initialize(): void
 	{
@@ -44,13 +44,12 @@ class BitacoraCabinaController extends AppController
 
 		$this->set(compact('bitacora', 'asignaciones', 'programStatuses', 'disabledSubmit', 'checkTimeToDisable', ));
 
-		$controlActivo = Cache::read('control_remoto_activo');
-
+		$controlActivo = Cache::read(self::CONTROL_REMOTO_CACHE);
 		if ($controlActivo) {
 			$tiempoTranscurrido = time() - $controlActivo['inicio'];
 
 			if ($tiempoTranscurrido > self::MAX_REMOTE_CONTROL_TIME) {
-				Cache::delete('control_remoto_activo');
+				Cache::delete(self::CONTROL_REMOTO_CACHE);
 				$controlActivo = null;
 			}
 		}

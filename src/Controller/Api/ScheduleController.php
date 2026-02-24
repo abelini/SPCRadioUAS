@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace SPC\Controller\Api;
 
 use SPC\Controller\ApiController;
+use SPC\Trait\APICacheTrait;
 use Cake\Cache\Cache;
 use Cake\Http\Response;
 use Cake\I18n\DateTime;
@@ -13,30 +14,25 @@ use Cake\ORM\Query\SelectQuery;
 
 class ScheduleController extends ApiController
 {
+	use APICacheTrait;
 
 	protected const string DEFAULT_PROGRAM_NAME = 'Paisajes sonoros';
 
 	protected const string DEFAULT_PRODUCTION_NAME = 'Fonoteca';
 
-	//protected const string DEFAULT_RADIOFEED_TEXT = self::DEFAULT_PRODUCCION_NAME . ' - ' . self::DEFAULT_PROGRAM_NAME;
-
-	//protected const array DEFAULT_PROGRAM = ['programa' => self::DEFAULT_PROGRAM_NAME, 'produccion' => self::DEFAULT_PRODUCCION_NAME];
-
 	protected const string RADIOUAS_URI = 'https://radio.uas.edu.mx';
-
-	private const int MAX_REMOTE_BROADCAST_TIME = 2 * 60 * 60;
 
 	public function now(): Response
 	{
-		$controlRemoto = Cache::read(parent::CONTROL_REMOTO_CACHE);
+		$controlRemoto = Cache::read(self::CONTROL_REMOTO_CACHE);
 		$JSONFeed = null;
 		$plainTextFeed = null;
 
 		if ($controlRemoto) {
 			$tiempoTranscurrido = time() - $controlRemoto['inicio'];
 
-			if ($tiempoTranscurrido > self::MAX_REMOTE_BROADCAST_TIME) {
-				Cache::delete(parent::CONTROL_REMOTO_CACHE);
+			if ($tiempoTranscurrido > self::MAX_REMOTE_CONTROL_TIME) {
+				Cache::delete(self::CONTROL_REMOTO_CACHE);
 			} else {
 				$JSONFeed = [
 					'programa' => $controlRemoto['evento'],
