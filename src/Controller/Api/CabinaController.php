@@ -97,7 +97,6 @@ class CabinaController extends ApiController
 	public function generateSocialContent(): Response
 	{
 		$type = $this->request->getData('type') ?? self::LIVE_SHOW;
-		debug($type);
 		$prompt = Configure::read('Prompts.' . $type);
 
 		if ($type == self::LIVE_SHOW) {
