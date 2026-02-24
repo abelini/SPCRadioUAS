@@ -90,7 +90,7 @@ class BitacoraCabinaController extends AppController
 	public function stopRemoteStream(): Response
 	{
 		$this->request->allowMethod(['post']);
-		Cache::delete('control_remoto_activo');
+		Cache::delete(self::CONTROL_REMOTO_CACHE);
 		$this->Flash->success('El control remoto ha finalizado. La programación regular ha vuelto a la normalidad.');
 		return $this->redirect($this->referer());
 	}
