@@ -29,8 +29,8 @@ class ScheduleController extends ApiController
 	public function now(): Response
 	{
 		$controlRemoto = Cache::read(parent::CONTROL_REMOTO_CACHE);
-		$feedArray = null;
-		$feedText = null;
+		$JSONFeed = null;
+		$plainTextFeed = null;
 
 		if ($controlRemoto) {
 			$tiempoTranscurrido = time() - $controlRemoto['inicio'];
@@ -38,22 +38,21 @@ class ScheduleController extends ApiController
 			if ($tiempoTranscurrido > self::MAX_REMOTE_BROADCAST_TIME) {
 				Cache::delete(parent::CONTROL_REMOTO_CACHE);
 			} else {
-				$feedArray = [
+				$JSONFeed = [
 					'programa' => $controlRemoto['evento'],
 					'produccion' => $controlRemoto['produccion']
 				];
-				$feedText = $controlRemoto['produccion'] . ' - ' . $controlRemoto['evento'];
+				$plainTextFeed = $controlRemoto['produccion'] . ' - ' . $controlRemoto['evento'];
 			}
 		}
 
-		if (!$feedArray) {
-			$today = DateTime::now();
+		if (!$JSONFeed) {
 			$programas = $this->getTableLocator()
 				->get('Programas')
 				->find()
 				->where(['Programas.outOfAir' => false])
 				->matching('Dias', function (SelectQuery $query) {
-					return $query->where(['Dias.ID' => (new DateTime())->dayOfWeek]);
+					return $query->where(['Dias.ID' => new DateTime()->dayOfWeek]);
 				})
 				->orderByAsc('horaInicio')
 				->all();
