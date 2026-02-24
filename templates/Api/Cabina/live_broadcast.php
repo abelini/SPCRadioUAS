@@ -12,7 +12,7 @@
     <?= $this->Form->label('evento', 'Participantes (opcional)') ?>
     <?= $this->Form->text('participantes', ['value' => '', 'placeholder' => 'Ej. Rector Dr. Jesús Madueña Molina y autoridades de la Facultad de...', 'class' => 'w3-input']) ?>
 
-    <?= $this->Form->hidden('type', ['value' => 'liveBroadcast']) ?>
+    <?= $this->Form->hidden('type', ['value' => 'live_broadcast']) ?>
 
     <?= $this->Form->submit('Gemini, genérame 3 opciones de publicación para Facebook Live', ['class' => 'w3-button w3-blue']) ?>
 

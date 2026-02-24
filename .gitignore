@@ -5,6 +5,7 @@
 /logs/*
 /tmp/*
 /vendor/*
+/webroot/img/alexa/*
 
 # --- CakePHP Logs y Temporales ---
 # Ignorar el contenido de logs, pero mantener la carpeta

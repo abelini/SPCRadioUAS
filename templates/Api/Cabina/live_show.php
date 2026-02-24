@@ -53,7 +53,7 @@
     ]) ?>
 
     <?= $this->Form->hidden('type', [
-        'value' => 'liveShow'
+        'value' => 'live_show'
     ]) ?>
 
     <?= $this->Form->button('<i class="fa-solid fa-robot"></i> Generar opciones de publicación para Facebook Live', [

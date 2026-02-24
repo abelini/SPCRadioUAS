@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace SPC\Controller\Api;
 
 use SPC\Controller\ApiController;
+use SPC\Trait\APICacheTrait;
 use Cake\Cache\Cache;
 use Cake\Core\Configure;
 use Cake\Http\Client;
@@ -17,6 +18,8 @@ use SPC\Service\GeminiService;
 
 class CabinaController extends ApiController
 {
+	use APICacheTrait;
+
 	public function comments(): Response
 	{
 		$this->viewBuilder()->setLayout('live_stream');
@@ -27,13 +30,13 @@ class CabinaController extends ApiController
 	{
 		$this->viewBuilder()->setLayout('ajax');
 
-		$tipo = $this->request->getQuery('type') ?? 'live_show';
+		$tipo = $this->request->getQuery('type') ?? self::LIVE_SHOW;
 
 		switch ($tipo) {
-			case 'live_show':
+			case self::LIVE_SHOW:
 				return $this->_liveShowForm();
 
-			case 'live_broadcast':
+			case self::LIVE_BROADCAST:
 				return $this->_liveBroadcastForm();
 
 			default:
@@ -48,6 +51,7 @@ class CabinaController extends ApiController
 			->find()
 			->where([
 				'Programas.reportable' => true,
+				'Programas.outOfAir' => false,
 			])
 			->matching('Dias', function (SelectQuery $query) {
 				return $query->where(['Dias.ID' => (new DateTime())->dayOfWeek]);
@@ -62,7 +66,8 @@ class CabinaController extends ApiController
 		});
 		$this->set('programas', $programas);
 		$this->set('nextProgram', $nextPrograms->first());
-		return $this->render('live_show');
+
+		return $this->render(self::LIVE_SHOW);
 	}
 
 	protected function _liveBroadcastForm(): Response
@@ -70,7 +75,7 @@ class CabinaController extends ApiController
 		$fecha = date('Y-m-d');
 		$this->set('fechaActual', $fecha);
 
-		return $this->render('live_broadcast');
+		return $this->render(self::LIVE_BROADCAST);
 	}
 
 	public function getProgramInfo(): Response
@@ -91,10 +96,10 @@ class CabinaController extends ApiController
 
 	public function generateSocialContent(): Response
 	{
-		$type = $this->request->getData('type') ?? 'liveShow';
+		$type = $this->request->getData('type') ?? self::LIVE_SHOW;
 		$prompt = Configure::read('Prompts.' . $type);
 
-		if ($type == 'liveShow') {
+		if ($type == self::LIVE_SHOW) {
 			$programa = $this->getTableLocator()->get('Programas')
 				->find()
 				->select(['ID', 'name', 'conduccion'])
@@ -117,10 +122,10 @@ class CabinaController extends ApiController
 
 			$prompt = str_replace(['%evento%', '%participantes%'], [$evento, $participantes], $prompt);
 
-			$controlActual = Cache::read(parent::CONTROL_REMOTO_CACHE);
+			$controlActual = Cache::read(self::CONTROL_REMOTO_CACHE);
 
 			if (!$controlActual || $controlActual['evento'] !== $evento) {
-				Cache::write(parent::CONTROL_REMOTO_CACHE, [
+				Cache::write(self::CONTROL_REMOTO_CACHE, [
 					'evento' => $evento,
 					'produccion' => 'Transmisión remota',
 					'inicio' => DateTime::now()->getTimestamp()
@@ -144,7 +149,10 @@ class CabinaController extends ApiController
 		$programas = $this->getTableLocator()
 			->get('Programas')
 			->find()
-			->where(['reportable' => true])
+			->where([
+				'reportable' => true,
+				'outOfAir' => false,
+			])
 			->matching('Dias', function (SelectQuery $query) {
 				return $query->where(['Dias.ID' => (new DateTime())->dayOfWeek]);
 			})

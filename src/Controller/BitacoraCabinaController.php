@@ -36,7 +36,7 @@ class BitacoraCabinaController extends AppController
 
 		$programStatuses = ReportesPrograma::STATUS_OPTIONS;
 
-		$disabledSubmit = (new Date())->greaterThan($bitacora->fecha) && !($this->request->getQuery('enable') !== null) && !($this->request->getQuery('update') !== null);
+		$disabledSubmit = new Date()->greaterThan($bitacora->fecha) && !($this->request->getQuery('enable') !== null) && !($this->request->getQuery('update') !== null);
 
 		$checkTimeToDisable = fn($horario, $report) => $this->checkDisabledControls($horario, $report, $disabledSubmit);
 
