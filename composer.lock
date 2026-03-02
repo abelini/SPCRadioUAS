@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4fd75503b4cc6e7f9656fb65ad885b02",
+    "content-hash": "69f6d792d7fabd55edf54c4a87b46c39",
     "packages": [
         {
             "name": "cakephp/authentication",
@@ -1927,16 +1927,16 @@
         },
         {
             "name": "symfony/http-client",
-            "version": "v8.0.3",
+            "version": "v8.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/http-client.git",
-                "reference": "ea062691009cc2b7bb87734fef20e02671cbd50b"
+                "reference": "f425139487f904e198f99e3c416c79ed08cef3c3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/http-client/zipball/ea062691009cc2b7bb87734fef20e02671cbd50b",
-                "reference": "ea062691009cc2b7bb87734fef20e02671cbd50b",
+                "url": "https://api.github.com/repos/symfony/http-client/zipball/f425139487f904e198f99e3c416c79ed08cef3c3",
+                "reference": "f425139487f904e198f99e3c416c79ed08cef3c3",
                 "shasum": ""
             },
             "require": {
@@ -1999,7 +1999,7 @@
                 "http"
             ],
             "support": {
-                "source": "https://github.com/symfony/http-client/tree/v8.0.3"
+                "source": "https://github.com/symfony/http-client/tree/v8.0.6"
             },
             "funding": [
                 {
@@ -2019,7 +2019,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-12-23T14:52:06+00:00"
+            "time": "2026-02-20T07:51:53+00:00"
         },
         {
             "name": "symfony/http-client-contracts",
@@ -6658,7 +6658,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=8.3.29"
+        "php": ">=8.4"
     },
     "platform-dev": {},
     "plugin-api-version": "2.9.0"
