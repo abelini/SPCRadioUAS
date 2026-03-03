@@ -17,6 +17,9 @@
 		<?= $this->Form->label('horaFin', 'Hora de finalización') ?>
 		<?= $this->Form->control('horaFin', ['label' => false]) ?>
 
+		<?= $this->Form->label('categoryID', 'Categoría') ?>
+		<?= $this->Form->control('categoryID', ['options' => $categorias, 'label' => false]) ?>
+
 		<?= $this->Form->label('produccion', 'Producción') ?>
 		<?= $this->Form->control('produccion', ['label' => false]) ?>
 

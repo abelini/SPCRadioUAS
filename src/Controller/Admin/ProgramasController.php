@@ -143,7 +143,8 @@ class ProgramasController extends AppController
 			$this->Flash->error(__('The programa could not be saved. Please, try again.'));
 		}
 		$dias = $this->Programas->Dias->find('list', limit: 200)->all();
-		$this->set(compact('programa', 'dias'));
+		$categorias = $this->Programas->CategoriasProgramas->find('list')->all();
+		$this->set(compact('programa', 'dias', 'categorias'));
 	}
 
 	public function edit($id = null)
