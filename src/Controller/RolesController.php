@@ -28,8 +28,9 @@ class RolesController extends AppController
 	public function view(): Response
 	{
 		$rol = $this->getRequestedRol();
+		$weekStart = clone $rol->fechaInicio;
 		$asignaciones = (new Collection($rol->asignaciones))
-			->groupBy(fn($a) => $rol->fechaInicio->addDays($a->diaID - 1)->toDateString())
+			->groupBy(fn($a) => (clone $weekStart)->addDays($a->diaID - 1)->toDateString())
 			->toArray();
 
 		ksort($asignaciones);

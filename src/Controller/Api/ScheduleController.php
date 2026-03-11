@@ -46,7 +46,6 @@ class ScheduleController extends ApiController
 			$programas = $this->getTableLocator()
 				->get('Programas')
 				->find()
-				->where(['Programas.outOfAir' => false])
 				->matching('Dias', function (SelectQuery $query) {
 					return $query->where(['Dias.ID' => new DateTime()->dayOfWeek]);
 				})
@@ -123,7 +122,6 @@ class ScheduleController extends ApiController
 			->get('Programas')
 			->find()
 			->select($select)
-			->where(['Programas.outOfAir' => false])
 			->contain('CategoriasProgramas', function (SelectQuery $query) {
 				return $query->select(['ID', 'slug']);
 			})
@@ -156,4 +154,3 @@ class ScheduleController extends ApiController
 		}
 	}
 }
-

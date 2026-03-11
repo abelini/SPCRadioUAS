@@ -1,11 +1,11 @@
 # Sistema de Producción y Cabina
 
-<img src="https://radio.uas.edu.mx/wp-content/media/logo.png" alt="Radio UAS" style="display:block;margin:auto;width:30%;">
+<img src="https://radio.uas.edu.mx/wp-content/media/logo.png" alt="Radio UAS" style="display:block;margin:auto;width:30%;display:block;">
 
 <p align="center">
   <img src="https://github.com/cakephp/app/actions/workflows/ci.yml/badge.svg?branch=master" alt="Build Status">
   <img src="https://img.shields.io/badge/CakePHP-5.3-red?logo=cakephp" alt="CakePHP 5.3">
-  <img src="https://img.shields.io/badge/PHP-8.4-777BB4?logo=php" alt="PHP 8.5">
+  <img src="https://img.shields.io/badge/PHP-8.5-777BB4?logo=php" alt="PHP 8.5">
   <img src="https://img.shields.io/badge/uso-interno-lightgrey" alt="Uso interno">
 </p>
 

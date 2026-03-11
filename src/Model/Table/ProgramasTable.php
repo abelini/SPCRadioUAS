@@ -41,17 +41,24 @@ class ProgramasTable extends Table
 		]);
 	}
 
+	/**
+	 * Aplica el filtro outOfAir por defecto en todas las queries públicas.
+	 * Se omite cuando la query trae la opción 'admin' => true,
+	 * o cuando ya trae explícitamente un filtro sobre outOfAir via opción 'filterOutOfAir' => false.
+	 */
 	public function beforeFind(EventInterface $event, SelectQuery $query, ArrayObject $options): void
 	{
 		$options = $query->getOptions();
 
-		if (isset($options['admin']) && $options['admin'] === true) {
+		if (!empty($options['admin'])) {
 			return;
 		}
 
-		if (!str_contains(serialize($query->clause('where')), 'outOfAir')) {
-			$query->where(['Programas.outOfAir' => false]);
+		if (!empty($options['filterOutOfAir']) && $options['filterOutOfAir'] === false) {
+			return;
 		}
+
+		$query->where(['Programas.outOfAir' => false]);
 	}
 
 	#[\Override]
@@ -102,36 +109,41 @@ class ProgramasTable extends Table
 		$validator
 			->scalar('conduccion')
 			->maxLength('conduccion', 255);
-		//->requirePresence('conduccion', 'create')
-		//->notEmptyString('conduccion');
 
 		$validator
 			->boolean('musical')
 			->requirePresence('musical', 'create')
 			->notEmptyString('musical');
 
-		$validator
-			->add('horaFin', 'afterStart', [
-				'rule' => function ($value, $context) {
-					if ($value == '00:00:00')
-						return true;
-					if (isset($context['data']['horaInicio'])) {
-						return $value > $context['data']['horaInicio'];
-					}
-					return true;
-				},
-				'message' => 'La hora de fin no puede ser menor o igual a la hora de inicio.'
-			]);
+		$validator->add('horaFin', 'afterStart', [
+			'rule' => $this->validateEndTimeAfterStart(...),
+			'message' => 'La hora de fin no puede ser menor o igual a la hora de inicio.',
+		]);
 
-		$validator
-			->add('dias', 'atLeastOne', [
-				'rule' => function ($value, $context) {
-					return !empty($value) && isset($value['_ids']) && !empty($value['_ids']);
-				},
-				'message' => 'Debes seleccionar al menos un día de transmisión para el programa.'
-			]);
+		$validator->add('dias', 'atLeastOne', [
+			'rule' => $this->validateAtLeastOneDay(...),
+			'message' => 'Debes seleccionar al menos un día de transmisión para el programa.',
+		]);
 
 		return $validator;
 	}
-}
 
+	/**
+	 * Valida que horaFin sea posterior a horaInicio, excepto cuando es medianoche (00:00:00).
+	 */
+	private function validateEndTimeAfterStart(mixed $value, array $context): bool
+	{
+		if ($value === '00:00:00') {
+			return true;
+		}
+		return !isset($context['data']['horaInicio']) || $value > $context['data']['horaInicio'];
+	}
+
+	/**
+	 * Valida que se haya seleccionado al menos un día de transmisión.
+	 */
+	private function validateAtLeastOneDay(mixed $value, array $context): bool
+	{
+		return !empty($value) && isset($value['_ids']) && !empty($value['_ids']);
+	}
+}

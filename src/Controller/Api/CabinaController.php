@@ -51,7 +51,6 @@ class CabinaController extends ApiController
 			->find()
 			->where([
 				'Programas.reportable' => true,
-				'Programas.outOfAir' => false,
 			])
 			->matching('Dias', function (SelectQuery $query) {
 				return $query->where(['Dias.ID' => (new DateTime())->dayOfWeek]);
@@ -151,7 +150,6 @@ class CabinaController extends ApiController
 			->find()
 			->where([
 				'reportable' => true,
-				'outOfAir' => false,
 			])
 			->matching('Dias', function (SelectQuery $query) {
 				return $query->where(['Dias.ID' => (new DateTime())->dayOfWeek]);
