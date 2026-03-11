@@ -13,7 +13,6 @@ use Cake\Http\Response;
 use Cake\I18n\DateTime;
 use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\Table;
-use NumberToWords\NumberToWords;
 
 class ReportesCabinasController extends AppController
 {
@@ -131,27 +130,14 @@ class ReportesCabinasController extends AppController
 				});
 			}
 		]);
-		//$star = $start;
+
 		$reportes = new Collection($programa->reportes);
-		$groupedReportes = $reportes->groupBy('status')->toArray();
+		$ocurrences = array_merge(
+			['V' => [], 'G' => [], 'S' => [], 'X' => []],
+			$reportes->groupBy('status')->toArray()
+		);
+		$programa->set('XtoWord', ReportesPrograma::countAbsencesToWords($ocurrences));
 		$statusLongText = ReportesPrograma::STATUS_LONGTEXT_FOR_1P;
-
-		if (!isset($groupedReportes['V']))
-			$groupedReportes['V'] = [];
-		if (!isset($groupedReportes['G']))
-			$groupedReportes['G'] = [];
-		if (!isset($groupedReportes['S']))
-			$groupedReportes['S'] = [];
-		if (!isset($groupedReportes['X']))
-			$groupedReportes['X'] = [];
-
-		$ocurrences = [
-			'V' => $groupedReportes['V'],
-			'G' => $groupedReportes['G'],
-			'S' => $groupedReportes['S'],
-			'X' => $groupedReportes['X']
-		];
-		$programa->set('XtoWord', NumberToWords::transformNumber('es', count($groupedReportes['X'])));
 
 		$this->set(compact('programa', 'start', 'end', 'reportes', 'ocurrences', 'statusLongText'));
 		$this->viewBuilder()->setTemplate('by_1p');
@@ -191,15 +177,12 @@ class ReportesCabinasController extends AppController
 		$reportesProgramas = $reportesProgramas->reject(function ($rp) {
 			return empty($rp->status);
 		});
-		$RPByStatus = $reportesProgramas->groupBy('status')->toArray();
-		$RPByStatus = [
-			'V' => $RPByStatus['V'],
-			'G' => $RPByStatus['G'],
-			'S' => $RPByStatus['S'],
-			'X' => $RPByStatus['X']
-		];
+		$RPByStatus = array_merge(
+			['V' => [], 'G' => [], 'S' => [], 'X' => []],
+			$reportesProgramas->groupBy('status')->toArray()
+		);
 
-		$XtoWord = NumberToWords::transformNumber('es', count($RPByStatus['X']));
+		$XtoWord = ReportesPrograma::countAbsencesToWords($RPByStatus);
 		$statusLongText = ReportesPrograma::STATUS_LONGTEXT_FOR_1P;
 		$programsCount = $this->ProgramsRepository->find()->count();
 
@@ -436,4 +419,3 @@ class ReportesCabinasController extends AppController
 		return $this->redirect(['action' => 'index']);
 	}
 }
-

@@ -5,7 +5,6 @@ namespace SPC\Model\Table;
 
 use Cake\Event\EventInterface;
 use Cake\Datasource\EntityInterface;
-use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
@@ -51,11 +50,6 @@ class AsignacionesTable extends Table
 
 	public function validationDefault(Validator $validator): Validator
 	{
-		/*$validator
-			->integer('rol_id')
-			->requirePresence('rol_id', 'create');
-			//->notEmptyString('rol_id');*/
-
 		$validator
 			->integer('diaID')
 			->notEmptyString('diaID');
@@ -69,7 +63,6 @@ class AsignacionesTable extends Table
 
 	public function buildRules(RulesChecker $rules): RulesChecker
 	{
-		//$rules->add($rules->existsIn(['locutor_id'], 'Locutores'), ['errorField' => 'locutor_id']);
 		$rules->add($rules->existsIn(['diaID'], 'Dias'), ['errorField' => 'diaID']);
 		$rules->add($rules->existsIn(['horarioID'], 'Horarios'), ['errorField' => 'horarioID']);
 

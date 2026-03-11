@@ -7,7 +7,6 @@ use SPC\Model\Entity\Horario;
 use SPC\Model\Entity\ReportesPrograma;
 use SPC\Trait\APICacheTrait;
 use Cake\Cache\Cache;
-use Cake\Collection\Collection;
 use Cake\Event\EventInterface;
 use Cake\Http\Response;
 use Cake\I18n\Date;
@@ -32,7 +31,10 @@ class BitacoraCabinaController extends AppController
 	{
 		$bitacora = $this->BitacoraCabina->findOrCreate(['fecha' => $this->requestedDate()]);
 		$bitacora = $this->BitacoraCabina->loadInto($bitacora, ['ReportesCabinas', 'ReportesCabinas.Locutores', 'ReportesCabinas.ReportesProgramas']);
-		$asignaciones = $this->getAsignacionesForTheDay($bitacora->fecha);
+		$asignaciones = $this->fetchTable('Roles')
+			->find('forDay', date: $bitacora->fecha)
+			->first()
+				?->asignaciones ?? [];
 
 		$programStatuses = ReportesPrograma::STATUS_OPTIONS;
 
@@ -95,55 +97,6 @@ class BitacoraCabinaController extends AppController
 		return $this->redirect($this->referer());
 	}
 
-	protected function getAsignacionesForTheDay(Date $dia): array
-	{
-		$rol = $this->getTableLocator()
-			->get('Roles')
-			->find()
-			->where(['fechaInicio' => $dia->startOfWeek()])
-
-			->contain('Asignaciones', function (SelectQuery $query) use ($dia) {
-				return $query->where(['diaID' => $dia->dayOfWeek])->orderByAsc('horaInicio');
-			})
-			->contain('Asignaciones.Locutores', function (SelectQuery $query) {
-				return $query->select(['ID', 'name', 'photo']);
-			})
-			->contain('Asignaciones.Horarios', function (SelectQuery $query) {
-				return $query->select(['ID', 'horaInicio', 'horaFin', 'turnoID']);
-			})
-			->contain('Asignaciones.Dias.Programas', function (SelectQuery $query) {
-				return $query->where(['Programas.outOfAir' => false])->orderByAsc('horaInicio');
-			})
-			->first();
-
-		// Filtro para que al ultimo locutor le aparezcan los programas más alla de su horario.
-		// Ej. Locutor sale a las 8PM, listar programas de las 10PM (Culiacanazos)
-		$ids = array_keys($rol->asignaciones);
-		$ultimoLocutor = end($ids);
-
-		foreach ($rol->asignaciones as $locutor => $asignacion) {
-			$programas = new Collection($asignacion->dia->programas);
-			if ($locutor !== $ultimoLocutor) {
-				$programas = $programas->filter(function ($programa, $key) use ($asignacion) {
-					return ($programa->horaInicio >= $asignacion->horario->horaInicio && $programa->horaInicio < $asignacion->horario->horaFin);
-				})->reject(function ($programa) {
-					return !$programa->isReportable();
-				});
-				$rol->asignaciones[$locutor]->dia->programas = $programas->toArray();
-			} else {
-				// Filtro para que al ultimo locutor le aparezcan los programas más alla de su horario.
-				$programas = $programas->filter(function ($programa, $key) use ($asignacion) {
-					return ($programa->horaInicio >= $asignacion->horario->horaInicio /*&& $programa->horaInicio < $asignacion->horario->horaFin*/);
-				})->reject(function ($programa) {
-					return !$programa->isReportable();
-				});
-				$rol->asignaciones[$locutor]->dia->programas = $programas->toArray();
-			}
-		}
-		return $rol->asignaciones;
-	}
-
-
 	public function update()
 	{
 		$bitacora = $this->BitacoraCabina->get($this->request->getData('ID'));
@@ -165,4 +118,3 @@ class BitacoraCabinaController extends AppController
 		$this->viewBuilder()->setLayout('cabina');
 	}
 }
-

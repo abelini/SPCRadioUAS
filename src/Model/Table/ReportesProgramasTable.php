@@ -7,6 +7,10 @@ use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use Cake\Event\EventInterface;
+use Cake\Datasource\EntityInterface;
+use ArrayObject;
+use SPC\Model\Entity\ReportesPrograma;
 
 
 class ReportesProgramasTable extends Table
@@ -26,6 +30,16 @@ class ReportesProgramasTable extends Table
 
 		$this->belongsTo('Programas')
 			->setForeignKey('programaID');
+	}
+
+	/**
+	 * Normaliza el status vacío o null a 'V' (en vivo) antes de persistir.
+	 */
+	public function beforeMarshal(EventInterface $event, ArrayObject $data, ArrayObject $options): void
+	{
+		if (empty($data['status'])) {
+			$data['status'] = ReportesPrograma::DEFAULT_STATUS;
+		}
 	}
 
 	public function findOrphans(SelectQuery $query, array $options = []): SelectQuery

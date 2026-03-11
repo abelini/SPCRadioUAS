@@ -48,8 +48,13 @@ class RolesController extends AppController
 			},
 			'Turnos'
 		]);
-		//$this->getMailer('Rol')->new($rol->ID); // PROBAR ENVIO DE EMAIL
-		$asignaciones = (new Collection($rol->asignaciones))->groupBy('diaID')->toArray();
+
+		$weekStart = clone $rol->fechaInicio;
+		$asignaciones = (new Collection($rol->asignaciones))
+			->groupBy(fn($a) => (clone $weekStart)->addDays($a->diaID - 1)->toDateString())
+			->toArray();
+
+		ksort($asignaciones);
 
 		$this->set(compact('rol', 'asignaciones'));
 	}
@@ -65,7 +70,7 @@ class RolesController extends AppController
 				$rol = $this->Roles->patchEntity($rol, $this->request->getData(), ['associated' => ['Asignaciones']]);
 				if ($this->Roles->save($rol, ['associated' => ['Asignaciones']])) {
 					$this->Flash->success('Rol de cabina guardado');
-					$this->getMailer('Rol')->new($rol->ID);
+					//$this->getMailer('Rol')->new($rol->ID);
 					return $this->redirect(['action' => 'index']);
 				}
 			} else {
@@ -109,4 +114,3 @@ class RolesController extends AppController
 		return $this->redirect(['action' => 'index']);
 	}
 }
-

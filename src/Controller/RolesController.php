@@ -28,7 +28,11 @@ class RolesController extends AppController
 	public function view(): Response
 	{
 		$rol = $this->getRequestedRol();
-		$asignaciones = (new Collection($rol->asignaciones))->groupBy('diaID')->toArray();
+		$asignaciones = (new Collection($rol->asignaciones))
+			->groupBy(fn($a) => $rol->fechaInicio->addDays($a->diaID - 1)->toDateString())
+			->toArray();
+
+		ksort($asignaciones);
 
 		$this->set(compact('rol', 'asignaciones'));
 
@@ -102,4 +106,3 @@ class RolesController extends AppController
 		$this->viewBuilder()->setLayout('cabina');
 	}
 }
-

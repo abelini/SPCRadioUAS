@@ -4,13 +4,16 @@ declare(strict_types=1);
 namespace SPC\Model\Entity;
 
 use Cake\I18n\Time;
+use Cake\I18n\DateTime;
 use Cake\ORM\Entity;
+use Cake\Collection\Collection;
+use SPC\Model\Entity\ReportesPrograma;
 
 
 class Programa extends Entity implements \Stringable
 {
 
-	//public string $XtoWord;
+	//public string $XtoWord; // ahora es virtual field via _getXtoWord()
 
 	protected const string UO_ICON = '<i class="fa-solid fa-school"></i>';
 
@@ -40,7 +43,6 @@ class Programa extends Entity implements \Stringable
 		'conduccion' => true,
 		'uo' => true,
 		'musical' => true,
-		'XtoWord' => true,
 		'reportes' => true,
 		'dias' => true,
 		'reportable' => true,
@@ -54,7 +56,6 @@ class Programa extends Entity implements \Stringable
 		'music',
 		'_matchingData',
 		'_joinData',
-		'XtoWord',
 	];
 
 	protected function _getStarts(): string
@@ -94,6 +95,34 @@ class Programa extends Entity implements \Stringable
 			return $this->_fields['icon'] ? self::UO_ICON : self::COLABORADOR_ICON;
 	}
 
+	/**
+	 * Devuelve en texto (español) cuántas veces el programa no se transmitió por falta.
+	 * Virtual field accesible como $programa->x_to_word o $programa->XtoWord.
+	 */
+	protected function _getXtoWord(): string
+	{
+		$summary = $this->getReportSummary();
+		return ReportesPrograma::countAbsencesToWords($summary['grouped']);
+	}
+
+	/**
+	 * Returns a structured summary of this program's reports grouped by status,
+	 * ensuring all status keys are always present even if empty.
+	 *
+	 * @return array{grouped: array<string, array>, collection: Collection}
+	 */
+	public function getReportSummary(): array
+	{
+		$reportes = new Collection($this->reportes ?? []);
+		$defaults = ['V' => [], 'G' => [], 'S' => [], 'X' => []];
+		$grouped = array_merge($defaults, $reportes->groupBy('status')->toArray());
+
+		return [
+			'collection' => $reportes,
+			'grouped' => $grouped,
+		];
+	}
+
 	public function __toString(): string
 	{
 		return $this->name;
@@ -104,4 +133,3 @@ class Programa extends Entity implements \Stringable
 		return (bool) $this->reportable;
 	}
 }
-
