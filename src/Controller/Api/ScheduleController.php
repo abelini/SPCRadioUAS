@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace SPC\Controller\Api;
 
 use SPC\Controller\ApiController;
+use SPC\Service\EpgBuilder;
 use SPC\Trait\APICacheTrait;
 use Cake\Cache\Cache;
 use Cake\Http\Response;
@@ -142,6 +143,25 @@ class ScheduleController extends ApiController
 			->withHeader('Access-Control-Allow-Origin', self::RADIOUAS_URI)
 			->withType('application/json')
 			->withStringBody(json_encode($programas));
+	}
+
+	/**
+	 * Devuelve el EPG en formato XML (RadioDNS EPG v10)
+	 * con toda la programación semanal
+	 *
+	 * GET /api/schedule/xml
+	 */
+	public function xml(): Response
+	{
+		$this->autoRender = false;
+
+		$xml = (new EpgBuilder())->build();
+
+		return $this->response
+			->withHeader('Access-Control-Allow-Origin', '*')
+			->withHeader('Content-Disposition', 'inline; filename="epg.xml"')
+			->withType('application/xml')
+			->withStringBody($xml);
 	}
 
 	protected function getRequestedDay(): int
