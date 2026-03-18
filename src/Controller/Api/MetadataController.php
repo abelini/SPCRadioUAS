@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace SPC\Controller\Api;
 
-use SPC\Controller\AppController;
+use SPC\Controller\ApiController;
 use SPC\Service\ShoutcastService;
 use Cake\Core\Configure;
 use Cake\Http\Exception\BadRequestException;
