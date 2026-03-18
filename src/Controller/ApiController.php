@@ -15,14 +15,4 @@ class ApiController extends Controller
         $this->loadComponent('Flash');
     }
 
-    /**
-     * Desactiva CSRF y seguridad para todos los endpoints API
-     */
-    public function beforeFilter(EventInterface $event)
-    {
-        parent::beforeFilter($event);
-
-        // Desactivar CSRF completamente para API
-        $this->getEventManager()->off($this->FormProtection);
-    }
 }
