@@ -13,7 +13,6 @@ class ApiController extends Controller
     {
         parent::initialize();
 
-        $this->components()->unload('FormProtection');
         $this->loadComponent('Flash');
     }
 
