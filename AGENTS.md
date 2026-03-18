@@ -55,6 +55,12 @@ When writing PHP code:
 declare(strict_types=1);
 ```
 
+Everything in this project is under the namespace SPC, avoid using App
+
+```php
+namespace SPC\Controller\Api;
+```
+
 * Code must be **fully typed**:
 
   * Method parameters
