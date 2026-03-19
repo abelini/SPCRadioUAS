@@ -54,6 +54,15 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
 
 	public function middleware(MiddlewareQueue $middlewareQueue): MiddlewareQueue
 	{
+		$csrf = new CsrfProtectionMiddleware([
+			'httponly' => true,
+		]);
+		$csrf->skipCheckCallback(function ($request) {
+			if ($request->getParam('prefix') === 'Api') {
+				return true;
+			}
+		});
+
 		$middlewareQueue
 			// Catch any exceptions in the lower layers,
 			// and make an error page/response
@@ -74,9 +83,7 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
 			->add(new BodyParserMiddleware())
 
 			// Cross Site Request Forgery (CSRF) Protection Middleware
-			->add(new CsrfProtectionMiddleware([
-				'httponly' => true,
-			]))
+			->add($csrf)
 
 			// Add the AuthenticationMiddleware. It should be
 			// after routing and body parser.

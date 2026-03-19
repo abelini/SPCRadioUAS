@@ -120,6 +120,18 @@ class UpdateMetadataCommand extends Command
         $io->info('Sending POST to: https://spc.radiouas.org/api/metadata/update');
         $io->info('Payload: ' . json_encode(['text' => $text]));
 
+        // Obtener token CSRF primero
+        $httpGet = new Client([
+            'scheme' => 'https',
+            'host' => 'spc.radiouas.org',
+            'timeout' => self::REQUEST_TIMEOUT,
+        ]);
+
+        $getResponse = $httpGet->get('/api/metadata/update');
+        $csrfToken = $getResponse->getCookie('csrfToken');
+
+        $io->info('CSRF Token: ' . ($csrfToken ? $csrfToken['value'] : 'NOT FOUND'));
+
         $http = new Client([
             'scheme' => 'https',
             'host' => 'spc.radiouas.org',
@@ -128,6 +140,7 @@ class UpdateMetadataCommand extends Command
             'headers' => [
                 'Authorization' => 'Bearer ' . $token,
                 'Content-Type' => 'application/json',
+                'X-CSRF-Token' => $csrfToken ? $csrfToken['value'] : '',
             ],
         ]);
 

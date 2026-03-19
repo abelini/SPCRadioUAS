@@ -32,8 +32,27 @@ return function (RouteBuilder $routes): void {
     $routes->prefix('Admin', function (RouteBuilder $routes) {
         $routes->fallbacks(DashedRoute::class);
     });
-
+    /*
     $routes->prefix('Api', function (RouteBuilder $routes) {
+        $routes->connect('/', ['controller' => 'Error', 'action' => 'error400']);
+        $routes->fallbacks(DashedRoute::class);
+    });
+    */
+    $routes->prefix('Api', function (RouteBuilder $routes) {
+        // Metadata endpoints
+        $routes->connect('/metadata/update', [
+            'controller' => 'Metadata',
+            'action' => 'update',
+            '_method' => 'POST'
+        ]);
+
+        // Schedule endpoints
+        $routes->connect('/schedule/now', [
+            'controller' => 'Schedule',
+            'action' => 'now',
+            '_method' => 'GET'
+        ]);
+
         $routes->connect('/', ['controller' => 'Error', 'action' => 'error400']);
         $routes->fallbacks(DashedRoute::class);
     });
