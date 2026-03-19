@@ -22,7 +22,6 @@ class MetadataController extends ApiController
     public function initialize(): void
     {
         parent::initialize();
-        $this->loadComponent('FormProtection', ['unlockedActions' => ['update']]);
         $this->shoutcastService = new ShoutcastService();
     }
 
