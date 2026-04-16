@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "69f6d792d7fabd55edf54c4a87b46c39",
+    "content-hash": "69b24f1e68bf7af2358873328ba83c7c",
     "packages": [
         {
             "name": "cakephp/authentication",
@@ -6706,5 +6706,8 @@
         "php": ">=8.4"
     },
     "platform-dev": {},
-    "plugin-api-version": "2.9.0"
+    "platform-overrides": {
+        "php": "8.5.2"
+    },
+    "plugin-api-version": "2.6.0"
 }
