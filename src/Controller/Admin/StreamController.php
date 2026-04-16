@@ -5,11 +5,12 @@ namespace SPC\Controller\Admin;
 
 use SPC\Controller\AppController;
 use Cake\Http\Client;
+use Cake\Http\Response;
 use Cake\Core\Configure;
 
 class StreamController extends AppController
 {
-    protected const string STREAM_SOURCE = 'https://stream8.mexiserver.com:2000/hls/radiouasx/radiouasx.m3u8';
+    protected const string STREAM_SOURCE = 'https://stream.radiouas.org/?format=hls&ref=SPCMonitor';
 
     protected const int SERVICE_ID = 250;
 
@@ -21,9 +22,11 @@ class StreamController extends AppController
         $this->APIKey = (string) Configure::read('SensitiveData.MediaCP.APIKey');
     }
 
-    public function index()
+    public function index(): Response
     {
+        $this->set('streamSource', self::STREAM_SOURCE);
         $this->viewBuilder()->setOption('serialize', []);
+        return $this->render();
     }
 
     public function radio()

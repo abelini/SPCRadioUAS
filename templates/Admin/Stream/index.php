@@ -77,8 +77,7 @@ $this->assign('title', 'Monitor de Stream');
 
     document.addEventListener('DOMContentLoaded', function () {
         const video = document.getElementById('video-player');
-        const videoSrc = 'https://stream.radiouas.org/?format=hls&ref=SPC%20Monitor'
-        //const videoSrc = 'https://stream8.mexiserver.com:2000/hls/radiouasx/radiouasx.m3u8';
+        const videoSrc = '<?= $streamSource ?>'
         const statusDiv = document.getElementById('status-message');
         const btnReset = document.getElementById('btn-reset');
 
