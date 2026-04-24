@@ -10,7 +10,6 @@ use Cake\Cache\Cache;
 use Cake\Event\EventInterface;
 use Cake\Http\Response;
 use Cake\I18n\Date;
-use Cake\ORM\Query\SelectQuery;
 
 
 class BitacoraCabinaController extends AppController

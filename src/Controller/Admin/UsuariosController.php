@@ -21,16 +21,13 @@ class UsuariosController extends AppController
 		$this->Authentication->allowUnauthenticated(['auth', 'retrieve']);
 	}
 
-	public function auth()
+	public function auth(): Response
 	{
 		$result = $this->Authentication->getResult();
 		// If the user is logged in send them away.
+
 		if ($result->isValid()) {
-			$target = match ($this->Authentication->getLoginRedirect()) {
-				'/', null => '/admin/dashboard',
-				default => $this->Authentication->getLoginRedirect(),
-			};
-			return $this->redirect($target);
+			return $this->Authentication->redirectAfterLogin();
 		}
 		if ($this->request->is('post')) {
 			$message = match ($result->getStatus()) {
@@ -41,8 +38,11 @@ class UsuariosController extends AppController
 			};
 			$this->Flash->error($message);
 			$this->set('retrieveLink', true);
-			//$this->Flash->error('Invalid username or password');
+
+			return $this->render();
 		}
+
+		return $this->render();
 	}
 
 	public function retrieve(): Response

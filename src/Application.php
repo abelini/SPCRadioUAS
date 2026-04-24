@@ -6,8 +6,9 @@ namespace SPC;
 use Authentication\AuthenticationService;
 use Authentication\AuthenticationServiceInterface;
 use Authentication\AuthenticationServiceProviderInterface;
-use Authentication\Identifier\AbstractIdentifier;
-use Authentication\Identifier\IdentifierInterface;
+use Authentication\Authenticator\FormAuthenticator;
+use Authentication\Authenticator\SessionAuthenticator;
+use Authentication\Identifier\PasswordIdentifier;
 use Authentication\Middleware\AuthenticationMiddleware;
 use Cake\Routing\Router;
 use Psr\Http\Message\ServerRequestInterface;
@@ -96,47 +97,43 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
 	{
 		$service = new AuthenticationService();
 
-		// Define where users should be redirected to when they are not authenticated
 		$service->setConfig([
-			'unauthenticatedRedirect' => Router::url([
+			'unauthenticatedRedirect' => [
 				'prefix' => 'Admin',
 				'plugin' => null,
 				'controller' => 'Usuarios',
 				'action' => 'auth',
-			]),
+			],
 			'queryParam' => 'redirect',
 		]);
 
-		$credentials = [
-			AbstractIdentifier::CREDENTIAL_USERNAME => 'username',
-			AbstractIdentifier::CREDENTIAL_PASSWORD => 'password'
-		];
 		$identifier = [
-			'Authentication.Password' => [
-				'fields' => $credentials,
-				'resolver' => [
-					'className' => 'Authentication.Orm',
-					'userModel' => 'Usuarios',
-				],
+			'className' => 'Authentication.Password',
+			'fields' => [
+				PasswordIdentifier::CREDENTIAL_USERNAME => 'username',
+				PasswordIdentifier::CREDENTIAL_PASSWORD => 'password',
+			],
+			'resolver' => [
+				'className' => 'Authentication.Orm',
+				'userModel' => 'Usuarios',
 			],
 		];
-		// Load the authenticators. Session should be first.
+
 		$service->loadAuthenticator('Authentication.Session');
 		$service->loadAuthenticator('Authentication.Form', [
-			'fields' => $credentials,
 			'identifier' => $identifier,
-			'loginUrl' => Router::url([
+			'fields' => [
+				PasswordIdentifier::CREDENTIAL_USERNAME => 'username',
+				PasswordIdentifier::CREDENTIAL_PASSWORD => 'password',
+			],
+			'loginUrl' => [
 				'prefix' => 'Admin',
 				'plugin' => null,
 				'controller' => 'Usuarios',
 				'action' => 'auth',
-			]),
+			],
 		]);
 
-		//	DEPRECATED since 3.3.0
-		/*
-		$service->loadIdentifier('Authentication.Password', $identifier);
-		*/
 		return $service;
 	}
 
