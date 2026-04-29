@@ -39,6 +39,13 @@ return function (RouteBuilder $routes): void {
     });
     */
     $routes->prefix('Api', function (RouteBuilder $routes) {
+        // StreamHits endpoint
+        $routes->connect('/hits/add', [
+            'controller' => 'StreamHits',
+            'action' => 'add',
+            '_method' => 'POST'
+        ]);
+
         // Metadata endpoints
         $routes->connect('/metadata/update', [
             'controller' => 'Metadata',
