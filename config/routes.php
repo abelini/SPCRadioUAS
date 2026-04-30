@@ -32,36 +32,32 @@ return function (RouteBuilder $routes): void {
     $routes->prefix('Admin', function (RouteBuilder $routes) {
         $routes->fallbacks(DashedRoute::class);
     });
-    /*
+
     $routes->prefix('Api', function (RouteBuilder $routes) {
-        $routes->connect('/', ['controller' => 'Error', 'action' => 'error400']);
-        $routes->fallbacks(DashedRoute::class);
-    });
-    */
-    $routes->prefix('Api', function (RouteBuilder $routes) {
-        // StreamHits endpoint
+        $routes->setExtensions(['json']);
+
         $routes->connect('/hits/add', [
             'controller' => 'StreamHits',
-            'action' => 'add',
-            '_method' => 'POST'
-        ]);
+            'action' => 'add'
+        ], ['_method' => 'POST']);
 
         // Metadata endpoints
         $routes->connect('/metadata/update', [
             'controller' => 'Metadata',
-            'action' => 'update',
-            '_method' => 'POST'
-        ]);
+            'action' => 'update'
+        ], ['_method' => 'POST']);
 
         // Schedule endpoints
         $routes->connect('/schedule/now', [
             'controller' => 'Schedule',
-            'action' => 'now',
-            '_method' => 'GET'
-        ]);
+            'action' => 'now'
+        ], ['_method' => 'GET']);
 
-        $routes->connect('/', ['controller' => 'Error', 'action' => 'error400']);
-        $routes->fallbacks(DashedRoute::class);
+        // Catch-all for unmatched routes (no fallbacks!)
+        $routes->connect('/{controller}/{action}', [
+            'controller' => 'Error',
+            'action' => 'error404'
+        ]);
     });
 
     $routes->scope('/', function (RouteBuilder $builder): void {
