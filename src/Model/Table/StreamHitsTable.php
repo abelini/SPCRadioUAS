@@ -3,28 +3,11 @@ declare(strict_types=1);
 
 namespace SPC\Model\Table;
 
-use Cake\ORM\Query\SelectQuery;
-use Cake\ORM\RulesChecker;
+use Cake\I18n\DateTime;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
-/**
- * StreamHits Table
- *
- * @method \SPC\Model\Entity\StreamHit newEmptyEntity()
- * @method \SPC\Model\Entity\StreamHit newEntity(array $data, array $options = [])
- * @method array<\SPC\Model\Entity\StreamHit> newEntities(array $data, array $options = [])
- * @method \SPC\Model\Entity\StreamHit get(mixed $primaryKey, array|string $finder = 'all', \Psr\SimpleCache\CacheInterface|string|null $cache = null, \Closure|string|null $cacheKey = null, mixed ...$args)
- * @method \SPC\Model\Entity\StreamHit findOrCreate($search, ?callable $callback = null, array $options = [])
- * @method \SPC\Model\Entity\StreamHit patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method array<\SPC\Model\Entity\StreamHit> patchEntities(iterable $entities, array $data, array $options = [])
- * @method \SPC\Model\Entity\StreamHit|false save(\Cake\Datasource\EntityInterface $entity, array $options = [])
- * @method \SPC\Model\Entity\StreamHit saveOrFail(\Cake\Datasource\EntityInterface $entity, array $options = [])
- * @method iterable<\SPC\Model\Entity\StreamHit>|\Cake\Datasource\ResultSetInterface<\SPC\Model\Entity\StreamHit>|false saveMany(iterable $entities, array $options = [])
- * @method iterable<\SPC\Model\Entity\StreamHit> saveManyOrFail(iterable $entities, array $options = [])
- *
- * @mixin \Cake\ORM\Behavior\TimestampBehavior
- */
+
 class StreamHitsTable extends Table
 {
     public function initialize(array $config): void
@@ -35,7 +18,14 @@ class StreamHitsTable extends Table
         $this->setDisplayField('format');
         $this->setPrimaryKey('ID');
 
-        $this->addBehavior('Timestamp');
+        $this->addBehavior('Timestamp', [
+            'events' => [
+                'Model.beforeSave' => [
+                    'created' => 'new',
+                    'modified' => 'always',
+                ],
+            ],
+        ]);
     }
 
     public function validationDefault(Validator $validator): Validator
@@ -53,5 +43,85 @@ class StreamHitsTable extends Table
         $validator->decimal('lon')->allowEmptyString('lon');
 
         return $validator;
+    }
+
+    /**
+     * Devuelve estadísticas resumen (KPIs)
+     */
+    public function getSummaryStats(string $from, string $to): array
+    {
+        $conn = $this->getConnection();
+        $today = (new DateTime())->format('Y-m-d');
+
+        $totalHits = (int) ($conn->execute('SELECT COUNT(*) as cnt FROM stream_hits WHERE created BETWEEN ? AND ?', [$from . ' 00:00:00', $to])->fetch('assoc')['cnt'] ?? 0);
+        $uniqueReferers = (int) ($conn->execute('SELECT COUNT(DISTINCT referer) as cnt FROM stream_hits WHERE created BETWEEN ? AND ?', [$from . ' 00:00:00', $to])->fetch('assoc')['cnt'] ?? 0);
+        $hitsToday = (int) ($conn->execute('SELECT COUNT(*) as cnt FROM stream_hits WHERE created >= ?', [$today . ' 00:00:00'])->fetch('assoc')['cnt'] ?? 0);
+        $uniqueIpsToday = (int) ($conn->execute('SELECT COUNT(DISTINCT ip) as cnt FROM stream_hits WHERE created >= ?', [$today . ' 00:00:00'])->fetch('assoc')['cnt'] ?? 0);
+        $topFormat = $conn->execute('SELECT format, COUNT(*) as cnt FROM stream_hits WHERE created BETWEEN ? AND ? GROUP BY format ORDER BY cnt DESC LIMIT 1', [$from . ' 00:00:00', $to])->fetch('assoc') ?: [];
+        $topCountry = $conn->execute('SELECT country, countryCode, COUNT(*) as cnt FROM stream_hits WHERE created BETWEEN ? AND ? AND country IS NOT NULL AND country != "" GROUP BY countryCode ORDER BY cnt DESC LIMIT 1', [$from . ' 00:00:00', $to])->fetch('assoc') ?: [];
+
+        return compact('totalHits', 'uniqueReferers', 'hitsToday', 'uniqueIpsToday', 'topFormat', 'topCountry');
+    }
+
+    /**
+     * Devuelve datos para gráficas
+     */
+    public function getChartsData(string $from, string $to): array
+    {
+        $conn = $this->getConnection();
+
+        $byFormat = $conn->execute('SELECT format, COUNT(*) as total FROM stream_hits WHERE created BETWEEN ? AND ? GROUP BY format ORDER BY total DESC LIMIT 10', [$from . ' 00:00:00', $to])->fetchAll('assoc');
+        $byDay = $conn->execute('SELECT DATE(created) as day, format, COUNT(*) as total FROM stream_hits WHERE created BETWEEN ? AND ? GROUP BY day, format ORDER BY day ASC LIMIT 14', [$from . ' 00:00:00', $to])->fetchAll('assoc');
+        $byHour = $conn->execute('SELECT HOUR(created) as hour, COUNT(*) as total FROM stream_hits WHERE created BETWEEN ? AND ? GROUP BY hour ORDER BY hour ASC', [$from . ' 00:00:00', $to])->fetchAll('assoc');
+
+        $audioVsVideo = $conn->execute(
+            'SELECT DATE(created) as day, SUM(CASE WHEN format = "mp3" THEN 1 ELSE 0 END) as audio, SUM(CASE WHEN format IN ("hls", "m3u8") THEN 1 ELSE 0 END) as video FROM stream_hits WHERE created BETWEEN ? AND ? GROUP BY day ORDER BY day ASC LIMIT 14',
+            [$from . ' 00:00:00', $to]
+        )->fetchAll('assoc');
+
+        return compact('byFormat', 'byDay', 'byHour', 'audioVsVideo');
+    }
+
+    /**
+     * Devuelve datos de tops
+     */
+    public function getTopsData(string $from, string $to): array
+    {
+        $conn = $this->getConnection();
+
+        $topDomains = $conn->execute('SELECT referer, COUNT(*) as total FROM stream_hits WHERE created BETWEEN ? AND ? AND refererType = "domain" GROUP BY referer ORDER BY total DESC LIMIT 15', [$from . ' 00:00:00', $to])->fetchAll('assoc');
+        $topApps = $conn->execute('SELECT referer, COUNT(*) as total FROM stream_hits WHERE created BETWEEN ? AND ? AND refererType = "app" GROUP BY referer ORDER BY total DESC LIMIT 15', [$from . ' 00:00:00', $to])->fetchAll('assoc');
+        $topCountries = $conn->execute('SELECT country, countryCode, COUNT(*) as total FROM stream_hits WHERE created BETWEEN ? AND ? AND country IS NOT NULL AND country != "" GROUP BY countryCode ORDER BY total DESC LIMIT 15', [$from . ' 00:00:00', $to])->fetchAll('assoc');
+        $topUserAgents = $conn->execute('SELECT userAgent, COUNT(*) as total FROM stream_hits WHERE created BETWEEN ? AND ? GROUP BY userAgent ORDER BY total DESC LIMIT 20', [$from . ' 00:00:00', $to])->fetchAll('assoc');
+
+        return compact('topDomains', 'topApps', 'topCountries', 'topUserAgents');
+    }
+
+    /**
+     * Devuelve datos geográficos agrupados por ciudad
+     */
+    public function getGeoData(string $from, string $to): array
+    {
+        $conn = $this->getConnection();
+
+        return $conn->execute(
+            'SELECT country, countryCode, city, 
+                    MIN(lat) as lat, MIN(lon) as lon, COUNT(*) as total 
+             FROM stream_hits 
+             WHERE created BETWEEN ? AND ? AND lat IS NOT NULL AND lon IS NOT NULL AND city IS NOT NULL 
+             GROUP BY LOWER(TRIM(city)), country, countryCode 
+             ORDER BY total DESC LIMIT 100',
+            [$from . ' 00:00:00', $to]
+        )->fetchAll('assoc');
+    }
+
+    /**
+     * Devuelve datos recientes
+     */
+    public function getRecentData(int $limit = 50): array
+    {
+        $conn = $this->getConnection();
+
+        return $conn->execute('SELECT ID, format, referer, refererType, ip, country, countryCode, city, created FROM stream_hits ORDER BY ID DESC LIMIT ' . $limit)->fetchAll('assoc');
     }
 }

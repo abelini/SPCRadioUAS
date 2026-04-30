@@ -1,75 +1,154 @@
 <?php
-/**
- * @var \SPC\View\AppView $this
- * @var iterable<\SPC\Model\Entity\StreamHit> $streamHits
- */
+
+$this->assign('title', 'Estadísticas de Streaming');
+
+$this->Html->css('stream-hits', ['block' => 'css']);
+$this->Html->script('https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js', ['block' => 'scriptBottom']);
+$this->Html->css('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', ['block' => 'css']);
+$this->Html->script('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', ['block' => 'scriptBottom']);
 ?>
-<div class="streamHits index content">
-    <?= $this->Html->link(__('New Stream Hit'), ['action' => 'add'], ['class' => 'button float-right']) ?>
-    <h3><?= __('Stream Hits') ?></h3>
-    <div class="table-responsive">
-        <table>
-            <thead>
-                <tr>
-                    <th><?= $this->Paginator->sort('ID') ?></th>
-                    <th><?= $this->Paginator->sort('format') ?></th>
-                    <th><?= $this->Paginator->sort('referer') ?></th>
-                    <th><?= $this->Paginator->sort('refererType') ?></th>
-                    <th><?= $this->Paginator->sort('ip') ?></th>
-                    <th><?= $this->Paginator->sort('userAgent') ?></th>
-                    <th><?= $this->Paginator->sort('country') ?></th>
-                    <th><?= $this->Paginator->sort('countryCode') ?></th>
-                    <th><?= $this->Paginator->sort('city') ?></th>
-                    <th><?= $this->Paginator->sort('zip') ?></th>
-                    <th><?= $this->Paginator->sort('lat') ?></th>
-                    <th><?= $this->Paginator->sort('lon') ?></th>
-                    <th><?= $this->Paginator->sort('created') ?></th>
-                    <th><?= $this->Paginator->sort('modified') ?></th>
-                    <th class="actions"><?= __('Actions') ?></th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($streamHits as $streamHit): ?>
-                <tr>
-                    <td><?= $this->Number->format($streamHit->ID) ?></td>
-                    <td><?= h($streamHit->format) ?></td>
-                    <td><?= h($streamHit->referer) ?></td>
-                    <td><?= h($streamHit->refererType) ?></td>
-                    <td><?= h($streamHit->ip) ?></td>
-                    <td><?= h($streamHit->userAgent) ?></td>
-                    <td><?= h($streamHit->country) ?></td>
-                    <td><?= h($streamHit->countryCode) ?></td>
-                    <td><?= h($streamHit->city) ?></td>
-                    <td><?= h($streamHit->zip) ?></td>
-                    <td><?= $streamHit->lat === null ? '' : $this->Number->format($streamHit->lat) ?></td>
-                    <td><?= $streamHit->lon === null ? '' : $this->Number->format($streamHit->lon) ?></td>
-                    <td><?= h($streamHit->created) ?></td>
-                    <td><?= h($streamHit->modified) ?></td>
-                    <td class="actions">
-                        <?= $this->Html->link(__('View'), ['action' => 'view', $streamHit->ID]) ?>
-                        <?= $this->Html->link(__('Edit'), ['action' => 'edit', $streamHit->ID]) ?>
-                        <?= $this->Form->postLink(
-                            __('Delete'),
-                            ['action' => 'delete', $streamHit->ID],
-                            [
-                                'method' => 'delete',
-                                'confirm' => __('Are you sure you want to delete # {0}?', $streamHit->ID),
-                            ]
-                        ) ?>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    </div>
-    <div class="paginator">
-        <ul class="pagination">
-            <?= $this->Paginator->first('<< ' . __('first')) ?>
-            <?= $this->Paginator->prev('< ' . __('previous')) ?>
-            <?= $this->Paginator->numbers() ?>
-            <?= $this->Paginator->next(__('next') . ' >') ?>
-            <?= $this->Paginator->last(__('last') . ' >>') ?>
-        </ul>
-        <p><?= $this->Paginator->counter(__('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')) ?></p>
-    </div>
+
+<div class="stats-container">
+
+    <!-- Filtros de fecha -->
+    <form method="get" class="filters">
+        <label>Desde</label>
+        <input type="date" name="from" value="<?= h($from) ?>" class="w3-input">
+        <label>Hasta</label>
+        <input type="date" name="to" value="<?= h($to) ?>" class="w3-input">
+        <div class="btn-group">
+            <a href="<?= $this->Url->build(['action' => 'index']) ?>"
+                class="btn <?= ($from === (new DateTime('-7 days'))->format('Y-m-d') && $to === (new DateTime())->format('Y-m-d')) ? 'active' : '' ?>">7
+                días</a>
+            <a href="<?= $this->Url->build(['action' => 'index', '?' => ['from' => (new DateTime())->format('Y-m-d'), 'to' => (new DateTime())->format('Y-m-d')]]) ?>"
+                class="btn <?= ($from === (new DateTime())->format('Y-m-d') && $to === (new DateTime())->format('Y-m-d')) ? 'active' : '' ?>">Hoy</a>
+            <a href="<?= $this->Url->build(['action' => 'index', '?' => ['from' => (new DateTime('-30 days'))->format('Y-m-d'), 'to' => (new DateTime())->format('Y-m-d')]]) ?>"
+                class="btn">30 días</a>
+            <a href="<?= $this->Url->build(['action' => 'index', '?' => ['from' => (new DateTime('-90 days'))->format('Y-m-d'), 'to' => (new DateTime())->format('Y-m-d')]]) ?>"
+                class="btn">90 días</a>
+        </div>
+        <button type="submit" class="w3-button w3-red">Aplicar →</button>
+    </form>
+
+    <!-- KPIs -->
+    <section id="kpi-section">
+        <h2>Resumen General</h2>
+        <div class="kpi-grid" id="kpi-grid">
+            <div class="kpi c1">
+                <div class="lbl">Total Hits</div>
+                <div class="val loading">—</div>
+                <div class="sub"><?= $from === $to ? 'Hoy' : $from . ' al ' . $to ?></div>
+            </div>
+            <div class="kpi c2">
+                <div class="lbl">Hits Hoy</div>
+                <div class="val loading">—</div>
+                <div class="sub"><?= (new DateTime())->format('Y-m-d') ?></div>
+            </div>
+            <div class="kpi c3">
+                <div class="lbl">IPs Únicas Hoy</div>
+                <div class="val loading">—</div>
+                <div class="sub">visitantes únicos</div>
+            </div>
+            <div class="kpi c4">
+                <div class="lbl">Orígenes Únicos</div>
+                <div class="val loading">—</div>
+                <div class="sub">distintas fuentes</div>
+            </div>
+            <div class="kpi c5">
+                <div class="lbl">Formato Top</div>
+                <div class="val loading">—</div>
+                <div class="sub">en período</div>
+            </div>
+            <div class="kpi c6">
+                <div class="lbl">País Top</div>
+                <div class="val loading">—</div>
+                <div class="sub">oyentes</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gráficas principales -->
+    <section>
+        <h2>Tendencias</h2>
+        <div class="grid2">
+            <div class="card">
+                <h3>Hits por día</h3>
+                <canvas id="chartDay"></canvas>
+            </div>
+            <div class="card">
+                <h3>Audio vs Video</h3>
+                <canvas id="chartAVV"></canvas>
+            </div>
+            <div class="card">
+                <h3>Distribución por hora</h3>
+                <canvas id="chartHour"></canvas>
+            </div>
+            <div class="card">
+                <h3>Proporción Audio / Video</h3>
+                <canvas id="chartDonut"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <!-- Top Consumidores -->
+    <section>
+        <h2>Top Consumidores</h2>
+        <div class="grid3">
+            <div class="card">
+                <h3>Top Dominios</h3>
+                <div id="top-domains" class="loading">
+                    <div class="loading-skeleton" style="height:200px"></div>
+                </div>
+            </div>
+            <div class="card">
+                <h3>Top Apps</h3>
+                <div id="top-apps" class="loading">
+                    <div class="loading-skeleton" style="height:200px"></div>
+                </div>
+            </div>
+            <div class="card">
+                <h3>Top Países</h3>
+                <div id="top-countries" class="loading">
+                    <div class="loading-skeleton" style="height:200px"></div>
+                </div>
+            </div>
+            <div class="card">
+                <h3>Top User Agents</h3>
+                <div id="top-agents" class="loading">
+                    <div class="loading-skeleton" style="height:200px"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mapa y Recientes -->
+    <section>
+        <h2>Mapa y Recientes</h2>
+        <div class="grid2" style="grid-template-columns: 1fr 1fr;">
+            <div class="card">
+                <h3>Mapa de Oyentes</h3>
+                <div id="map"></div>
+            </div>
+            <div class="card">
+                <h3>Hits Recientes</h3>
+                <div id="recent-table" class="loading">
+                    <div class="loading-skeleton" style="height:300px"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
 </div>
+
+<?= $this->fetch('scriptBottom') ?>
+<script>
+    var STREAM_HITS_API_PARAMS = '<?= http_build_query($this->request->getQuery()) ?>';
+    var STREAM_HITS_API_URL = {
+        summary: '<?= $this->Url->build(['action' => 'apiSummary']) ?>',
+        charts: '<?= $this->Url->build(['action' => 'apiCharts']) ?>',
+        tops: '<?= $this->Url->build(['action' => 'apiTops']) ?>',
+        geo: '<?= $this->Url->build(['action' => 'apiGeo']) ?>',
+        recent: '<?= $this->Url->build(['action' => 'apiRecent']) ?>',
+    };
+</script>
+<script src="<?= $this->Url->build('/js/stream-hits.js') ?>"></script>
