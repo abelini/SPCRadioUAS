@@ -25,8 +25,15 @@ class StreamHitsController extends AppController
      */
     public function index(): Response
     {
-        $from = $this->request->getQuery('from') ?? (new DateTime('-30 days'))->format('Y-m-d');
-        $to = $this->request->getQuery('to') ?? (new DateTime())->format('Y-m-d');
+        $fromParam = $this->request->getQuery('from');
+        $toParam = $this->request->getQuery('to');
+
+        $from = $fromParam
+            ? DateTime::createFromFormat('Y-m-d', $fromParam)
+            : new DateTime()->subDays(30);
+        $to = $toParam
+            ? DateTime::createFromFormat('Y-m-d', $toParam)
+            : new DateTime();
 
         $formatLabel = ['mp3' => 'AUDIO', 'hls' => 'VIDEO', 'm3u8' => 'VIDEO'];
         $refererLabel = ['android' => 'Android', 'ios' => 'iOS'];

@@ -8,27 +8,36 @@ $this->Html->css('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', ['block' =>
 $this->Html->script('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', ['block' => 'scriptBottom']);
 ?>
 
-<div class="stats-container">
+<div class="content">
+
+    <div class="w3-deep-blue w3-padding">
+        <h5><i class="fa-regular fa-clock"></i> Estadísticas de Streaming</h5>
+    </div>
+    <div class="w3-low-blue w3-padding w3-center">
+        <h6 style="text-transform:uppercase">
+            <?= $from->i18nFormat("d 'de' MMMM") ?> <i class="fa-solid fa-arrow-right-long"></i>
+            <?= $to->i18nFormat("d 'de' MMMM") ?>
+        </h6>
+    </div>
 
     <!-- Filtros de fecha -->
-    <form method="get" class="filters">
-        <label>Desde</label>
-        <input type="date" name="from" value="<?= h($from) ?>" class="w3-input">
-        <label>Hasta</label>
-        <input type="date" name="to" value="<?= h($to) ?>" class="w3-input">
-        <div class="btn-group">
-            <a href="<?= $this->Url->build(['action' => 'index']) ?>"
-                class="btn <?= ($from === (new DateTime('-7 days'))->format('Y-m-d') && $to === (new DateTime())->format('Y-m-d')) ? 'active' : '' ?>">7
-                días</a>
-            <a href="<?= $this->Url->build(['action' => 'index', '?' => ['from' => (new DateTime())->format('Y-m-d'), 'to' => (new DateTime())->format('Y-m-d')]]) ?>"
-                class="btn <?= ($from === (new DateTime())->format('Y-m-d') && $to === (new DateTime())->format('Y-m-d')) ? 'active' : '' ?>">Hoy</a>
-            <a href="<?= $this->Url->build(['action' => 'index', '?' => ['from' => (new DateTime('-30 days'))->format('Y-m-d'), 'to' => (new DateTime())->format('Y-m-d')]]) ?>"
-                class="btn">30 días</a>
-            <a href="<?= $this->Url->build(['action' => 'index', '?' => ['from' => (new DateTime('-90 days'))->format('Y-m-d'), 'to' => (new DateTime())->format('Y-m-d')]]) ?>"
-                class="btn">90 días</a>
-        </div>
-        <button type="submit" class="w3-button w3-red">Aplicar →</button>
-    </form>
+    <?= $this->Form->create(null, ['method' => 'get', 'class' => 'filters']) ?>
+
+    <?= $this->Form->control('from', ['type' => 'date', 'label' => false, 'value' => $from->format('Y-m-d'), 'class' => 'w3-input', 'div' => false]) ?>
+
+    <i class="fa-solid fa-arrow-right-long"></i>
+
+    <?= $this->Form->control('to', ['type' => 'date', 'label' => false, 'value' => $to->format('Y-m-d'), 'class' => 'w3-input', 'div' => false]) ?>
+
+    <div class="btn-group">
+        <?= $this->Html->link('7 días', ['action' => 'index', '?' => ['from' => (new DateTime('-7 days'))->format('Y-m-d'), 'to' => (new DateTime())->format('Y-m-d')]], ['class' => 'w3-button w3-light-gray ' . ($from->format('Y-m-d') === (new DateTime('-7 days'))->format('Y-m-d') && $to->format('Y-m-d') === (new DateTime())->format('Y-m-d') ? 'active' : '')]) ?>
+        <?= $this->Html->link('Hoy', ['action' => 'index', '?' => ['from' => (new DateTime())->format('Y-m-d'), 'to' => (new DateTime())->format('Y-m-d')]], ['class' => 'w3-button w3-light-gray ' . ($from->format('Y-m-d') === (new DateTime())->format('Y-m-d') && $to->format('Y-m-d') === (new DateTime())->format('Y-m-d') ? 'active' : '')]) ?>
+        <?= $this->Html->link('30 días', ['action' => 'index', '?' => ['from' => (new DateTime('-30 days'))->format('Y-m-d'), 'to' => (new DateTime())->format('Y-m-d')]], ['class' => 'w3-button w3-light-gray ' . ($from->format('Y-m-d') === (new DateTime('-30 days'))->format('Y-m-d') && $to->format('Y-m-d') === (new DateTime())->format('Y-m-d') ? 'active' : '')]) ?>
+        <?= $this->Html->link('90 días', ['action' => 'index', '?' => ['from' => (new DateTime('-90 days'))->format('Y-m-d'), 'to' => (new DateTime())->format('Y-m-d')]], ['class' => 'w3-button w3-light-gray ' . ($from->format('Y-m-d') === (new DateTime('-90 days'))->format('Y-m-d') && $to->format('Y-m-d') === (new DateTime())->format('Y-m-d') ? 'active' : '')]) ?>
+    </div>
+
+    <?= $this->Form->button('Aplicar →', ['class' => 'w3-button w3-red']) ?>
+    <?= $this->Form->end() ?>
 
     <!-- KPIs -->
     <section id="kpi-section">
@@ -37,7 +46,9 @@ $this->Html->script('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', ['block' 
             <div class="kpi c1">
                 <div class="lbl">Total Hits</div>
                 <div class="val loading">—</div>
-                <div class="sub"><?= $from === $to ? 'Hoy' : $from . ' al ' . $to ?></div>
+                <div class="sub">
+                    <?= $from->format('Y-m-d') === $to->format('Y-m-d') ? 'Hoy' : $from->format('Y-m-d') . ' al ' . $to->format('Y-m-d') ?>
+                </div>
             </div>
             <div class="kpi c2">
                 <div class="lbl">Hits Hoy</div>

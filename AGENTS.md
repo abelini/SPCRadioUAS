@@ -1,5 +1,11 @@
 # AGENTS.md
 
+## Project Information
+
+- This project uses **CakePHP 5.3.4**.
+- Target PHP version: **8.5.5**.
+- **No deprecated code** is permitted; use only non-deprecated APIs and practices for the specified versions.
+
 ## Coding Guidelines
 
 When generating code for this project, follow these rules strictly.
@@ -54,6 +60,8 @@ When writing PHP code:
 ```php
 declare(strict_types=1);
 ```
+
+* **No deprecated code**: Avoid all deprecated PHP 8.5.5 and CakePHP 5.3.4 features and APIs.
 
 Everything in this project is under the namespace SPC, avoid using App
 
@@ -125,6 +133,7 @@ public function findUserById(int $userId): ?User
 * camelCase naming
 * Fully typed code
 * `declare(strict_types=1);`
+* No deprecated code
 * Minimal inline comments
 * Spanish DocBlocks for every method
 
