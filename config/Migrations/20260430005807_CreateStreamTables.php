@@ -81,14 +81,17 @@ class CreateStreamTables extends BaseMigration
                 'null' => true,
                 'default' => null
             ])
-            ->addColumn('createdAt', 'datetime', [
+            ->addColumn('created', 'datetime', [
+                'default' => 'CURRENT_TIMESTAMP',
+                'null' => false
+            ])
+            ->addColumn('modified', 'datetime', [
                 'default' => 'CURRENT_TIMESTAMP',
                 'null' => false
             ])
             ->addIndex(['format'])
             ->addIndex(['referer'])
             ->addIndex(['refererType'])
-            ->addIndex(['createdAt'])
             ->addIndex(['ip'])
             ->create();
     }
