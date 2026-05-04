@@ -16,7 +16,7 @@
         "google-gemini-php/client": "^2.7",
         "kwn/number-to-words": "^2.9",
         "matomo/device-detector": "^6.5",
-        "mobiledetect/mobiledetectlib": "4.8.01",
+        "mobiledetect/mobiledetectlib": "4.10.0",
         "symfony/http-client": "^8.0"
     },
     "require-dev": {
