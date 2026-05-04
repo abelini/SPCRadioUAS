@@ -6,27 +6,24 @@
  * @var \Cake\Collection\CollectionInterface|string[] $tipoBitacora
  */
 ?>
-<div class="row">
-    <aside class="column">
-        <div class="side-nav">
-            <h4 class="heading"><?= __('Actions') ?></h4>
-            <?= $this->Html->link(__('List Bitacora Vigilancia'), ['action' => 'index'], ['class' => 'side-nav-item']) ?>
-        </div>
-    </aside>
-    <div class="column column-80">
-        <div class="bitacoraVigilancia form content">
-            <?= $this->Form->create($bitacoraVigilancium) ?>
-            <fieldset>
-                <legend><?= __('Add Bitacora Vigilancium') ?></legend>
-                <?php
-                    echo $this->Form->control('vigilanteID', ['options' => $vigilantes]);
-                    echo $this->Form->control('tipoBitacora', ['options' => $tipoBitacora]);
-                    echo $this->Form->control('fecha');
-                    echo $this->Form->control('observaciones');
-                ?>
-            </fieldset>
-            <?= $this->Form->button(__('Submit')) ?>
-            <?= $this->Form->end() ?>
-        </div>
+<div class="page-header">
+    <h5><i class="fa-solid fa-plus"></i> Agregar bitácora de vigilancia</h5>
+</div>
+
+<div class="form-container">
+    <?= $this->Form->create($bitacoraVigilancium) ?>
+    <fieldset>
+        <legend><?= __('Add Bitacora Vigilancium') ?></legend>
+        <?php
+            echo $this->Form->control('vigilanteID', ['options' => $vigilantes, 'class' => 'form-control']);
+            echo $this->Form->control('tipoBitacora', ['options' => $tipoBitacora, 'class' => 'form-control']);
+            echo $this->Form->control('fecha', ['class' => 'form-control']);
+            echo $this->Form->control('observaciones', ['class' => 'form-control']);
+        ?>
+    </fieldset>
+    <div class="actions-bar">
+        <?= $this->Form->button('<i class="fa-solid fa-check"></i> Guardar', ['escapeTitle' => false]) ?>
+        <?= $this->Html->link('<i class="fa-solid fa-xmark"></i> Cancelar', ['action' => 'index'], ['class' => 'btn btn-outlined', 'escapeTitle' => false]) ?>
     </div>
+    <?= $this->Form->end() ?>
 </div>

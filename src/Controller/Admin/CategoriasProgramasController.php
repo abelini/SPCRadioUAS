@@ -34,8 +34,8 @@ class CategoriasProgramasController extends AppController
      */
     public function view($id = null)
     {
-        $categoriasPrograma = $this->CategoriasProgramas->get($id, contain: []);
-        $this->set(compact('categoriasPrograma'));
+        $category = $this->CategoriasProgramas->get($id, contain: ['Programas']);
+        $this->set(compact('category'));
     }
 
     /**

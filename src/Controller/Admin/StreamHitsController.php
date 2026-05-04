@@ -15,6 +15,7 @@ use SPC\Service\DeviceDetectorService;
  */
 class StreamHitsController extends AppController
 {
+    private const int DEFAULT_BACK_DAYS = 7;
     /**
      * Index method
      *
@@ -30,7 +31,7 @@ class StreamHitsController extends AppController
 
         $from = $fromParam
             ? DateTime::createFromFormat('Y-m-d', $fromParam)
-            : new DateTime()->subDays(30);
+            : new DateTime()->subDays(self::DEFAULT_BACK_DAYS);
         $to = $toParam
             ? DateTime::createFromFormat('Y-m-d', $toParam)
             : new DateTime();

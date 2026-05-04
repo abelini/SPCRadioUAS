@@ -1,53 +1,42 @@
-<div class="content">
-
-	<div class="w3-container">
-
-
-	</div>
-
-	<?php foreach ($permisos as $tipoDeUsuario): ?>
-
-		<div class="w3-deep-blue w3-padding">
-			<h5><?= $tipoDeUsuario->icon ?> &nbsp;&nbsp; <?= $tipoDeUsuario->plural ?></h5>
-		</div>
-
-		<table class="w3-table w3-table-all">
-			<?php foreach ($tipoDeUsuario->usuarios as $usuario): ?>
-				<tr>
-					<td class="d"><?= $usuario->empleado ?></td>
-
-					<td class="p"><?= $this->Html->link('@' . $usuario->username, ['action' => 'view', $usuario->ID]) ?></td>
-					<td class="n"><?= $this->Html->link($usuario->fullname, ['action' => 'view', $usuario->ID]) ?></td>
-					<td class="e"><?= $usuario->email ?></td>
-					<td class="actions">
-						<?= $this->Html->link(__('View'), ['action' => 'view', $usuario->ID]) ?>
-						<?= $this->Html->link(__('Edit'), ['action' => 'edit', $usuario->ID]) ?>
-						<?= $this->Form->deleteLink(__('Delete'), ['action' => 'delete', $usuario->ID], ['confirm' => __('Are you sure you want to delete # {0}?', $usuario->ID)]) ?>
-					</td>
-				</tr>
-			<?php endforeach; ?>
-		</table>
-
-	<?php endforeach; ?>
+<div class="page-header">
+    <h5><i class="fa-solid fa-users"></i> Usuarios</h5>
 </div>
 
-<?= $this->Html->link('<i class="fa-solid fa-plus"></i>', ['action' => 'add'], ['class' => 'w3-button w3-circle w3-xxlarge w3-golden w3-hover-dark-golden add', 'escape' => false]) ?>
+<?php foreach ($permisos as $tipoDeUsuario): ?>
 
+    <div class="page-header">
+        <h5><?= $tipoDeUsuario->icon ?> <?= $tipoDeUsuario->plural ?></h5>
+    </div>
 
-<style>
-	.d {
-		width: 10%
-	}
+    <div class="content-card">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Empleado</th>
+                    <th>Usuario</th>
+                    <th>Nombre completo</th>
+                    <th>Email</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($tipoDeUsuario->usuarios as $usuario): ?>
+                    <tr>
+                        <td><?= $usuario->empleado ?></td>
+                        <td><?= $this->Html->link('@' . $usuario->username, ['action' => 'view', $usuario->ID]) ?></td>
+                        <td><?= $this->Html->link($usuario->fullname, ['action' => 'view', $usuario->ID]) ?></td>
+                        <td><?= $usuario->email ?></td>
+                        <td>
+                            <?= $this->Html->link('<i class="fa-solid fa-eye"></i>', ['action' => 'view', $usuario->ID], ['escapeTitle' => false]) ?>
+                            <?= $this->Html->link('<i class="fa-regular fa-pen-to-square"></i>', ['action' => 'edit', $usuario->ID], ['escapeTitle' => false]) ?>
+                            <?= $this->Form->deleteLink('<i class="fa-regular fa-trash-can"></i>', ['action' => 'delete', $usuario->ID], ['confirm' => '¿Estás seguro de eliminar este usuario?', 'escapeTitle' => false]) ?>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
 
-	.p {
-		width: 15%
-	}
+<?php endforeach; ?>
 
-	.n {
-		width: 20%;
-	}
-
-	.e {
-		width: 20%;
-	}
-</style>
+<?= $this->Html->link('<i class="fa-solid fa-plus"></i> Agregar', ['action' => 'add'], ['class' => 'btn-circle', 'escapeTitle' => false]) ?>

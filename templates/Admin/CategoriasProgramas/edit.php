@@ -4,30 +4,22 @@
  * @var \SPC\Model\Entity\CategoriasPrograma $categoriasPrograma
  */
 ?>
-<div class="row">
-    <aside class="column">
-        <div class="side-nav">
-            <h4 class="heading"><?= __('Actions') ?></h4>
-            <?= $this->Form->postLink(
-                __('Delete'),
-                ['action' => 'delete', $categoriasPrograma->ID],
-                ['confirm' => __('Are you sure you want to delete # {0}?', $categoriasPrograma->ID), 'class' => 'side-nav-item']
-            ) ?>
-            <?= $this->Html->link(__('List Categorias Programas'), ['action' => 'index'], ['class' => 'side-nav-item']) ?>
-        </div>
-    </aside>
-    <div class="column column-80">
-        <div class="categoriasProgramas form content">
-            <?= $this->Form->create($categoriasPrograma) ?>
-            <fieldset>
-                <legend><?= __('Edit Categorias Programa') ?></legend>
-                <?php
-                    echo $this->Form->control('name');
-                    echo $this->Form->control('slug');
-                ?>
-            </fieldset>
-            <?= $this->Form->button(__('Submit')) ?>
-            <?= $this->Form->end() ?>
-        </div>
+<div class="page-header">
+    <h5><i class="fa-regular fa-pen-to-square"></i> Modificar categoría de programa: <?= h($categoriasPrograma->name) ?></h5>
+</div>
+
+<div class="form-container">
+    <?= $this->Form->create($categoriasPrograma) ?>
+    <fieldset>
+        <legend><?= __('Edit Categorias Programa') ?></legend>
+        <?php
+            echo $this->Form->control('name', ['class' => 'form-control']);
+            echo $this->Form->control('slug', ['class' => 'form-control']);
+        ?>
+    </fieldset>
+    <div class="actions-bar">
+        <?= $this->Form->button('<i class="fa-solid fa-check"></i> Guardar', ['escapeTitle' => false]) ?>
+        <?= $this->Html->link('<i class="fa-solid fa-xmark"></i> Cancelar', ['action' => 'index'], ['class' => 'btn btn-outlined', 'escapeTitle' => false]) ?>
     </div>
+    <?= $this->Form->end() ?>
 </div>

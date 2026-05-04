@@ -1,9 +1,9 @@
-<div class="content">
-	<div class="w3-deep-blue w3-padding">
-		<h5>Registro de incidencias</h5>
-	</div>
+<div class="page-header">
+	<h5><i class="fa-solid fa-triangle-exclamation"></i> Registro de incidencias</h5>
+</div>
 
-	<table class="w3-table w3-table-all ">
+<div class="content-card">
+	<table class="data-table">
 		<thead>
 			<tr>
 				<th>Folio</th>
@@ -11,37 +11,39 @@
 				<th>Observaciones</th>
 				<th>Fecha</th>
 				<th>Estado</th>
-				<th class="actions"></th>
+				<th>Acciones</th>
 			</tr>
 		</thead>
 		<tbody>
 			<?php foreach ($incidencias as $incidencia): ?>
 				<tr>
 					<td><?= $incidencia->ID ?></td>
-					<td><?= $this->Html->link($incidencia->area, ['controller' => 'Areas', 'action' => 'view', $incidencia->area->ID], ['escape' => false]) ?>
+					<td><?= $this->Html->link($incidencia->area->name, ['controller' => 'Areas', 'action' => 'view', $incidencia->area->ID]) ?>
 					</td>
 					<td><i class="fa-solid fa-angles-right"></i> <?= $incidencia->observaciones ?></td>
 					<td><?= $incidencia->fecha->i18nFormat(\IntlDateFormatter::SHORT) ?></td>
 					<td><?= $incidencia->getPrintStatus() ?></td>
-					<td class="actions">
-						<?= $this->Html->link('<i class="fa-solid fa-square-arrow-up-right"></i>', ['action' => 'view', $incidencia->ID], ['escape' => false]) ?>
-						<?= $this->Html->link('<i class="fa-regular fa-pen-to-square"></i>', ['action' => 'edit', $incidencia->ID], ['escape' => false]) ?>
-						<?= $this->Form->deleteLink('<i class="fa-regular fa-trash-can"></i>', ['action' => 'delete', $incidencia->ID], ['confirm' => __('Are you sure you want to delete # {0}?', $incidencia->ID), 'escape' => false]) ?>
+					<td>
+						<?= $this->Html->link('<i class="fa-solid fa-eye"></i>', ['action' => 'view', $incidencia->ID], ['escapeTitle' => false]) ?>
+						<?= $this->Html->link('<i class="fa-regular fa-pen-to-square"></i>', ['action' => 'edit', $incidencia->ID], ['escapeTitle' => false]) ?>
+						<?= $this->Form->deleteLink('<i class="fa-regular fa-trash-can"></i>', ['action' => 'delete', $incidencia->ID], ['confirm' => '¿Estás seguro?', 'escapeTitle' => false]) ?>
 					</td>
 				</tr>
 			<?php endforeach; ?>
 		</tbody>
 	</table>
 
-	<div class="paginator">
-		<ul class="pagination">
-			<?= $this->Paginator->first('<< ' . __('first')) ?>
-			<?= $this->Paginator->prev('< ' . __('previous')) ?>
-			<?= $this->Paginator->numbers() ?>
-			<?= $this->Paginator->next(__('next') . ' >') ?>
-			<?= $this->Paginator->last(__('last') . ' >>') ?>
-		</ul>
-		<p><?= $this->Paginator->counter(__('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')) ?>
-		</p>
+	<div class="pagination-counter">
+		<?= $this->Paginator->counter('Página {{page}} de {{pages}}. Mostrando {{current}} resultados de un total de {{count}}') ?>
+	</div>
+
+	<div class="pagination">
+		<?= $this->Paginator->first('<i class="fa-solid fa-angles-left"></i>', ['escape' => false]) ?>
+		<?= $this->Paginator->prev('<i class="fa-solid fa-angle-left"></i>', ['escape' => false]) ?>
+		<?= $this->Paginator->numbers() ?>
+		<?= $this->Paginator->next('<i class="fa-solid fa-angle-right"></i>', ['escape' => false]) ?>
+		<?= $this->Paginator->last('<i class="fa-solid fa-angles-right"></i>', ['escape' => false]) ?>
 	</div>
 </div>
+
+<?= $this->Html->link('<i class="fa-solid fa-plus"></i> Agregar', ['action' => 'add'], ['class' => 'btn-circle', 'escapeTitle' => false]) ?>

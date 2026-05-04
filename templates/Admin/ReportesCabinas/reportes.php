@@ -1,100 +1,76 @@
-<div class="content">
-
-	<div class="w3-deep-blue w3-padding">
-		<h5><i class="fa-solid fa-chart-pie"></i> Reportes </h5>
-	</div>
-	<div class="w3-row">
-
-		<div class="w3-col l4">
-			<div class="w3-low-blue w3-padding">
-				<h6>Por programa</h6>
-			</div>
-			
-			<div class="w3-container form">
-				
-				<?= $this->Form->select('p', $programas, ['id' => 'p1P', 'class' => 'w3-select'])?>
-				
-				<?= $this->Form->select('m', $meses, ['id' => 'm1P', 'class' => 'w3-select'])?>
-				<?= $this->Form->button('Por mes', ['id' => 'Sbt1PM', 'class' => 'w3-button w3-golden w3-hover-dark-golden w3-section'])?>			
-
-				<?= $this->Form->select('y', $periodos, ['id' => 'y1P', 'class' => 'w3-select'])?>
-				<?= $this->Form->button('Por período', ['id' => 'Sbt1PP', 'class' => 'w3-button w3-golden w3-hover-dark-golden w3-section'])?>
-			</div>
-		</div>
+<div class="row g-3">
+	<div class="col-md-4">
+		<div class="content-card">
+			<h4>Por programa</h4>
 		
-		<div class="w3-col l4">
-			<div class="w3-low-blue w3-padding w3-border-left w3-border-white">
-				<h6>Por mes</h6>
-			</div>
-			<div class="w3-container form">
-
-				<?= $this->Form->select('m', $meses, ['id' => 'm1M', 'class' => 'w3-select'])?>
-				<?= $this->Form->button('Generar', ['id' => 'Sbt1M', 'class' => 'w3-button w3-golden w3-hover-dark-golden w3-section'])?>
-
-			</div>
-		</div>
+			<?= $this->Form->create(null, ['type' => 'GET'])?>
 		
-		<div class="w3-col l4">
-			<div class="w3-low-blue w3-padding w3-border-left w3-border-white">
-				<h6>Por cuatrimestre</h6>
-			</div>
-			<div class="w3-container form">
+				<div class="form-group">
+					<?= $this->Form->label('p', 'Programa') ?>
+					<?= $this->Form->select('p', $programas, ['id' => 'p1P', 'class' => 'form-control mb-2'])?>
+				</div>
 			
-				<?= $this->Form->select('m', $cuatrimestres, ['id' => 'm4M', 'class' => 'w3-select'])?>
-				<?= $this->Form->button('Generar', ['id' => 'Sbt4M', 'class' => 'w3-button w3-golden w3-hover-dark-golden w3-section'])?>
-
-			</div>
+				<div class="form-group">
+					<?= $this->Form->label('m', 'Mes') ?>
+					<?= $this->Form->select('m', $meses, ['id' => 'm1P', 'class' => 'form-control mb-2'])?>
+				</div>
+			
+				<?= $this->Form->hidden('type', ['value' => '1P'])?>
+			
+				<?= $this->Form->button('<i class="fa-solid fa-chart-bar"></i> Generar', ['id' => 'Sbt1P', 'class' => 'btn'])?>
+			<?= $this->Form->end()?>
 		</div>
 	</div>
-
-	<div class="w3-row w3-section">
-		<div id="result"></div>
+	
+	<div class="col-md-4">
+		<div class="content-card">
+			<h4>Por mes</h4>
+	
+			<?= $this->Form->create(null, ['type' => 'GET'])?>
+			
+				<?= $this->Form->hidden('type', ['value' => '1M'])?>
+			
+				<?= $this->Form->submit('Generar', ['class' => 'btn'])?>
+			<?= $this->Form->end()?>
+		</div>
+	</div>
+	
+	<div class="col-md-4">
+		<div class="content-card">
+			<h4>Por cuatrimestre</h4>
+	
+			<?= $this->Form->create(null, ['type' => 'GET'])?>
+			
+				<?= $this->Form->hidden('type', ['value' => '4M'])?>
+			
+				<?= $this->Form->submit('Generar', ['class' => 'btn'])?>
+			<?= $this->Form->end()?>
+		</div>
 	</div>
 </div>
-<?= $this->Html->script('https://www.gstatic.com/charts/loader.js')?>
+
+<div class="row">
+	<div id="result"></div>
+</div>
+
 
 <script type="text/javascript">
 	$(document).ready(function() {
-		$("#Sbt1PM").on("click", function() {
-			$(".form").removeClass("w3-card");
-			$(this).parent().toggleClass("w3-card");
-			sendRequest({p:$("#p1P").val(), m:$("#m1P").val(), t:"1PM"});
-			return false;
-		});
-	});
-	$(document).ready(function() {
-		$("#Sbt1PP").on("click", function() {
-			$(".form").removeClass("w3-card");
-			$(this).parent().toggleClass("w3-card");
-			sendRequest({p:$("#p1P").val(), y:$("#y1P").val(), t:"1PP"});
-			return false;
-		});
-	});
-	$(document).ready(function() {
-		$("#Sbt1M").on("click", function() {
-			$(".form").removeClass("w3-card");
-			$(this).parent().toggleClass("w3-card");
-			sendRequest({m:$("#m1M").val(), t:"1M"});
-			return false;
-		});
-	});
-	$(document).ready(function() {
-		$("#Sbt4M").on("click", function() {
-			$(".form").removeClass("w3-card");
-			$(this).parent().toggleClass("w3-card");
-			sendRequest({m:$("#m4M").val(), t:"4M"});
-			return false;
-		});
-	});
+ 		$("#Sbt1P").on("click", function() {
+ 			sendRequest({p:$("#p1P").val(), m:$("#m1P").val(), t:'1P'});
+ 			return false;
+ 		});
+ 	});
+	
 	function sendRequest(data) {
-		$.ajax({
-			method: "GET",
-			url:"<?= $this->Url->build(['action' => 'getReportBy'])?>",
-			data:data
-		})
-		.done(function(response) {
-			$("#result").html(response);
-		});
+ 		$.ajax({
+ 			method: "GET",
+ 			url:"<?= $this->Url->build(['action' => 'getReportBy'])?>",
+ 			data:data
+ 		})
+ 		.done(function(response) {
+ 			$("#result").html(response);
+ 		});
 	}
 </script>
 <style>

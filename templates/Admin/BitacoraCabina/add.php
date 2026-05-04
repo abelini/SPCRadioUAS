@@ -1,15 +1,18 @@
 <div class="content">
-
-	<div class="w3-deep-blue w3-padding">
-		<h5><i class="fa-solid fa-table-list"></i> Agregar una bitácora faltante</h5>
-	</div>
+	
+	<div class="page-header">
+ 		<h5><i class="fa-solid fa-table-list"></i> Agregar una bitácora faltante</h5>
+ 	</div>
 	
 	<?= $this->Form->create($bitacora) ?>
 		
-		<p class="w3-section">Selecciona la fecha</p>
-			
-			<?= $this->Form->control('fecha', ['label' => false])?>
-
-		<?= $this->Form->button('Crear bitácora', ['class' => 'w3-section']) ?>
-	<?= $this->Form->end() ?>
+ 		<div class="form-group">
+            <?= $this->Form->label('fecha', 'Fecha') ?>
+ 			<?= $this->Form->control('fecha', ['label' => false, 'class' => 'form-control']) ?>
+        </div>
+	
+ 		<div class="actions-bar">
+            <?= $this->Form->button('<i class="fa-solid fa-check"></i> Crear bitácora', ['escapeTitle' => false]) ?>
+        </div>
+ 	<?= $this->Form->end() ?>
 </div>

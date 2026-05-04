@@ -1,32 +1,19 @@
-<?php
-/**
- * @var \App\View\AppView $this
- * @var \App\Model\Entity\BitacoraCabina $bitacoraCabina
- */
-?>
-<div class="row">
-    <aside class="column">
-        <div class="side-nav">
-            <h4 class="heading"><?= __('Actions') ?></h4>
-            <?= $this->Form->deleteLink(
-                __('Delete'),
-                ['action' => 'delete', $bitacoraCabina->id],
-                ['confirm' => __('Are you sure you want to delete # {0}?', $bitacoraCabina->id), 'class' => 'side-nav-item']
-            ) ?>
-            <?= $this->Html->link(__('List Bitacora Cabina'), ['action' => 'index'], ['class' => 'side-nav-item']) ?>
-        </div>
-    </aside>
-    <div class="column column-80">
-        <div class="bitacoraCabina form content">
-            <?= $this->Form->create($bitacoraCabina) ?>
-            <fieldset>
-                <legend><?= __('Edit Bitacora Cabina') ?></legend>
-                <?php
-                echo $this->Form->control('fecha');
-                ?>
-            </fieldset>
-            <?= $this->Form->button(__('Submit')) ?>
-            <?= $this->Form->end() ?>
-        </div>
+<div class="page-header">
+    <h5><i class="fa-solid fa-pen-to-square"></i> Modificar bitácora</h5>
+</div>
+
+<div class="form-container">
+    <?= $this->Form->create($bitacoraCabina) ?>
+
+    <div class="form-group">
+        <?= $this->Form->label('fecha', 'Fecha') ?>
+        <?= $this->Form->control('fecha', ['label' => false, 'class' => 'form-control']) ?>
     </div>
+
+    <div class="actions-bar">
+        <?= $this->Form->button('<i class="fa-solid fa-check"></i> Guardar', ['escapeTitle' => false]) ?>
+        <?= $this->Html->link('<i class="fa-solid fa-xmark"></i> Cancelar', ['action' => 'index'], ['class' => 'btn btn-outlined', 'escapeTitle' => false]) ?>
+    </div>
+
+    <?= $this->Form->end() ?>
 </div>

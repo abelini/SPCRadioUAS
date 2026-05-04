@@ -1,36 +1,29 @@
-<?php
-/**
- * @var \App\View\AppView $this
- * @var \App\Model\Entity\Dia $dia
- * @var string[]|\Cake\Collection\CollectionInterface $horarios
- * @var string[]|\Cake\Collection\CollectionInterface $programas
- */
-?>
-<div class="row">
-    <aside class="column">
-        <div class="side-nav">
-            <h4 class="heading"><?= __('Actions') ?></h4>
-            <?= $this->Form->deleteLink(
-                __('Delete'),
-                ['action' => 'delete', $dia->ID],
-                ['confirm' => __('Are you sure you want to delete # {0}?', $dia->ID), 'class' => 'side-nav-item']
-            ) ?>
-            <?= $this->Html->link(__('List Dias'), ['action' => 'index'], ['class' => 'side-nav-item']) ?>
-        </div>
-    </aside>
-    <div class="column column-80">
-        <div class="dias form content">
-            <?= $this->Form->create($dia) ?>
-            <fieldset>
-                <legend><?= __('Edit Dia') ?></legend>
-                <?php
-                echo $this->Form->control('name');
-                echo $this->Form->control('horarios._ids', ['options' => $horarios]);
-                echo $this->Form->control('programas._ids', ['options' => $programas]);
-                ?>
-            </fieldset>
-            <?= $this->Form->button(__('Submit')) ?>
-            <?= $this->Form->end() ?>
-        </div>
+<div class="page-header">
+    <h5><i class="fa-solid fa-calendar-day"></i> Modificar día</h5>
+</div>
+
+<div class="form-container">
+    <?= $this->Form->create($dia) ?>
+
+    <div class="form-group">
+        <?= $this->Form->label('name', 'Nombre') ?>
+        <?= $this->Form->control('name', ['label' => false, 'class' => 'form-control']) ?>
     </div>
+
+    <div class="form-group">
+        <?= $this->Form->label('horarios._ids', 'Horarios') ?>
+        <?= $this->Form->control('horarios._ids', ['options' => $horarios, 'label' => false, 'class' => 'form-control', 'size' => count($horarios)]) ?>
+    </div>
+
+    <div class="form-group">
+        <?= $this->Form->label('programas._ids', 'Programas') ?>
+        <?= $this->Form->control('programas._ids', ['options' => $programas, 'label' => false, 'class' => 'form-control', 'size' => count($programas)]) ?>
+    </div>
+
+    <div class="actions-bar">
+        <?= $this->Form->button('<i class="fa-solid fa-check"></i> Guardar', ['escapeTitle' => false]) ?>
+        <?= $this->Html->link('<i class="fa-solid fa-xmark"></i> Cancelar', ['action' => 'index'], ['class' => 'btn btn-outlined', 'escapeTitle' => false]) ?>
+    </div>
+
+    <?= $this->Form->end() ?>
 </div>

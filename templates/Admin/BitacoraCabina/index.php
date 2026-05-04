@@ -1,41 +1,43 @@
-<div class="content">
-	<div class="w3-deep-blue w3-padding">
-		<h5><i class="fa-solid fa-list-check"></i> Bitácoras de cabina</h5>
-	</div>
+<div class="page-header">
+    <h5><i class="fa-solid fa-list-check"></i> Bitácoras de cabina</h5>
+</div>
 
-	<table class="w3-table w3-table-all">
-		<tr>
-			<th>Bitácora</th>
-			<th>Fecha</th>
-			<th class="actions">Acciones</th>
-		</tr>
+<div class="content-card">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Fecha</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($bitacoras as $bitacora): ?>
+                <tr>
+                    <td>#<?= $bitacora->ID ?></td>
+                    <td><?= $this->Html->link($bitacora->fecha->i18nFormat(\IntlDateFormatter::FULL), ['action' => 'view', $bitacora->ID], ['escape' => false]) ?></td>
+                    <td>
+                        <?= $this->Html->link('<i class="fa-solid fa-eye"></i>', ['action' => 'view', $bitacora->ID], ['escapeTitle' => false]) ?>
+                        <?= $this->Html->link('<i class="fa-regular fa-pen-to-square"></i>', ['action' => 'edit', $bitacora->ID], ['escapeTitle' => false]) ?>
+                        <?= $this->Form->deleteLink('<i class="fa-regular fa-trash-can"></i>', ['action' => 'delete', $bitacora->ID], ['confirm' => '¿Estás seguro de eliminar esta bitácora?', 'escapeTitle' => false]) ?>
+                        <?= $this->Html->link('<i class="fa-solid fa-external-link"></i> Ver en INFO', ['controller' => 'BitacoraCabina', 'action' => 'display', '?' => ['d' => $bitacora->fecha->format('Y-m-d'), 'enable' => 1], 'prefix' => false], ['escapeTitle' => false, 'class' => 'btn btn-outlined']) ?>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
 
-		<?php foreach ($bitacoras as $bitacora): ?>
-			<tr>
-				<td>#<?= $bitacora->ID ?></td>
-				<td><?= $this->Html->link($bitacora->fecha->i18nFormat(\IntlDateFormatter::FULL), ['action' => 'view', $bitacora->ID], ['escape' => false]) ?>
-				</td>
+    <div class="pagination-counter">
+        <?= $this->Paginator->counter('Página {{page}} de {{pages}}. Mostrando {{current}} resultados de un total de {{count}}') ?>
+    </div>
 
-				<td class="actions">
-					<?= $this->Html->link('<i class="fa-solid fa-square-arrow-up-right"></i>', ['action' => 'view', $bitacora->ID], ['escape' => false]) ?>
-					<?= $this->Html->link('<i class="fa-regular fa-pen-to-square"></i>', ['action' => 'edit', $bitacora->ID], ['escape' => false]) ?>
-					<?= $this->Form->deleteLink('<i class="fa-regular fa-trash-can"></i>', ['action' => 'delete', $bitacora->ID,], ['confirm' => __('Are you sure you want to delete # {0}?', $bitacora->ID), 'escape' => false]) ?>
-					|
-					<?= $this->Html->link('<i class="fa-solid fa-arrow-up-right-from-square"></i> Ver en el INFO', ['controller' => 'BitacoraCabina', 'action' => 'display', '?' => ['d' => $bitacora->fecha->format('Y-m-d'), 'enable' => 1], 'prefix' => false], ['escape' => false]) ?>
-				</td>
-			</tr>
-		<?php endforeach; ?>
-	</table>
+    <div class="pagination">
+        <?= $this->Paginator->first('<i class="fa-solid fa-angles-left"></i>', ['escape' => false]) ?>
+        <?= $this->Paginator->prev('<i class="fa-solid fa-angle-left"></i>', ['escape' => false]) ?>
+        <?= $this->Paginator->numbers() ?>
+        <?= $this->Paginator->next('<i class="fa-solid fa-angle-right"></i>', ['escape' => false]) ?>
+        <?= $this->Paginator->last('<i class="fa-solid fa-angles-right"></i>', ['escape' => false]) ?>
+    </div>
 
-	<?= $this->Html->link('<i class="fa-solid fa-plus"></i>', ['action' => 'add'], ['class' => 'w3-button w3-circle w3-xxlarge w3-golden w3-hover-dark-golden add', 'escape' => false]) ?>
-
-	<div class="w3-center w3-padding-48">
-		<div class="w3-bar w3-border">
-			<?= $this->Paginator->first('<i class="fa-solid fa-angles-left"></i>', ['escape' => false]) ?>
-			<?= $this->Paginator->prev('<i class="fa-solid fa-angle-left"></i>', ['escape' => false]) ?>
-			<?= $this->Paginator->numbers() ?>
-			<?= $this->Paginator->next('<i class="fa-solid fa-angle-right"></i>', ['escape' => false]) ?>
-			<?= $this->Paginator->last('<i class="fa-solid fa-angles-right"></i>', ['escape' => false]) ?>
-		</div>
-	</div>
+    <?= $this->Html->link('<i class="fa-solid fa-plus"></i> Agregar', ['action' => 'add'], ['class' => 'btn-circle', 'escapeTitle' => false]) ?>
 </div>

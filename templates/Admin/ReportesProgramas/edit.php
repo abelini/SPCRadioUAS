@@ -1,23 +1,32 @@
-<div class="content">
-	<div class="w3-deep-blue w3-padding">
-		<h5>Modificar el reporte de programa RP#<?= $reportePrograma->ID ?></h5>
-	</div>
-	<div class="w3-low-blue w3-padding">
-		<h5><?= $reportePrograma->programa ?></h5>
-	</div>
+<div class="page-header">
+    <h5><i class="fa-solid fa-pen-to-square"></i> Modificar el reporte de programa RP#<?= $reportePrograma->ID ?></h5>
+</div>
 
-	<div class="w3-container w3-section">
-		<?= $this->Form->deleteLink(
-			'Eliminar reporte',
-			['action' => 'delete', $reportePrograma->ID],
-			['confirm' => __('Are you sure you want to delete # {0}?', $reportePrograma->ID), 'class' => 'w3-red w3-button w3-right w3-section']
-		) ?>
-
-
-		<?= $this->Form->create($reportePrograma, ['class' => 'w3-padding-64']) ?>
-		<?= $this->Form->select('status', $statuses); ?>
-		<?= $this->Form->control('ID'); ?>
-		<?= $this->Form->button('Cambiar', ['class' => 'w3-section']) ?>
-		<?= $this->Form->end() ?>
-	</div>
+<div class="form-container">
+    <?= $this->Form->deleteLink(
+        '<i class="fa-regular fa-trash-can"></i> Eliminar reporte',
+        ['action' => 'delete', $reportePrograma->ID],
+        ['confirm' => '¿Estás seguro de eliminar este reporte?', 'class' => 'btn btn-danger', 'escapeTitle' => false]
+    ) ?>
+    
+    <?= $this->Form->create($reportePrograma) ?>
+    
+    <div class="form-group">
+        <?= $this->Form->label('status', 'Status') ?>
+        <?= $this->Form->select('status', $statuses, ['class' => 'form-control']) ?>
+    </div>
+    
+    <div class="form-group">
+        <?= $this->Form->label('programa', 'Programa') ?>
+        <div style="color: var(--color-ghost-white); padding: var(--spacing-8) 0;"><?= $reportePrograma->programa ?></div>
+    </div>
+    
+    <?= $this->Form->control('ID'); ?>
+    
+    <div class="actions-bar">
+        <?= $this->Form->button('<i class="fa-solid fa-check"></i> Guardar', ['escapeTitle' => false]) ?>
+        <?= $this->Html->link('<i class="fa-solid fa-xmark"></i> Cancelar', ['action' => 'index'], ['class' => 'btn btn-outlined', 'escapeTitle' => false]) ?>
+    </div>
+    
+    <?= $this->Form->end() ?>
 </div>

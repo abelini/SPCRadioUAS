@@ -1,55 +1,48 @@
-<?php
-/**
- * @var \App\View\AppView $this
- * @var iterable<\Cake\Datasource\EntityInterface> $asignaciones
- */
-?>
-<div class="asignaciones index content">
-    <?= $this->Html->link(__('New Asignacione'), ['action' => 'add'], ['class' => 'button float-right']) ?>
-    <h3><?= __('Asignaciones') ?></h3>
-    <div class="table-responsive">
-        <table>
-            <thead>
+<div class="page-header">
+    <h5><i class="fa-solid fa-calendar-check"></i> Asignaciones</h5>
+</div>
+
+<div class="content-card">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Rol</th>
+                <th>Locutor</th>
+                <th>Día</th>
+                <th>Horario</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($asignaciones as $asignacione): ?>
                 <tr>
-                    <th><?= $this->Paginator->sort('ID') ?></th>
-                    <th><?= $this->Paginator->sort('rolID') ?></th>
-                    <th><?= $this->Paginator->sort('locutorID') ?></th>
-                    <th><?= $this->Paginator->sort('diaID') ?></th>
-                    <th><?= $this->Paginator->sort('horarioID') ?></th>
-                    <th class="actions"><?= __('Actions') ?></th>
+                    <td><?= $this->Number->format($asignacione->ID) ?></td>
+                    <td><?= $asignacione->hasValue('rol') ? $this->Html->link($asignacione->rol->fechaInicio, ['controller' => 'Roles', 'action' => 'view', $asignacione->rol->ID]) : '' ?></td>
+                    <td><?= $asignacione->hasValue('locutor') ? $this->Html->link($asignacione->locutor->name, ['controller' => 'Locutores', 'action' => 'view', $asignacione->locutor->ID]) : '' ?></td>
+                    <td><?= $asignacione->hasValue('dia') ? $this->Html->link($asignacione->dia->name, ['controller' => 'Dias', 'action' => 'view', $asignacione->dia->ID]) : '' ?></td>
+                    <td><?= $asignacione->hasValue('horario') ? $this->Html->link($asignacione->horario->ID, ['controller' => 'Horarios', 'action' => 'view', $asignacione->horario->ID]) : '' ?></td>
+                    <td>
+                        <?= $this->Html->link('<i class="fa-solid fa-eye"></i>', ['action' => 'view', $asignacione->ID], ['escapeTitle' => false]) ?>
+                        <?= $this->Html->link('<i class="fa-regular fa-pen-to-square"></i>', ['action' => 'edit', $asignacione->ID], ['escapeTitle' => false]) ?>
+                        <?= $this->Form->deleteLink('<i class="fa-regular fa-trash-can"></i>', ['action' => 'delete', $asignacione->ID], ['confirm' => __('¿Estás seguro de eliminar # {0}?', $asignacione->ID), 'escapeTitle' => false]) ?>
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($asignaciones as $asignacione): ?>
-                    <tr>
-                        <td><?= $this->Number->format($asignacione->ID) ?></td>
-                        <td><?= $asignacione->hasValue('rol') ? $this->Html->link($asignacione->rol->fechaInicio, ['controller' => 'Roles', 'action' => 'view', $asignacione->rol->ID]) : '' ?>
-                        </td>
-                        <td><?= $asignacione->hasValue('locutor') ? $this->Html->link($asignacione->locutor->name, ['controller' => 'Locutores', 'action' => 'view', $asignacione->locutor->ID]) : '' ?>
-                        </td>
-                        <td><?= $asignacione->hasValue('dia') ? $this->Html->link($asignacione->dia->name, ['controller' => 'Dias', 'action' => 'view', $asignacione->dia->ID]) : '' ?>
-                        </td>
-                        <td><?= $asignacione->hasValue('horario') ? $this->Html->link($asignacione->horario->ID, ['controller' => 'Horarios', 'action' => 'view', $asignacione->horario->ID]) : '' ?>
-                        </td>
-                        <td class="actions">
-                            <?= $this->Html->link(__('View'), ['action' => 'view', $asignacione->ID]) ?>
-                            <?= $this->Html->link(__('Edit'), ['action' => 'edit', $asignacione->ID]) ?>
-                            <?= $this->Form->deleteLink(__('Delete'), ['action' => 'delete', $asignacione->ID], ['confirm' => __('Are you sure you want to delete # {0}?', $asignacione->ID)]) ?>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+
+    <div class="pagination-counter">
+        <?= $this->Paginator->counter(__('Página {{page}} de {{pages}}, mostrando {{current}} registro(s) de un total de {{count}}')) ?>
     </div>
-    <div class="paginator">
-        <ul class="pagination">
-            <?= $this->Paginator->first('<< ' . __('first')) ?>
-            <?= $this->Paginator->prev('< ' . __('previous')) ?>
-            <?= $this->Paginator->numbers() ?>
-            <?= $this->Paginator->next(__('next') . ' >') ?>
-            <?= $this->Paginator->last(__('last') . ' >>') ?>
-        </ul>
-        <p><?= $this->Paginator->counter(__('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')) ?>
-        </p>
+
+    <div class="pagination">
+        <?= $this->Paginator->first('<i class="fa-solid fa-angles-left"></i>', ['escape' => false]) ?>
+        <?= $this->Paginator->prev('<i class="fa-solid fa-angle-left"></i>', ['escape' => false]) ?>
+        <?= $this->Paginator->numbers() ?>
+        <?= $this->Paginator->next('<i class="fa-solid fa-angle-right"></i>', ['escape' => false]) ?>
+        <?= $this->Paginator->last('<i class="fa-solid fa-angles-right"></i>', ['escape' => false]) ?>
     </div>
 </div>
+
+<?= $this->Html->link('<i class="fa-solid fa-plus"></i> Agregar', ['action' => 'add'], ['class' => 'btn-circle', 'escapeTitle' => false]) ?>

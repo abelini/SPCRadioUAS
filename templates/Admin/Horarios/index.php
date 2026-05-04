@@ -1,50 +1,47 @@
-<?php
-/**
- * @var \App\View\AppView $this
- * @var iterable<\App\Model\Entity\Horario> $horarios
- */
-?>
-<div class="horarios index content">
-    <?= $this->Html->link(__('New Horario'), ['action' => 'add'], ['class' => 'button float-right']) ?>
-    <h3><?= __('Horarios') ?></h3>
-    <div class="table-responsive">
-        <table>
-            <thead>
+<div class="page-header">
+    <h5><i class="fa-solid fa-clock"></i> Horarios</h5>
+</div>
+
+<div class="content-card">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Hora Inicio</th>
+                <th>Hora Fin</th>
+                <th>Turno</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($horarios as $horario): ?>
                 <tr>
-                    <th><?= $this->Paginator->sort('ID') ?></th>
-                    <th><?= $this->Paginator->sort('horaInicio') ?></th>
-                    <th><?= $this->Paginator->sort('horaFin') ?></th>
-                    <th><?= $this->Paginator->sort('turnoID') ?></th>
-                    <th class="actions"><?= __('Actions') ?></th>
+                    <td><?= $this->Number->format($horario->ID) ?></td>
+                    <td><?= h($horario->horaInicio) ?></td>
+                    <td><?= h($horario->horaFin) ?></td>
+                    <td><?= $horario->hasValue('turno') ? $this->Html->link($horario->turno->name, ['controller' => 'Turnos', 'action' => 'view', $horario->turno->ID]) : '' ?>
+                    </td>
+                    <td>
+                        <?= $this->Html->link('<i class="fa-solid fa-eye"></i>', ['action' => 'view', $horario->ID], ['escapeTitle' => false]) ?>
+                        <?= $this->Html->link('<i class="fa-regular fa-pen-to-square"></i>', ['action' => 'edit', $horario->ID], ['escapeTitle' => false]) ?>
+                        <?= $this->Form->deleteLink('<i class="fa-regular fa-trash-can"></i>', ['action' => 'delete', $horario->ID], ['confirm' => '¿Estás seguro de eliminar este horario?', 'escapeTitle' => false]) ?>
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($horarios as $horario): ?>
-                    <tr>
-                        <td><?= $this->Number->format($horario->ID) ?></td>
-                        <td><?= h($horario->horaInicio) ?></td>
-                        <td><?= h($horario->horaFin) ?></td>
-                        <td><?= $horario->hasValue('turno') ? $this->Html->link($horario->turno->name, ['controller' => 'Turnos', 'action' => 'view', $horario->turno->ID]) : '' ?>
-                        </td>
-                        <td class="actions">
-                            <?= $this->Html->link(__('View'), ['action' => 'view', $horario->ID]) ?>
-                            <?= $this->Html->link(__('Edit'), ['action' => 'edit', $horario->ID]) ?>
-                            <?= $this->Form->deleteLink(__('Delete'), ['action' => 'delete', $horario->ID], ['confirm' => __('Are you sure you want to delete # {0}?', $horario->ID)]) ?>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+
+    <div class="pagination-counter">
+        <?= $this->Paginator->counter('Página {{page}} de {{pages}}, mostrando {{current}} registro(s) de un total de {{count}}') ?>
     </div>
-    <div class="paginator">
-        <ul class="pagination">
-            <?= $this->Paginator->first('<< ' . __('first')) ?>
-            <?= $this->Paginator->prev('< ' . __('previous')) ?>
-            <?= $this->Paginator->numbers() ?>
-            <?= $this->Paginator->next(__('next') . ' >') ?>
-            <?= $this->Paginator->last(__('last') . ' >>') ?>
-        </ul>
-        <p><?= $this->Paginator->counter(__('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')) ?>
-        </p>
+
+    <div class="pagination">
+        <?= $this->Paginator->first('<i class="fa-solid fa-angles-left"></i>', ['escape' => false]) ?>
+        <?= $this->Paginator->prev('<i class="fa-solid fa-angle-left"></i>', ['escape' => false]) ?>
+        <?= $this->Paginator->numbers() ?>
+        <?= $this->Paginator->next('<i class="fa-solid fa-angle-right"></i>', ['escape' => false]) ?>
+        <?= $this->Paginator->last('<i class="fa-solid fa-angles-right"></i>', ['escape' => false]) ?>
     </div>
 </div>
+
+<?= $this->Html->link('<i class="fa-solid fa-plus"></i> Agregar', ['action' => 'add'], ['class' => 'btn-circle', 'escapeTitle' => false]) ?>

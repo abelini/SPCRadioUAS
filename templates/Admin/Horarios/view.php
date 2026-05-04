@@ -1,97 +1,59 @@
-<?php
-/**
- * @var \App\View\AppView $this
- * @var \App\Model\Entity\Horario $horario
- */
-?>
-<div class="row">
-    <aside class="column">
-        <div class="side-nav">
-            <h4 class="heading"><?= __('Actions') ?></h4>
-            <?= $this->Html->link(__('Edit Horario'), ['action' => 'edit', $horario->ID], ['class' => 'side-nav-item']) ?>
-            <?= $this->Form->deleteLink(__('Delete Horario'), ['action' => 'delete', $horario->ID], ['confirm' => __('Are you sure you want to delete # {0}?', $horario->ID), 'class' => 'side-nav-item']) ?>
-            <?= $this->Html->link(__('List Horarios'), ['action' => 'index'], ['class' => 'side-nav-item']) ?>
-            <?= $this->Html->link(__('New Horario'), ['action' => 'add'], ['class' => 'side-nav-item']) ?>
+<div class="page-header">
+    <h5><i class="fa-solid fa-clock"></i> Horario #<?= $horario->ID ?></h5>
+</div>
+
+<div class="content-card">
+    <table class="view-table">
+        <tr>
+            <th>Turno</th>
+            <td><?= $horario->hasValue('turno') ? $this->Html->link($horario->turno->name, ['controller' => 'Turnos', 'action' => 'view', $horario->turno->ID]) : '' ?>
+            </td>
+        </tr>
+        <tr>
+            <th>ID</th>
+            <td><?= $this->Number->format($horario->ID) ?></td>
+        </tr>
+        <tr>
+            <th>Hora Inicio</th>
+            <td><?= h($horario->horaInicio) ?></td>
+        </tr>
+        <tr>
+            <th>Hora Fin</th>
+            <td><?= h($horario->horaFin) ?></td>
+        </tr>
+    </table>
+
+    <div class="stats-section">
+        <div class="page-header">
+            <h5><i class="fa-solid fa-calendar-day"></i> Días relacionados</h5>
         </div>
-    </aside>
-    <div class="column column-80">
-        <div class="horarios view content">
-            <h3><?= h($horario->ID) ?></h3>
-            <table>
+
+        <table class="data-table">
+            <thead>
                 <tr>
-                    <th><?= __('Turno') ?></th>
-                    <td><?= $horario->hasValue('turno') ? $this->Html->link($horario->turno->name, ['controller' => 'Turnos', 'action' => 'view', $horario->turno->ID]) : '' ?>
-                    </td>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Acciones</th>
                 </tr>
-                <tr>
-                    <th><?= __('ID') ?></th>
-                    <td><?= $this->Number->format($horario->ID) ?></td>
-                </tr>
-                <tr>
-                    <th><?= __('HoraInicio') ?></th>
-                    <td><?= h($horario->horaInicio) ?></td>
-                </tr>
-                <tr>
-                    <th><?= __('HoraFin') ?></th>
-                    <td><?= h($horario->horaFin) ?></td>
-                </tr>
-            </table>
-            <div class="related">
-                <h4><?= __('Related Dias') ?></h4>
-                <?php if (!empty($horario->dias)): ?>
-                    <div class="table-responsive">
-                        <table>
-                            <tr>
-                                <th><?= __('ID') ?></th>
-                                <th><?= __('Name') ?></th>
-                                <th class="actions"><?= __('Actions') ?></th>
-                            </tr>
-                            <?php foreach ($horario->dias as $dia): ?>
-                                <tr>
-                                    <td><?= h($dia->ID) ?></td>
-                                    <td><?= h($dia->name) ?></td>
-                                    <td class="actions">
-                                        <?= $this->Html->link(__('View'), ['controller' => 'Dias', 'action' => 'view', $dia->ID]) ?>
-                                        <?= $this->Html->link(__('Edit'), ['controller' => 'Dias', 'action' => 'edit', $dia->ID]) ?>
-                                        <?= $this->Form->deleteLink(__('Delete'), ['controller' => 'Dias', 'action' => 'delete', $dia->ID], ['confirm' => __('Are you sure you want to delete # {0}?', $dia->ID)]) ?>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </table>
-                    </div>
-                <?php endif; ?>
-            </div>
-            <div class="related">
-                <h4><?= __('Related Asignaciones') ?></h4>
-                <?php if (!empty($horario->asignaciones)): ?>
-                    <div class="table-responsive">
-                        <table>
-                            <tr>
-                                <th><?= __('ID') ?></th>
-                                <th><?= __('RolID') ?></th>
-                                <th><?= __('LocutorID') ?></th>
-                                <th><?= __('DiaID') ?></th>
-                                <th><?= __('HorarioID') ?></th>
-                                <th class="actions"><?= __('Actions') ?></th>
-                            </tr>
-                            <?php foreach ($horario->asignaciones as $asignacione): ?>
-                                <tr>
-                                    <td><?= h($asignacione->ID) ?></td>
-                                    <td><?= h($asignacione->rolID) ?></td>
-                                    <td><?= h($asignacione->locutorID) ?></td>
-                                    <td><?= h($asignacione->diaID) ?></td>
-                                    <td><?= h($asignacione->horarioID) ?></td>
-                                    <td class="actions">
-                                        <?= $this->Html->link(__('View'), ['controller' => 'Asignaciones', 'action' => 'view', $asignacione->ID]) ?>
-                                        <?= $this->Html->link(__('Edit'), ['controller' => 'Asignaciones', 'action' => 'edit', $asignacione->ID]) ?>
-                                        <?= $this->Form->deleteLink(__('Delete'), ['controller' => 'Asignaciones', 'action' => 'delete', $asignacione->ID], ['confirm' => __('Are you sure you want to delete # {0}?', $asignacione->ID)]) ?>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </table>
-                    </div>
-                <?php endif; ?>
-            </div>
-        </div>
+            </thead>
+            <tbody>
+                <?php foreach ($horario->dias as $dia): ?>
+                    <tr>
+                        <td><?= h($dia->ID) ?></td>
+                        <td><?= h($dia->name) ?></td>
+                        <td>
+                            <?= $this->Html->link('<i class="fa-solid fa-eye"></i>', ['controller' => 'Dias', 'action' => 'view', $dia->ID], ['escapeTitle' => false]) ?>
+                            <?= $this->Html->link('<i class="fa-regular fa-pen-to-square"></i>', ['controller' => 'Dias', 'action' => 'edit', $dia->ID], ['escapeTitle' => false]) ?>
+                            <?= $this->Form->deleteLink('<i class="fa-regular fa-trash-can"></i>', ['controller' => 'Dias', 'action' => 'delete', $dia->ID], ['confirm' => '¿Estás seguro?', 'escapeTitle' => false]) ?>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="actions-bar">
+        <?= $this->Html->link('<i class="fa-regular fa-pen-to-square"></i> Modificar', ['action' => 'edit', $horario->ID], ['class' => 'btn btn-outlined', 'escapeTitle' => false]) ?>
+        <?= $this->Form->deleteLink('<i class="fa-regular fa-trash-can"></i> Eliminar', ['action' => 'delete', $horario->ID], ['confirm' => '¿Estás seguro de eliminar este horario?', 'class' => 'btn btn-danger', 'escapeTitle' => false]) ?>
     </div>
 </div>

@@ -35,7 +35,7 @@ class HorariosController extends AppController
      */
     public function view($id = null)
     {
-        $horario = $this->Horarios->get($id, contain: ['Turnos', 'Dias', 'Asignaciones']);
+        $horario = $this->Horarios->get($id, contain: ['Turnos', 'Dias']);
         $this->set(compact('horario'));
     }
 

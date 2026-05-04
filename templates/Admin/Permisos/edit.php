@@ -5,33 +5,25 @@
  * @var string[]|\Cake\Collection\CollectionInterface $usuarios
  */
 ?>
-<div class="row">
-    <aside class="column">
-        <div class="side-nav">
-            <h4 class="heading"><?= __('Actions') ?></h4>
-            <?= $this->Form->deleteLink(
-                __('Delete'),
-                ['action' => 'delete', $permiso->ID],
-                ['confirm' => __('Are you sure you want to delete # {0}?', $permiso->ID), 'class' => 'side-nav-item']
-            ) ?>
-            <?= $this->Html->link(__('List Permisos'), ['action' => 'index'], ['class' => 'side-nav-item']) ?>
-        </div>
-    </aside>
-    <div class="column column-80">
-        <div class="permisos form content">
-            <?= $this->Form->create($permiso) ?>
-            <fieldset>
-                <legend><?= __('Edit Permiso') ?></legend>
-                <?php
-                echo $this->Form->control('name');
-                echo $this->Form->control('plural');
-                echo $this->Form->control('singular');
-                echo $this->Form->control('icon');
-                echo $this->Form->control('usuarios._ids', ['options' => $usuarios]);
-                ?>
-            </fieldset>
-            <?= $this->Form->button(__('Submit')) ?>
-            <?= $this->Form->end() ?>
-        </div>
+<div class="page-header">
+    <h5><i class="fa-regular fa-pen-to-square"></i> Modificar permiso: <?= h($permiso->name) ?></h5>
+</div>
+
+<div class="form-container">
+    <?= $this->Form->create($permiso) ?>
+    <fieldset>
+        <legend><?= __('Edit Permiso') ?></legend>
+        <?php
+            echo $this->Form->control('name', ['class' => 'form-control']);
+            echo $this->Form->control('plural', ['class' => 'form-control']);
+            echo $this->Form->control('singular', ['class' => 'form-control']);
+            echo $this->Form->control('icon', ['class' => 'form-control']);
+            echo $this->Form->control('usuarios._ids', ['options' => $usuarios, 'class' => 'form-control']);
+        ?>
+    </fieldset>
+    <div class="actions-bar">
+        <?= $this->Form->button('<i class="fa-solid fa-check"></i> Guardar', ['escapeTitle' => false]) ?>
+        <?= $this->Html->link('<i class="fa-solid fa-xmark"></i> Cancelar', ['action' => 'index'], ['class' => 'btn btn-outlined', 'escapeTitle' => false]) ?>
     </div>
+    <?= $this->Form->end() ?>
 </div>

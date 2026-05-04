@@ -40,7 +40,7 @@ class AppController extends Controller
 				->first();
 
 			$layout = match ($this->user->permisos[0]->name) {
-				Permiso::ADMINISTRATOR => strtolower(Permiso::ADMINISTRATOR),
+				Permiso::ADMINISTRATOR => strtolower(Permiso::CAPTURISTA),//strtolower(Permiso::ADMINISTRATOR),
 				Permiso::CAPTURISTA => strtolower(Permiso::CAPTURISTA),
 				Permiso::FONOTECARIO => strtolower(Permiso::FONOTECARIO),
 				default => 'default',

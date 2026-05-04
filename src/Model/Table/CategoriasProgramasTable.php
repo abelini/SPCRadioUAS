@@ -40,6 +40,10 @@ class CategoriasProgramasTable extends Table
         $this->setTable('categorias_programas');
         $this->setDisplayField('name');
         $this->setPrimaryKey('ID');
+
+        $this->hasMany('Programas', [
+            'foreignKey' => 'categoryID',
+        ]);
     }
 
     /**

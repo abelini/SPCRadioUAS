@@ -3,15 +3,10 @@ declare(strict_types=1);
 
 namespace SPC\Controller\Admin;
 
-//use \DateTime as DT;
-//use \DateInterval;
-//use \DateTimeInterface;
 
 use SPC\Controller\AppController;
 use SPC\Model\Entity\Permiso;
 use SPC\Model\Entity\TipoSolicitud;
-
-use Cake\Collection\CollectionInterface;
 use Cake\Http\Response;
 use Cake\I18n\DateTime;
 use Cake\ORM\Query\SelectQuery;
@@ -32,10 +27,9 @@ class DashboardController extends AppController
 	public function index(): Response
 	{
 
-		$datetime = parent::$datetime; //DateTime::now();
+		$datetime = parent::$datetime;
 
 		$this->set('user', $this->user);
-		//$this->set('time', $datetime);
 
 		switch ($this->user->permisos[0]->name) {
 			case Permiso::ADMINISTRATOR:

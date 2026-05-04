@@ -40,9 +40,6 @@ class AsignacionesController extends AppController
 		}
 	}
 
-
-
-
 	public function index()
 	{
 		$query = $this->Asignaciones->find()

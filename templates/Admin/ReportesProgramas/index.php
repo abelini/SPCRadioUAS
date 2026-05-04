@@ -1,51 +1,48 @@
-<?php
-/**
- * @var \App\View\AppView $this
- * @var iterable<\App\Model\Entity\ReportesPrograma> $reportesProgramas
- */
-?>
-<div class="reportesProgramas index content">
-    <?= $this->Html->link(__('New Reportes Programa'), ['action' => 'add'], ['class' => 'button float-right']) ?>
-    <h3><?= __('Reportes Programas') ?></h3>
-    <div class="table-responsive">
-        <table>
-            <thead>
+<div class="page-header">
+    <h5><i class="fa-solid fa-radio"></i> Reportes de programas</h5>
+</div>
+
+<div class="content-card">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Reporte de Cabina</th>
+                <th>Programa</th>
+                <th>Status</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($reportesProgramas as $reporte): ?>
                 <tr>
-                    <th><?= $this->Paginator->sort('ID') ?></th>
-                    <th><?= $this->Paginator->sort('ReporteCabinaID') ?></th>
-                    <th><?= $this->Paginator->sort('programaID') ?></th>
-                    <th><?= $this->Paginator->sort('status') ?></th>
-                    <th class="actions"><?= __('Actions') ?></th>
+                    <td><?= $this->Number->format($reporte->ID) ?></td>
+                    <td><?= $reporte->hasValue('reporte') ? $this->Html->link('#' . $reporte->reporte->ID, ['controller' => 'ReportesCabinas', 'action' => 'view', $reporte->reporte->ID]) : '' ?>
+                    </td>
+                    <td><?= $reporte->hasValue('programa') ? $this->Html->link($reporte->programa->name, ['controller' => 'Programas', 'action' => 'view', $reporte->programa->ID]) : '' ?>
+                    </td>
+                    <td><?= h($reporte->status) ?></td>
+                    <td>
+                        <?= $this->Html->link('<i class="fa-solid fa-eye"></i>', ['action' => 'view', $reporte->ID], ['escapeTitle' => false]) ?>
+                        <?= $this->Html->link('<i class="fa-regular fa-pen-to-square"></i>', ['action' => 'edit', $reporte->ID], ['escapeTitle' => false]) ?>
+                        <?= $this->Form->deleteLink('<i class="fa-regular fa-trash-can"></i>', ['action' => 'delete', $reporte->ID], ['confirm' => '¿Estás seguro?', 'escapeTitle' => false]) ?>
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($reportesProgramas as $reportesPrograma): ?>
-                    <tr>
-                        <td><?= $this->Number->format($reportesPrograma->ID) ?></td>
-                        <td><?= $reportesPrograma->hasValue('reporte') ? $this->Html->link($reportesPrograma->reporte->ID, ['controller' => 'ReportesCabinas', 'action' => 'view', $reportesPrograma->reporte->ID]) : '' ?>
-                        </td>
-                        <td><?= $reportesPrograma->hasValue('programa') ? $this->Html->link($reportesPrograma->programa->name, ['controller' => 'Programas', 'action' => 'view', $reportesPrograma->programa->ID]) : '' ?>
-                        </td>
-                        <td><?= h($reportesPrograma->status) ?></td>
-                        <td class="actions">
-                            <?= $this->Html->link(__('View'), ['action' => 'view', $reportesPrograma->ID]) ?>
-                            <?= $this->Html->link(__('Edit'), ['action' => 'edit', $reportesPrograma->ID]) ?>
-                            <?= $this->Form->deleteLink(__('Delete'), ['action' => 'delete', $reportesPrograma->ID], ['confirm' => __('Are you sure you want to delete # {0}?', $reportesPrograma->ID)]) ?>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+
+    <div class="pagination-counter">
+        <?= $this->Paginator->counter('Página {{page}} de {{pages}}. Mostrando {{current}} resultados de un total de {{count}}') ?>
     </div>
-    <div class="paginator">
-        <ul class="pagination">
-            <?= $this->Paginator->first('<< ' . __('first')) ?>
-            <?= $this->Paginator->prev('< ' . __('previous')) ?>
-            <?= $this->Paginator->numbers() ?>
-            <?= $this->Paginator->next(__('next') . ' >') ?>
-            <?= $this->Paginator->last(__('last') . ' >>') ?>
-        </ul>
-        <p><?= $this->Paginator->counter(__('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')) ?>
-        </p>
+
+    <div class="pagination">
+        <?= $this->Paginator->first('<i class="fa-solid fa-angles-left"></i>', ['escape' => false]) ?>
+        <?= $this->Paginator->prev('<i class="fa-solid fa-angle-left"></i>', ['escape' => false]) ?>
+        <?= $this->Paginator->numbers() ?>
+        <?= $this->Paginator->next('<i class="fa-solid fa-angle-right"></i>', ['escape' => false]) ?>
+        <?= $this->Paginator->last('<i class="fa-solid fa-angles-right"></i>', ['escape' => false]) ?>
     </div>
 </div>
+
+<?= $this->Html->link('<i class="fa-solid fa-plus"></i> Agregar', ['action' => 'add'], ['class' => 'btn-circle', 'escapeTitle' => false]) ?>

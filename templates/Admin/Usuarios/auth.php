@@ -1,14 +1,22 @@
-<div class="w3-section">
-
+<div style="max-width: 400px; margin: var(--spacing-24) auto; background-color: var(--surface-floating-card-translucent); border: 1px solid var(--color-subtle-gray); border-radius: var(--radius-cards); padding: var(--spacing-24);">
+    
     <?= $this->Form->create() ?>
-
-        <?= $this->Form->control('username', ['label' => false, 'placeholder' => 'Nombre de usuario', 'class' => 'w3-input w3-section']) ?>
-        <?= $this->Form->control('password', ['label' => false, 'placeholder' => 'Contraseña', 'class' => 'w3-input w3-section']) ?>
-
-		<?php if(isset($retrieveLink)) : ?>
-			<p class="w3-medium w3-text-red w3-center w3-padding" style="margin:0;"><?= $this->Html->link('Olvidé la contraseña', ['action' => 'retrieve'])?></p>
-		<?php endif; ?>
-
-    <?= $this->Form->button('Iniciar sesión', ['class' => 'w3-button w3-galaxy-blue']); ?>
+    
+        <div class="form-group">
+            <?= $this->Form->control('username', ['label' => false, 'placeholder' => 'Nombre de usuario', 'class' => 'form-control']) ?>
+        </div>
+        
+        <div class="form-group">
+            <?= $this->Form->control('password', ['label' => false, 'placeholder' => 'Contraseña', 'class' => 'form-control']) ?>
+        </div>
+    
+    	<?php if(isset($retrieveLink)) : ?>
+    		<p style="text-align: center; margin: var(--spacing-12) 0; color: var(--color-polar-blue);"><?= $this->Html->link('Olvidé la contraseña', ['action' => 'retrieve'], ['style' => 'color: var(--color-polar-blue);']) ?></p>
+    	<?php endif; ?>
+    
+        <div style="display: flex; justify-content: center; margin-top: var(--spacing-16);">
+            <?= $this->Form->button('<i class="fa-solid fa-right-to-bracket"></i> Iniciar sesión', ['escapeTitle' => false]) ?>
+        </div>
+        
     <?= $this->Form->end() ?>
 </div>
