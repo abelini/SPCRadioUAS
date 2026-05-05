@@ -21,20 +21,20 @@
         </thead>
         <tbody>
             <?php foreach ($categoriasProgramas as $categoriasPrograma): ?>
-            <tr>
-                <td><?= $this->Number->format($categoriasPrograma->ID) ?></td>
-                <td><?= h($categoriasPrograma->name) ?></td>
-                <td><?= h($categoriasPrograma->slug) ?></td>
-                <td>
-                    <i class="<?= h($categoriasPrograma->icon) ?>"></i>
-                    <span style="color: var(--color-ui-gray); font-size: var(--text-caption);"><?= h($categoriasPrograma->icon) ?></span>
-                </td>
-                <td class="actions">
-                    <?= $this->Html->link('<i class="fa-solid fa-eye"></i>', ['action' => 'view', $categoriasPrograma->ID], ['escapeTitle' => false]) ?>
-                    <?= $this->Html->link('<i class="fa-regular fa-pen-to-square"></i>', ['action' => 'edit', $categoriasPrograma->ID], ['escapeTitle' => false]) ?>
-                    <?= $this->Form->deleteLink('<i class="fa-regular fa-trash-can"></i>', ['action' => 'delete', $categoriasPrograma->ID], ['confirm' => __('Are you sure you want to delete # {0}?', $categoriasPrograma->ID), 'escapeTitle' => false]) ?>
-                </td>
-            </tr>
+                <tr>
+                    <td><?= $this->Number->format($categoriasPrograma->ID) ?></td>
+                    <td><?= h($categoriasPrograma->name) ?></td>
+                    <td><?= h($categoriasPrograma->slug) ?></td>
+                    <td>
+                        <i class="<?= h($categoriasPrograma->icon) ?>"></i>
+
+                    </td>
+                    <td class="actions">
+                        <?= $this->Html->link('<i class="fa-solid fa-eye"></i>', ['action' => 'view', $categoriasPrograma->ID], ['escapeTitle' => false]) ?>
+                        <?= $this->Html->link('<i class="fa-regular fa-pen-to-square"></i>', ['action' => 'edit', $categoriasPrograma->ID], ['escapeTitle' => false]) ?>
+                        <?= $this->Form->deleteLink('<i class="fa-regular fa-trash-can"></i>', ['action' => 'delete', $categoriasPrograma->ID], ['confirm' => __('Are you sure you want to delete # {0}?', $categoriasPrograma->ID), 'escapeTitle' => false]) ?>
+                    </td>
+                </tr>
             <?php endforeach; ?>
         </tbody>
     </table>

@@ -107,6 +107,7 @@ class ProgramasTable extends Table
 			->notEmptyString('produccion');
 
 		$validator
+			->allowEmptyString('conduccion', 'update')
 			->scalar('conduccion')
 			->maxLength('conduccion', 255);
 
