@@ -30,6 +30,11 @@ return function (RouteBuilder $routes): void {
     $routes->setRouteClass(DashedRoute::class);
 
     $routes->prefix('Admin', function (RouteBuilder $routes) {
+        $routes->connect('/dashboard/streaming-stats', ['controller' => 'Dashboard', 'action' => 'streamingStats']);
+        $routes->connect('/dashboard/solicitudes-pendientes', ['controller' => 'Dashboard', 'action' => 'solicitudesPendientes']);
+        $routes->connect('/dashboard/incidencias-abiertas', ['controller' => 'Dashboard', 'action' => 'incidenciasAbiertas']);
+        $routes->connect('/dashboard/bitacora-hoy', ['controller' => 'Dashboard', 'action' => 'bitacoraHoy']);
+        $routes->connect('/dashboard/roles-proxima-semana', ['controller' => 'Dashboard', 'action' => 'rolesProximaSemana']);
         $routes->fallbacks(DashedRoute::class);
     });
 

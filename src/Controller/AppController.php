@@ -20,6 +20,10 @@ class AppController extends Controller
 
 	protected const string APP_NAME = 'SISTEMA DE PRODUCCIÓN Y CABINA';
 
+	protected const string LOGO = 'https://radio.uas.edu.mx/wp-content/images/logo.webp';
+
+	protected const string VERSION = '3.5.1';
+
 	protected array $paginate = [
 		'limit' => 40,
 	];
@@ -49,6 +53,8 @@ class AppController extends Controller
 		$this->viewBuilder()->setLayout($layout);
 
 		$this->set('AppName', self::APP_NAME);
+		$this->set('AppLogo', self::LOGO);
+		$this->set('AppVersion', self::VERSION);
 		$this->set('datetime', self::$datetime);
 	}
 

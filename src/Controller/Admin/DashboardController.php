@@ -3,124 +3,195 @@ declare(strict_types=1);
 
 namespace SPC\Controller\Admin;
 
-
 use SPC\Controller\AppController;
 use SPC\Model\Entity\Permiso;
 use SPC\Model\Entity\TipoSolicitud;
 use Cake\Http\Response;
 use Cake\I18n\DateTime;
-use Cake\ORM\Query\SelectQuery;
 
 /**
  * Dashboard Controller
- *
  */
 class DashboardController extends AppController
 {
+    protected array $solicitudes;
+    protected array $bitacoras;
+    protected array $programas;
 
-	protected array $solicitudes;
+    public function index(): Response
+    {
+        $datetime = parent::$datetime;
 
-	protected array $bitacoras;
+        $this->set('user', $this->user);
 
-	protected array $programas;
+        switch ($this->user->permisos[0]->name) {
+            case Permiso::ADMINISTRATOR:
+                $this->solicitudes = $this->getSolicitudesStats();
+                $this->bitacoras = $this->getBitacorasStats();
+                $this->programas = $this->getProgramasStats();
+                break;
+            case Permiso::CAPTURISTA:
+                $this->solicitudes = $this->getSolicitudesStats();
+                $this->bitacoras = $this->getBitacorasStats();
+                $this->programas = $this->getProgramasStats();
+                break;
+            default:
+        }
 
-	public function index(): Response
-	{
+        $diff = $this->getDateDiffString($datetime->diff(DateTime::createFromFormat(\DateTimeInterface::ISO8601, $this->bitacoras['FirstOne']->format(\DateTimeInterface::ISO8601))));
 
-		$datetime = parent::$datetime;
+        $this->set('bitacorasDiff', $diff);
+        $this->set('solicitudes', $this->solicitudes);
+        $this->set('bitacoras', $this->bitacoras);
+        $this->set('programas', $this->programas);
+        $this->set('theme', isset($_COOKIE['theme']) ? $_COOKIE['theme'] : 'midday');
 
-		$this->set('user', $this->user);
+        $this->viewBuilder()->setTemplate($this->viewBuilder()->getLayout());
+        return $this->render();
+    }
 
-		switch ($this->user->permisos[0]->name) {
-			case Permiso::ADMINISTRATOR:
-				$this->solicitudes = $this->getSolicitudesStats();
-				$this->bitacoras = $this->getBitacorasStats();
-				$this->programas = $this->getProgramasStats();
-				break;
-			case Permiso::CAPTURISTA:
-				$this->solicitudes = $this->getSolicitudesStats();
-				$this->bitacoras = $this->getBitacorasStats();
-				$this->programas = $this->getProgramasStats();
-				break;
+    protected function getSolicitudesStats(): array
+    {
+        $query = $this->getTableLocator()->get('Solicitudes')->find();
+        $stats = $query
+            ->select([
+                'Total' => $query->func()->count('*'),
+                'TotalGDS' => $query->func()->count(
+                    $query->expr()->case()->when(['tipoSolicitudID' => TipoSolicitud::GRABACION_DE_SPOT])->then(1)
+                ),
+                'TotalMDC' => $query->func()->count(
+                    $query->expr()->case()->when(['tipoSolicitudID' => TipoSolicitud::MAESTRO_DE_CEREMONIA])->then(1)
+                ),
+                'TotalCR' => $query->func()->count(
+                    $query->expr()->case()->when(['tipoSolicitudID' => TipoSolicitud::CONTROL_REMOTO])->then(1)
+                ),
+            ])
+            ->disableHydration()
+            ->all();
 
-			case Permiso::FONOTECARIO:
-				$this->solicitudes = $this->getSolicitudesStats();
-				$this->bitacoras = $this->getBitacorasStats();
-				$this->programas = $this->getProgramasStats();
-				break;
-			default:
+        return $stats->toArray()[0];
+    }
 
-		}
+    protected function getBitacorasStats(): array
+    {
+        $stats = $this->getTableLocator()->get('BitacoraCabina')
+            ->find()
+            ->select(
+                function ($query) {
+                    return [
+                        'Total' => $query->func()->count('*'),
+                        'FirstOne' => $query->func()->min('fecha', ['date']),
+                        'LastOne' => $query->func()->max('fecha', ['date']),
+                    ];
+                }
+            )
+            ->orderByAsc('fecha')
+            ->disableHydration()
+            ->all();
+        return $stats->toArray()[0];
+    }
 
-		$diff = $this->getDateDiffString($datetime->diff(DateTime::createFromFormat(\DateTimeInterface::ISO8601, $this->bitacoras['FirstOne']->format(\DateTimeInterface::ISO8601))));
+    protected function getProgramasStats(): array
+    {
+        $query = $this->getTableLocator()->get('Programas')->find();
+        $stats = $query
+            ->select([
+                'Total' => $query->func()->count('*'),
+            ])
+            ->disableHydration()
+            ->all();
 
-		$this->set('bitacorasDiff', $diff);
-		$this->set('solicitudes', $this->solicitudes);
-		$this->set('bitacoras', $this->bitacoras);
-		$this->set('programas', $this->programas);
+        return $stats->toArray()[0];
+    }
 
-		$this->viewBuilder()->setTemplate($this->viewBuilder()->getLayout());
-		return $this->render();
-	}
+    protected function getDateDiffString(\DateInterval $diff): string
+    {
+        return $diff->y . ' años, ' . $diff->m . ' meses y ' . $diff->d . ' días';
+    }
 
-	protected function getSolicitudesStats(): array
-	{
-		$query = $this->getTableLocator()->get('Solicitudes')->find();
-		$stats = $query
-			->select([
-				'Total' => $query->func()->count('*'),
+    public function streamingStats(): Response
+    {
+        $this->disableAutoRender();
 
-				'TotalGDS' => $query->func()->count(
-					$query->expr()->case()->when(['tipoSolicitudID' => TipoSolicitud::GRABACION_DE_SPOT])->then(1)
-				),
-				'TotalMDC' => $query->func()->count(
-					$query->expr()->case()->when(['tipoSolicitudID' => TipoSolicitud::MAESTRO_DE_CEREMONIA])->then(1)
-				),
-				'TotalCR' => $query->func()->count(
-					$query->expr()->case()->when(['tipoSolicitudID' => TipoSolicitud::CONTROL_REMOTO])->then(1)
-				),
-			])
-			->disableHydration()
-			->all();
+        $from = (new DateTime('-7 days'))->format('Y-m-d');
+        $to = (new DateTime())->format('Y-m-d');
 
-		return $stats->toArray()[0];
-	}
+        $data = $this->getTableLocator()->get('StreamHits')
+            ->getSummaryStats($from, $to, ['totalHits', 'hitsToday', 'maxDay']);
 
-	protected function getBitacorasStats(): array
-	{
-		$stats = $this->getTableLocator()->get('BitacoraCabina')
-			->find()
-			->select(
-				function (SelectQuery $query) {
-					return [
-						'Total' => $query->func()->count('*'),
-						'FirstOne' => $query->func()->min('fecha', ['date']),
-						'LastOne' => $query->func()->max('fecha', ['date']),
-					];
-				}
-			)
-			->orderByAsc('fecha')
-			->disableHydration()
-			->all();
-		return $stats->toArray()[0];
-	}
+        return $this->response->withType('json')
+            ->withStringBody(json_encode([
+                'totalListeners' => $data['totalHits'] ?? 0,
+                'hitsToday' => $data['hitsToday'] ?? 0,
+                'maxDay' => $data['maxDay'] ?? null,
+            ]));
+    }
 
-	protected function getProgramasStats(): array
-	{
-		$query = $this->getTableLocator()->get('Programas')->find();
-		$stats = $query
-			->select([
-				'Total' => $query->func()->count('*'),
-			])
-			->disableHydration()
-			->all();
+    public function solicitudesPendientes(): Response
+    {
+        $this->disableAutoRender();
 
-		return $stats->toArray()[0];
-	}
+        $count = $this->getTableLocator()->get('Solicitudes')
+            ->find()
+            ->where(['status' => 0])
+            ->count();
 
-	protected function getDateDiffString(\DateInterval $diff): string
-	{
-		return $diff->y . ' años, ' . $diff->m . ' meses y ' . $diff->d . ' días';
-	}
+        return $this->response->withType('json')
+            ->withStringBody(json_encode(['pendientes' => $count]));
+    }
+
+    public function incidenciasAbiertas(): Response
+    {
+        $this->disableAutoRender();
+
+        $count = $this->getTableLocator()->get('Incidencias')
+            ->find()
+            ->where(['closed' => 0])
+            ->count();
+
+        return $this->response->withType('json')
+            ->withStringBody(json_encode(['abiertas' => $count]));
+    }
+
+    public function bitacoraHoy(): Response
+    {
+        $this->disableAutoRender();
+
+        $today = date('Y-m-d');
+        $count = $this->getTableLocator()->get('BitacoraCabina')
+            ->find()
+            ->where(['fecha' => $today])
+            ->count();
+
+        return $this->response->withType('json')
+            ->withStringBody(json_encode([
+                'registros' => $count,
+                'fecha' => $today,
+            ]));
+    }
+
+    public function rolesProximaSemana(): Response
+    {
+        $this->disableAutoRender();
+
+        $nextMonday = (new DateTime())->next(DateTime::MONDAY);
+        $nextSunday = (clone $nextMonday)->addDays(6);
+        // debug($nextMonday);
+
+        $count = $this->getTableLocator()->get('Roles')
+            ->find()
+            ->where([
+                'fechaInicio' => $nextMonday->format('Y-m-d'),
+                //'fechaInicio <=' => $nextSunday->format('Y-m-d'),
+            ])
+            ->count();
+        //debug($nextMonday);
+        return $this->response->withType('json')
+            ->withStringBody(json_encode([
+                'existe' => $count > 0,
+                'semanaInicio' => $nextMonday->i18nFormat("'X de' LLLL 'de' YYYY"),
+                'semanaFin' => $nextSunday->i18nFormat("'X de' LLLL 'de' YYYY"),
+                'totalLocutores' => $count,
+            ]));
+    }
 }
-
