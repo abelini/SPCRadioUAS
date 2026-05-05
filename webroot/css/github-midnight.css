@@ -496,6 +496,31 @@ p {
   margin-bottom: var(--spacing-8);
 }
 
+/* Grid */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 calc(-1 * var(--spacing-8));
+}
+
+.row > [class*="col-"] {
+  padding: 0 var(--spacing-8);
+  box-sizing: border-box;
+}
+
+.col-md-4 { width: 33.333333%; }
+.col-md-6 { width: 50%; }
+.col-md-12 { width: 100%; }
+
+@media (max-width: 768px) {
+  .col-md-4,
+  .col-md-6,
+  .col-md-12 {
+    width: 100%;
+    margin-bottom: var(--spacing-16);
+  }
+}
+
 .form-control {
   width: 100%;
   background-color: var(--surface-code-canvas);
@@ -789,14 +814,21 @@ div.error-message {
   margin-top: var(--spacing-4);
 }
 
-.input.select select[multiple] {
+/* Select with size */
+select[size] {
   height: auto;
   background-color: var(--surface-code-canvas);
 }
 
-.input.select select[multiple] option:checked {
+select[size] option:checked {
   background-color: var(--color-interface-blue) !important;
-  color: var(--color-ghost-white);
+  color: var(--color-ghost-white) !important;
+  font-weight: 600;
+}
+
+select[size]:has(option:checked) {
+  border-color: var(--color-polar-blue) !important;
+  box-shadow: 0 0 0 2px rgba(141, 214, 255, 0.3);
 }
 
 /* Scrollbar */
@@ -816,4 +848,33 @@ div.error-message {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-ash-gray);
+}
+
+/* Status Badges */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  padding: var(--spacing-4) var(--spacing-12);
+  border-radius: var(--radius-full);
+  font-size: var(--text-caption);
+  font-weight: var(--font-weight-medium);
+}
+
+.status-pending {
+  background-color: rgba(220, 38, 38, 0.15);
+  color: #fca5a5;
+  border: 1px solid #dc2626;
+}
+
+.status-progress {
+  background-color: rgba(234, 88, 12, 0.15);
+  color: #fb923c;
+  border: 1px solid #ea580c;
+}
+
+.status-completed {
+  background-color: rgba(8, 135, 43, 0.15);
+  color: var(--color-neon-green);
+  border: 1px solid var(--color-spring-green);
 }

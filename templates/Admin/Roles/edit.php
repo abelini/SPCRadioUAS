@@ -6,18 +6,18 @@
     <?= $this->Form->create($role) ?>
 
     <div class="form-group">
-        <?= $this->Form->label('fecha_inicio', 'Fecha inicial') ?>
-        <?= $this->Form->control('fecha_inicio', ['label' => false, 'class' => 'form-control']) ?>
+        <?= $this->Form->label('fechaInicio', 'Fecha inicial') ?>
+        <?= $this->Form->control('fechaInicio', ['label' => false, 'class' => 'form-control']) ?>
     </div>
 
     <div class="form-group">
-        <?= $this->Form->label('fecha_fin', 'Fecha final') ?>
-        <?= $this->Form->control('fecha_fin', ['label' => false, 'class' => 'form-control']) ?>
+        <?= $this->Form->label('fechaFin', 'Fecha final') ?>
+        <?= $this->Form->control('fechaFin', ['label' => false, 'class' => 'form-control']) ?>
     </div>
 
     <div class="form-group">
-        <?= $this->Form->label('turno_id', 'Tipo de horario') ?>
-        <?= $this->Form->control('turno_id', ['options' => $turnos, 'label' => false, 'class' => 'form-control']) ?>
+        <?= $this->Form->label('turnoID', 'Tipo de horario') ?>
+        <?= $this->Form->control('turnoID', ['options' => $turnos, 'label' => false, 'class' => 'form-control']) ?>
     </div>
 
     <div class="actions-bar">

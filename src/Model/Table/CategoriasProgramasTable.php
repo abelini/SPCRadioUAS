@@ -66,6 +66,12 @@ class CategoriasProgramasTable extends Table
             ->requirePresence('slug', 'create')
             ->notEmptyString('slug');
 
+        $validator
+            ->scalar('icon')
+            ->maxLength('icon', 128)
+            ->requirePresence('icon', 'create')
+            ->notEmptyString('icon');
+
         return $validator;
     }
 }

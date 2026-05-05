@@ -1,0 +1,6 @@
+-- Días-Horarios table
+CREATE TABLE IF NOT EXISTS dias_horarios (
+    ID INT(11) PRIMARY KEY AUTOINCREMENT,
+    diaID INT(11) NOT NULL DEFAULT 0,
+    horarioID INT(11) NOT NULL DEFAULT 0
+);

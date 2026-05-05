@@ -1,0 +1,5 @@
+-- Turnos table
+CREATE TABLE IF NOT EXISTS turnos (
+    ID INT(11) PRIMARY KEY AUTOINCREMENT,
+    name VARCHAR(255) NOT NULL
+);

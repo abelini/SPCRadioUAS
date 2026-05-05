@@ -50,7 +50,7 @@ return [
         'namespace' => 'SPC',
         'encoding' => 'UTF-8',
         'defaultLocale' => 'es_MX',
-        'defaultTimezone' => 'America/Hermosillo',
+        'defaultTimezone' => 'America/Mazatlan',
         'base' => false,
         'dir' => 'src',
         'webroot' => 'webroot',

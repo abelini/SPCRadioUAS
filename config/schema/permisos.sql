@@ -1,0 +1,8 @@
+-- Permisos table
+CREATE TABLE IF NOT EXISTS permisos (
+    ID INT(11) PRIMARY KEY AUTOINCREMENT,
+    name VARCHAR(255) NOT NULL,
+    plural VARCHAR(128) NOT NULL,
+    singular VARCHAR(255) NOT NULL,
+    icon VARCHAR(128) NOT NULL
+);

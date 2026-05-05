@@ -5,8 +5,7 @@
  */
 ?>
 <div class="page-header">
-    <?= $this->Html->link(__('New Categorias Programa'), ['action' => 'add'], ['class' => 'btn btn-outlined']) ?>
-    <h3><?= __('Categorias Programas') ?></h3>
+    <h5><i class="fa-solid fa-layer-group"></i> Categorías de Programas</h5>
 </div>
 
 <div class="content-card">
@@ -16,6 +15,7 @@
                 <th><?= $this->Paginator->sort('ID') ?></th>
                 <th><?= $this->Paginator->sort('name') ?></th>
                 <th><?= $this->Paginator->sort('slug') ?></th>
+                <th>Icono</th>
                 <th class="actions"><?= __('Actions') ?></th>
             </tr>
         </thead>
@@ -25,6 +25,10 @@
                 <td><?= $this->Number->format($categoriasPrograma->ID) ?></td>
                 <td><?= h($categoriasPrograma->name) ?></td>
                 <td><?= h($categoriasPrograma->slug) ?></td>
+                <td>
+                    <i class="<?= h($categoriasPrograma->icon) ?>"></i>
+                    <span style="color: var(--color-ui-gray); font-size: var(--text-caption);"><?= h($categoriasPrograma->icon) ?></span>
+                </td>
                 <td class="actions">
                     <?= $this->Html->link('<i class="fa-solid fa-eye"></i>', ['action' => 'view', $categoriasPrograma->ID], ['escapeTitle' => false]) ?>
                     <?= $this->Html->link('<i class="fa-regular fa-pen-to-square"></i>', ['action' => 'edit', $categoriasPrograma->ID], ['escapeTitle' => false]) ?>
@@ -47,3 +51,5 @@
         <?= $this->Paginator->last('<i class="fa-solid fa-angles-right"></i>', ['escape' => false]) ?>
     </div>
 </div>
+
+<?= $this->Html->link('<i class="fa-solid fa-plus"></i>', ['action' => 'add'], ['class' => 'btn-circle', 'escapeTitle' => false]) ?>

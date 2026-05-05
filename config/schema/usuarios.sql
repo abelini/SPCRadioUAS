@@ -1,0 +1,12 @@
+-- Usuarios table
+CREATE TABLE IF NOT EXISTS usuarios (
+    ID INT(11) PRIMARY KEY AUTOINCREMENT,
+    empleado INT(11) NOT NULL,
+    username VARCHAR(30) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    fullname VARCHAR(255) NOT NULL,
+    email VARCHAR(64) NOT NULL,
+    base TINYINT(1) NOT NULL DEFAULT 0,
+    photo VARCHAR(255) NOT NULL
+);

@@ -1,0 +1,7 @@
+-- Horarios table
+CREATE TABLE IF NOT EXISTS horarios (
+    ID INT(11) PRIMARY KEY AUTOINCREMENT,
+    horaInicio TIME NOT NULL DEFAULT '00:00:00',
+    horaFin TIME NOT NULL DEFAULT '00:00:00',
+    turnoID INT(11) NOT NULL
+);

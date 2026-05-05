@@ -13,5 +13,6 @@
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  * @var \App\View\AppView $this
  */
+?>
 
-echo $this->fetch('content');
+<?php echo $this->fetch('content');

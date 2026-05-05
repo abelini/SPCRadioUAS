@@ -1,0 +1,6 @@
+-- Áreas table
+CREATE TABLE IF NOT EXISTS areas (
+    ID INT(11) PRIMARY KEY AUTOINCREMENT,
+    name VARCHAR(128) NOT NULL,
+    icon VARCHAR(128) NOT NULL
+);

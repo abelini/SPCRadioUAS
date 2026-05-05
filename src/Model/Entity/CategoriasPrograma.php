@@ -11,6 +11,7 @@ use Cake\ORM\Entity;
  * @property int $ID
  * @property string $name
  * @property string $slug
+ * @property string $icon
  */
 class CategoriasPrograma extends Entity
 {
@@ -26,5 +27,6 @@ class CategoriasPrograma extends Entity
     protected array $_accessible = [
         'name' => true,
         'slug' => true,
+        'icon' => true,
     ];
 }

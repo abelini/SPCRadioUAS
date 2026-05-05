@@ -1,0 +1,7 @@
+-- Roles table
+CREATE TABLE IF NOT EXISTS roles (
+    ID INT(11) PRIMARY KEY AUTOINCREMENT,
+    fechaInicio DATE NOT NULL,
+    fechaFin DATE NOT NULL,
+    turnoID INT(11) NOT NULL DEFAULT 1
+);
