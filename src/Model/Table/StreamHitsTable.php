@@ -48,15 +48,18 @@ class StreamHitsTable extends Table
     /**
      * Devuelve estadísticas resumen (KPIs)
      *
-     * @param string $from Fecha inicio (Y-m-d)
-     * @param string $to Fecha fin (Y-m-d)
+     * @param DateTime $from Fecha inicio
+     * @param DateTime $to Fecha fin
      * @param array<string>|null $fields Campos opcionales a devolver. Si es null, devuelve todos.
      * @return array<string, mixed>
      */
-    public function getSummaryStats(string $from, string $to, array|null $fields = null): array
+    public function getSummaryStats(DateTime $from, DateTime $to, array|null $fields = null): array
     {
+        $format = 'Y-m-d H:i:s';
         $conn = $this->getConnection();
-        $today = (new DateTime())->format('Y-m-d');
+        $today = new DateTime()->format($format);
+        $from = $from->format($format);
+        $to = $to->format($format);
         $result = [];
 
         $defaultFields = ['totalHits', 'uniqueReferers', 'hitsToday', 'uniqueIpsToday', 'topFormat', 'topCountry', 'maxDay'];
@@ -65,49 +68,49 @@ class StreamHitsTable extends Table
         if (in_array('totalHits', $requestedFields)) {
             $result['totalHits'] = (int) ($conn->execute(
                 'SELECT COUNT(*) as cnt FROM stream_hits WHERE created BETWEEN ? AND ?',
-                [$from . ' 00:00:00', $to . ' 23:59:59']
+                [$from, $to]
             )->fetch('assoc')['cnt'] ?? 0);
         }
 
         if (in_array('uniqueReferers', $requestedFields)) {
             $result['uniqueReferers'] = (int) ($conn->execute(
                 'SELECT COUNT(DISTINCT referer) as cnt FROM stream_hits WHERE created BETWEEN ? AND ?',
-                [$from . ' 00:00:00', $to . ' 23:59:59']
+                [$from, $to]
             )->fetch('assoc')['cnt'] ?? 0);
         }
 
         if (in_array('hitsToday', $requestedFields)) {
             $result['hitsToday'] = (int) ($conn->execute(
                 'SELECT COUNT(*) as cnt FROM stream_hits WHERE created >= ?',
-                [$today . ' 00:00:00']
+                [$today]
             )->fetch('assoc')['cnt'] ?? 0);
         }
 
         if (in_array('uniqueIpsToday', $requestedFields)) {
             $result['uniqueIpsToday'] = (int) ($conn->execute(
                 'SELECT COUNT(DISTINCT ip) as cnt FROM stream_hits WHERE created >= ?',
-                [$today . ' 00:00:00']
+                [$today]
             )->fetch('assoc')['cnt'] ?? 0);
         }
 
         if (in_array('topFormat', $requestedFields)) {
             $result['topFormat'] = $conn->execute(
                 'SELECT format, COUNT(*) as cnt FROM stream_hits WHERE created BETWEEN ? AND ? GROUP BY format ORDER BY cnt DESC LIMIT 1',
-                [$from . ' 00:00:00', $to . ' 23:59:59']
+                [$from, $to]
             )->fetch('assoc') ?: [];
         }
 
         if (in_array('topCountry', $requestedFields)) {
             $result['topCountry'] = $conn->execute(
                 'SELECT country, countryCode, COUNT(*) as cnt FROM stream_hits WHERE created BETWEEN ? AND ? AND country IS NOT NULL AND country != "" GROUP BY countryCode ORDER BY cnt DESC LIMIT 1',
-                [$from . ' 00:00:00', $to . ' 23:59:59']
+                [$from, $to]
             )->fetch('assoc') ?: [];
         }
 
         if (in_array('maxDay', $requestedFields)) {
             $maxDayRow = $conn->execute(
                 'SELECT DATE(created) as day, COUNT(*) as cnt FROM stream_hits WHERE created BETWEEN ? AND ? GROUP BY DATE(created) ORDER BY cnt DESC LIMIT 1',
-                [$from . ' 00:00:00', $to . ' 23:59:59']
+                [$from, $to]
             )->fetch('assoc');
             $dayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
             $result['maxDay'] = $maxDayRow ? $dayNames[(new DateTime($maxDayRow['day']))->format('w')] : null;

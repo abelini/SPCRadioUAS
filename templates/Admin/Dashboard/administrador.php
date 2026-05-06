@@ -104,9 +104,9 @@
         </div>
     </div>
 
-    <div class="col-md-3" id="card-bitacora" style="min-height: 150px;">
+    <div class="col-md-3" id="card-programas" style="min-height: 150px;">
         <div class="content-card" style="height: 100%;">
-            <h5><i class="fa-solid fa-file-contract"></i> Bitácora Hoy</h5>
+            <h5><i class="fa-solid fa-radio"></i> Programas</h5>
             <div class="stat-loading"
                 style="padding: var(--spacing-24); text-align: center; color: var(--color-muted-gray);">
                 <i class="fa-solid fa-circle-notch fa-spin"></i> Cargando...
@@ -116,7 +116,17 @@
 </div>
 
 <div class="row g-4" style="margin-top: var(--spacing-24);">
-    <div class="col-md-12" id="card-roles" style="min-height: 120px;">
+    <div class="col-md-3" id="card-bitacora" style="min-height: 150px;">
+        <div class="content-card" style="height: 100%;">
+            <h5><i class="fa-solid fa-file-contract"></i> Bitácora Hoy</h5>
+            <div class="stat-loading"
+                style="padding: var(--spacing-24); text-align: center; color: var(--color-muted-gray);">
+                <i class="fa-solid fa-circle-notch fa-spin"></i> Cargando...
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-9" id="card-roles" style="min-height: 120px;">
         <div class="content-card">
             <h5><i class="fa-solid fa-microphone-lines"></i> Roles de Cabina para la siguiente semana</h5>
             <div class="stat-loading"
@@ -158,47 +168,65 @@
         </div>
     `);
 
-        loadCard('<?= $this->Url->build(['controller' => 'Dashboard', 'action' => 'solicitudesPendientes']) ?>', 'card-solicitudes', (data, c) => `
+        loadCard('<?= $this->Url->build(['controller' => 'Dashboard', 'action' => 'getPendingRequests']) ?>', 'card-solicitudes', (data, c) => `
         <h5><i class="fa-solid fa-folder-open"></i> Solicitudes Pendientes</h5>
         <div style="padding: var(--spacing-16) 0;">
-            <div style="font-size: 2.5rem; font-weight: bold; color: ${data.pendientes > 0 ? c.warning : c.success};">${data.pendientes}</div>
+            <div style="font-size: 2.5rem; font-weight: bold; color: ${data.pending > 0 ? c.warning : c.success};">${data.pending}</div>
             <div style="color: ${c.text};">sin atender</div>
-            ${data.pendientes > 0 ? `<a href="<?= $this->Url->build(['controller' => 'Solicitudes', 'status' => 'pendiente']) ?>" style="color: ${c.primary}; margin-top: var(--spacing-16); display: block;">
+            ${data.pending > 0 ? `<a href="<?= $this->Url->build(['controller' => 'Solicitudes', 'status' => 'pendiente']) ?>" style="color: ${c.primary}; margin-top: var(--spacing-16); display: block;">
                 <i class="fa-solid fa-arrow-right"></i> Ver solicitudes
             </a>` : ''}
         </div>
     `);
 
-        loadCard('<?= $this->Url->build(['controller' => 'Dashboard', 'action' => 'incidenciasAbiertas']) ?>', 'card-incidencias', (data, c) => `
+        loadCard('<?= $this->Url->build(['controller' => 'Dashboard', 'action' => 'getOpenIncidences']) ?>', 'card-incidencias', (data, c) => `
         <h5><i class="fa-solid fa-file-signature"></i> Incidencias Abiertas</h5>
         <div style="padding: var(--spacing-16) 0;">
-            <div style="font-size: 2.5rem; font-weight: bold; color: ${data.abiertas > 0 ? c.danger : c.success};">${data.abiertas}</div>
+            <div style="font-size: 2.5rem; font-weight: bold; color: ${data.open > 0 ? c.danger : c.success};">${data.open}</div>
             <div style="color: ${c.text};">incidencias activas</div>
-            ${data.abiertas > 0 ? `<a href="<?= $this->Url->build(['controller' => 'Incidencias', 'status' => 'abierta']) ?>" style="color: ${c.primary}; margin-top: var(--spacing-16); display: block;">
+            ${data.open > 0 ? `<a href="<?= $this->Url->build(['controller' => 'Incidencias', 'status' => 'abierta']) ?>" style="color: ${c.primary}; margin-top: var(--spacing-16); display: block;">
                 <i class="fa-solid fa-arrow-right"></i> Ver incidencias
             </a>` : ''}
         </div>
     `);
 
-        loadCard('<?= $this->Url->build(['controller' => 'Dashboard', 'action' => 'bitacoraHoy']) ?>', 'card-bitacora', (data, c) => `
+        loadCard('<?= $this->Url->build(['controller' => 'Dashboard', 'action' => 'getProgramsStats']) ?>', 'card-programas', (data, c) => `
+        <h5><i class="fa-solid fa-computer"></i> Programas</h5>
+        <div style="padding: var(--spacing-16) 0;">
+            <div style="font-size: 2.5rem; font-weight: bold; color: ${c.primary};">${data.total}</div>
+            <div style="color: ${c.text}; margin-bottom: var(--spacing-8);">programas al aire</div>
+            <div style="font-size: 0.9rem;">
+                <div style="color: ${c.success};"><i class="fa-solid fa-music"></i> ${data.musical} segmentos musicales</div>
+                <div style="color: ${c.primary};"><i class="fa-solid fa-microphone"></i> ${data.spoken} programas hablados</div>
+            </div>
+            ${data.outOfAir > 0 ? `<div style="font-size: 0.9rem; color: ${c.danger};">
+                <i class="fa-solid fa-circle-xmark"></i> ${data.outOfAir} fuera del aire
+            </div>` : ''}
+            <a href="<?= $this->Url->build(['controller' => 'Programas']) ?>" style="color: ${c.primary}; margin-top: var(--spacing-16); display: block;">
+                <i class="fa-solid fa-arrow-right"></i> Ver Programas
+            </a>
+        </div>
+    `);
+
+        loadCard('<?= $this->Url->build(['controller' => 'Dashboard', 'action' => 'cabinaRecordsToday']) ?>', 'card-bitacora', (data, c) => `
         <h5><i class="fa-solid fa-file-contract"></i> Bitácora Hoy</h5>
         <div style="padding: var(--spacing-16) 0;">
             <div style="font-size: 2.5rem; font-weight: bold; color: ${c.primary};">${data.registros}</div>
             <div style="color: ${c.text};">registros hoy</div>
-            ${data.registros > 0 ? `<a href="<?= $this->Url->build(['controller' => 'BitacoraCabina']) ?>?date=${data.fecha}" style="color: ${c.primary}; margin-top: var(--spacing-16); display: block;">
+            ${data.registros > 0 ? `<a href="<?= $this->Url->build(['controller' => 'BitacoraCabina', 'action' => 'view']) ?>?date=${data.fecha}" style="color: ${c.primary}; margin-top: var(--spacing-16); display: block;">
                 <i class="fa-solid fa-arrow-right"></i> Ver bitácora
             </a>` : ''}
         </div>
     `);
 
-        loadCard('<?= $this->Url->build(['controller' => 'Dashboard', 'action' => 'rolesProximaSemana']) ?>', 'card-roles', (data, c) => `
-        <h5><i class="fa-solid fa-microphone-lines"></i> Roles de Cabina para la próxima semana</h5>
+        loadCard('<?= $this->Url->build(['controller' => 'Dashboard', 'action' => 'getNextWeekRol']) ?>', 'card-roles', (data, c) => `
+        <h5><i class="fa-solid fa-microphone-lines"></i> Roles de Cabina</h5>
         <div style="padding: var(--spacing-16) 0;">
             ${data.existe
                 ? `<div style="color: ${c.success};"><i class="fa-solid fa-check-circle"></i> El rol para la semana del ${data.semanaInicio} al ${data.semanaFin} ya está registrado</div>`
                 : `<div style="color: ${c.warning};"><i class="fa-solid fa-exclamation-circle"></i> No se ha registrado rol de cabina para la próxima semana</div>
                    <a href="<?= $this->Url->build(['controller' => 'Roles', 'action' => 'add']) ?>" style="color: ${c.primary}; margin-top: var(--spacing-16); display: inline-block;">
-                       <i class="fa-solid fa-plus"></i> Crear role de cabina
+                       <i class="fa-solid fa-plus"></i> Crear Rol de Cabina
                    </a>`
             }
         </div>

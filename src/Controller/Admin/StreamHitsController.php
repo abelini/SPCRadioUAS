@@ -50,10 +50,13 @@ class StreamHitsController extends AppController
     public function apiSummary(): Response
     {
         $this->disableAutoRender();
-
-        $from = $this->request->getQuery('from') ?? (new DateTime('-30 days'))->format('Y-m-d');
-        $to = $this->request->getQuery('to') ?? (new DateTime())->format('Y-m-d');
-
+        try {
+            $from = DateTime::createFromFormat('Y-m-d', $this->request->getQuery('from')) ?? new DateTime()->subDays(self::DEFAULT_BACK_DAYS);
+            $to = DateTime::createFromFormat('Y-m-d', $this->request->getQuery('to')) ?? DateTime::now();
+        } catch (\DateMalformedStringException $e) {
+            $from = (new DateTime())->subDays(self::DEFAULT_BACK_DAYS);
+            $to = DateTime::now();
+        }
         $data = $this->StreamHits->getSummaryStats($from, $to);
 
         return $this->response->withType('json')->withStringBody(json_encode($data));
@@ -66,8 +69,8 @@ class StreamHitsController extends AppController
     {
         $this->disableAutoRender();
 
-        $from = $this->request->getQuery('from') ?? (new DateTime('-30 days'))->format('Y-m-d');
-        $to = $this->request->getQuery('to') ?? (new DateTime())->format('Y-m-d');
+        $from = DateTime::createFromFormat('Y-m-d', $this->request->getQuery('from') ?? (new DateTime('-30 days'))->format('Y-m-d'));
+        $to = DateTime::createFromFormat('Y-m-d', $this->request->getQuery('to') ?? (new DateTime())->format('Y-m-d'));
 
         $data = $this->StreamHits->getChartsData($from, $to);
 

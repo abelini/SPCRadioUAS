@@ -8,6 +8,7 @@ use SPC\Model\Entity\Permiso;
 use SPC\Model\Entity\TipoSolicitud;
 use Cake\Http\Response;
 use Cake\I18n\DateTime;
+use Cake\Core\Configure;
 
 /**
  * Dashboard Controller
@@ -16,7 +17,8 @@ class DashboardController extends AppController
 {
     protected array $solicitudes;
     protected array $bitacoras;
-    protected array $programas;
+    //protected array $programas;
+    private const int DEFAULT_BACK_DAYS = 7;
 
     public function index(): Response
     {
@@ -28,12 +30,12 @@ class DashboardController extends AppController
             case Permiso::ADMINISTRATOR:
                 $this->solicitudes = $this->getSolicitudesStats();
                 $this->bitacoras = $this->getBitacorasStats();
-                $this->programas = $this->getProgramasStats();
+                //$this->programas = $this->getProgramasStats();
                 break;
             case Permiso::CAPTURISTA:
                 $this->solicitudes = $this->getSolicitudesStats();
                 $this->bitacoras = $this->getBitacorasStats();
-                $this->programas = $this->getProgramasStats();
+                //$this->programas = $this->getProgramasStats();
                 break;
             default:
         }
@@ -43,7 +45,7 @@ class DashboardController extends AppController
         $this->set('bitacorasDiff', $diff);
         $this->set('solicitudes', $this->solicitudes);
         $this->set('bitacoras', $this->bitacoras);
-        $this->set('programas', $this->programas);
+        //$this->set('programas', $this->programas);
         $this->set('theme', isset($_COOKIE['theme']) ? $_COOKIE['theme'] : 'midday');
 
         $this->viewBuilder()->setTemplate($this->viewBuilder()->getLayout());
@@ -91,17 +93,35 @@ class DashboardController extends AppController
         return $stats->toArray()[0];
     }
 
-    protected function getProgramasStats(): array
+    public function getProgramsStats(): Response
     {
-        $query = $this->getTableLocator()->get('Programas')->find();
+        $this->disableAutoRender();
+
+        $query = $this->getTableLocator()->get('Programas')->find(admin: true);
+
         $stats = $query
             ->select([
-                'Total' => $query->func()->count('*'),
+                'total' => $query->func()->count('*'),
+                'musical' => $query->func()->count(
+                    $query->expr()->case()->when(['musical' => true, 'outOfAir' => false])->then(1)
+                ),
+                'spoken' => $query->func()->count(
+                    $query->expr()->case()->when(['musical' => false, 'outOfAir' => false])->then(1)
+                ),
+                'outOfAir' => $query->func()->count(
+                    $query->expr()->case()->when(['outOfAir' => true])->then(1)
+                ),
             ])
             ->disableHydration()
-            ->all();
+            ->toArray();
 
-        return $stats->toArray()[0];
+        return $this->response->withType('json')
+            ->withStringBody(json_encode([
+                'total' => (int) ($stats[0]['total'] ?? 0),
+                'musical' => (int) ($stats[0]['musical'] ?? 0),
+                'spoken' => (int) ($stats[0]['spoken'] ?? 0),
+                'outOfAir' => (int) ($stats[0]['outOfAir'] ?? 0),
+            ]));
     }
 
     protected function getDateDiffString(\DateInterval $diff): string
@@ -113,8 +133,8 @@ class DashboardController extends AppController
     {
         $this->disableAutoRender();
 
-        $from = (new DateTime('-7 days'))->format('Y-m-d');
-        $to = (new DateTime())->format('Y-m-d');
+        $from = new DateTime()->subDays(self::DEFAULT_BACK_DAYS)->setTime(0, 0, 0);
+        $to = new DateTime()->setTime(23, 59, 59);
 
         $data = $this->getTableLocator()->get('StreamHits')
             ->getSummaryStats($from, $to, ['totalHits', 'hitsToday', 'maxDay']);
@@ -127,7 +147,7 @@ class DashboardController extends AppController
             ]));
     }
 
-    public function solicitudesPendientes(): Response
+    public function getPendingRequests(): Response
     {
         $this->disableAutoRender();
 
@@ -137,10 +157,10 @@ class DashboardController extends AppController
             ->count();
 
         return $this->response->withType('json')
-            ->withStringBody(json_encode(['pendientes' => $count]));
+            ->withStringBody(json_encode(['pending' => $count]));
     }
 
-    public function incidenciasAbiertas(): Response
+    public function getOpenIncidences(): Response
     {
         $this->disableAutoRender();
 
@@ -150,14 +170,14 @@ class DashboardController extends AppController
             ->count();
 
         return $this->response->withType('json')
-            ->withStringBody(json_encode(['abiertas' => $count]));
+            ->withStringBody(json_encode(['open' => $count]));
     }
 
-    public function bitacoraHoy(): Response
+    public function cabinaRecordsToday(): Response
     {
         $this->disableAutoRender();
 
-        $today = date('Y-m-d');
+        $today = DateTime::now()->format('Y-m-d');
         $count = $this->getTableLocator()->get('BitacoraCabina')
             ->find()
             ->where(['fecha' => $today])
@@ -170,27 +190,26 @@ class DashboardController extends AppController
             ]));
     }
 
-    public function rolesProximaSemana(): Response
+    public function getNextWeekRol(): Response
     {
         $this->disableAutoRender();
 
-        $nextMonday = (new DateTime())->next(DateTime::MONDAY);
+        $timezone = new \DateTimeZone(Configure::read('App.defaultTimezone'));
+        $nextMonday = (new DateTime(timezone: $timezone))->next(DateTime::MONDAY);
         $nextSunday = (clone $nextMonday)->addDays(6);
-        // debug($nextMonday);
 
         $count = $this->getTableLocator()->get('Roles')
             ->find()
             ->where([
                 'fechaInicio' => $nextMonday->format('Y-m-d'),
-                //'fechaInicio <=' => $nextSunday->format('Y-m-d'),
             ])
             ->count();
-        //debug($nextMonday);
+
         return $this->response->withType('json')
             ->withStringBody(json_encode([
                 'existe' => $count > 0,
-                'semanaInicio' => $nextMonday->i18nFormat("'X de' LLLL 'de' YYYY"),
-                'semanaFin' => $nextSunday->i18nFormat("'X de' LLLL 'de' YYYY"),
+                'semanaInicio' => (new \IntlDateFormatter('es_MX', \IntlDateFormatter::LONG, \IntlDateFormatter::NONE, $timezone))->format($nextMonday),
+                'semanaFin' => (new \IntlDateFormatter('es_MX', \IntlDateFormatter::LONG, \IntlDateFormatter::NONE, $timezone))->format($nextSunday),
                 'totalLocutores' => $count,
             ]));
     }
