@@ -31,6 +31,7 @@ class RolesTable extends Table
 		]);
 
 		$this->hasMany('Asignaciones', [
+			'foreignKey' => 'rolID',
 			'sort' => [
 				'diaID' => 'ASC',
 				'horarioID' => 'ASC'
@@ -95,8 +96,11 @@ class RolesTable extends Table
 		return $query->where(['fechaFin' => $rol->fechaInicio->addDays(-1)]);
 	}
 
-	public function findNext(SelectQuery $query, Rol $rol)
+	public function findNext(SelectQuery $query, ?Rol $rol = null, ?Date $date = null)
 	{
+		if ($date !== null) {
+			return $query->where(['fechaInicio' => $date]);
+		}
 		return $query->where(['fechaInicio' => $rol->fechaFin->addDays(1)]);
 	}
 

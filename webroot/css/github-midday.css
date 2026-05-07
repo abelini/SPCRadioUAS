@@ -96,7 +96,7 @@
   --radius-full: 48px;
   --radius-full-2: 60px;
   --radius-pill: 60px;
-  --radius-cards: 24px;
+  --radius-cards: 8px;
   --radius-input: 8px;
   --radius-buttons: 6px;
   --radius-default: 6px;
@@ -280,8 +280,6 @@ p {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  position: sticky;
-  top: 0;
   z-index: 50;
 }
 
@@ -289,6 +287,12 @@ p {
   font-size: var(--text-heading-sm);
   font-weight: var(--font-weight-semibold);
   color: var(--color-polar-blue);
+}
+
+.admin-header-user {
+  color: var(--color-vapor-trail-blue);
+  font-size: var(--text-body);
+  margin-left: auto;
 }
 
 .admin-header .mobile-menu-btn {
@@ -377,10 +381,6 @@ p {
   border-bottom: 1px solid var(--color-border-subtle);
 }
 
-.data-table tbody tr:hover {
-  background-color: rgba(208, 215, 222, 0.3);
-}
-
 .data-table a {
   color: var(--color-polar-blue);
 }
@@ -431,6 +431,16 @@ p {
 
 .btn-danger {
   background-color: #cf222e;
+  color: #ffffff;
+}
+
+.btn-success {
+  background-color: #1a7f37;
+  color: #ffffff;
+}
+
+.btn-success:hover {
+  background-color: #158c37;
   color: #ffffff;
 }
 
@@ -544,6 +554,7 @@ p {
 }
 
 @media (max-width: 768px) {
+
   .col-md-3,
   .col-md-4,
   .col-md-5,

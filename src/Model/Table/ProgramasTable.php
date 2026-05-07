@@ -44,6 +44,7 @@ class ProgramasTable extends Table
 	/**
 	 * Aplica el filtro outOfAir por defecto en todas las queries públicas.
 	 * Se omite cuando la query trae la opción 'admin' => true,
+	 * 		$query->find('all', admin:true);
 	 * o cuando ya trae explícitamente un filtro sobre outOfAir via opción 'filterOutOfAir' => false.
 	 */
 	public function beforeFind(EventInterface $event, SelectQuery $query, ArrayObject $options): void
@@ -76,6 +77,24 @@ class ProgramasTable extends Table
 			keyField: $keyField ?? 'ID',
 			valueField: $valueField ?? 'name'
 		);
+	}
+
+	public function findStats(SelectQuery $query): SelectQuery
+	{
+		return
+			$query->select([
+				'total' => $query->func()->count('*'),
+				'musical' => $query->func()->count(
+					$query->expr()->case()->when(['musical' => true, 'outOfAir' => false])->then(1)
+				),
+				'spoken' => $query->func()->count(
+					$query->expr()->case()->when(['musical' => false, 'outOfAir' => false])->then(1)
+				),
+				'outOfAir' => $query->func()->count(
+					$query->expr()->case()->when(['outOfAir' => true])->then(1)
+				),
+			])
+				->disableHydration();
 	}
 
 	public function validationDefault(Validator $validator): Validator

@@ -37,6 +37,12 @@ class IncidenciasTable extends Table
 			->setProperty('updates');
 	}
 
+	public function findOpen(SelectQuery $query): SelectQuery
+	{
+		return $query
+			->where(['Incidencias.closed' => false]);
+	}
+
 	public function validationDefault(Validator $validator): Validator
 	{
 		$validator

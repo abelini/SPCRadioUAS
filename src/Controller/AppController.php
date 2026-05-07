@@ -56,6 +56,7 @@ class AppController extends Controller
 		$this->set('AppLogo', self::LOGO);
 		$this->set('AppVersion', self::VERSION);
 		$this->set('datetime', self::$datetime);
+		$this->set('user', $this->user);
 	}
 
 	public function initialize(): void

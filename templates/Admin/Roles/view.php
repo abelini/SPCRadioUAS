@@ -7,7 +7,7 @@
         <tr>
             <th>Tipo de horario</th>
             <td>
-                <?= $this->Html->link($rol->turno->name, ['controller' => 'Turnos', 'action' => 'view', $rol->turno->ID]) ?>
+                <?= $this->Html->link($rol->turno->name, ['controller' => 'Turnos', 'action' => 'view', $rol->turno->ID], ['style' => 'color: var(--color-vapor-trail-blue);']) ?>
             </td>
         </tr>
         <tr>
@@ -58,9 +58,13 @@
                                     <tr>
                                         <td class="hide-on-mobile"><?= $asignacion->ID ?></td>
                                         <td><i class="fa-solid fa-user hide-on-mobile"></i> <?= $asignacion->locutor->name ?></td>
-                                        <td><?= $asignacion->horario->horaInicio ?> <i class="fa-solid fa-arrow-right-long"></i> <?= $asignacion->horario->horaFin ?></td>
                                         <td>
-                                            <?= $this->Html->link('<i class="fa-solid fa-rotate"></i>', ['controller' => 'asignaciones', 'action' => 'edit', $asignacion->ID], ['escapeTitle' => false]) ?>
+                                            <span style="color: var(--color-vapor-trail-blue);"><?= $asignacion->horario->horaInicio ?></span>
+                                            <i class="fa-solid fa-arrow-right-long" style="margin: 0 var(--spacing-8); color: var(--color-muted-gray);"></i>
+                                            <span style="color: var(--color-vapor-trail-blue);"><?= $asignacion->horario->horaFin ?></span>
+                                        </td>
+                                        <td>
+                                            <?= $this->Html->link('<i class="fa-solid fa-rotate"></i>', ['controller' => 'asignaciones', 'action' => 'edit', $asignacion->ID], ['escapeTitle' => false, 'style' => 'color: var(--color-vapor-trail-blue);', 'title' => 'Editar']) ?>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -73,7 +77,7 @@
     </div>
 
     <div class="actions-bar">
-        <?= $this->Html->link('<i class="fa-regular fa-pen-to-square"></i> Modificar', ['action' => 'edit', $rol->ID], ['class' => 'btn btn-outlined', 'escapeTitle' => false]) ?>
+        <?= $this->Html->link('<i class="fa-regular fa-pen-to-square"></i> Modificar', ['action' => 'edit', $rol->ID], ['class' => 'btn btn-success', 'escapeTitle' => false]) ?>
         <?= $this->Form->deleteLink('<i class="fa-regular fa-trash-can"></i> Eliminar', ['action' => 'delete', $rol->ID], ['confirm' => '¿Estás seguro de eliminar este rol?', 'class' => 'btn btn-danger', 'escapeTitle' => false]) ?>
     </div>
 </div>
@@ -92,7 +96,15 @@
         font-size: 20px;
         text-transform: uppercase;
         width: 180px;
-        color: var(--color-ghost-white);
+        color: var(--color-vapor-trail-blue);
+        background: rgba(9, 105, 218, 0.08);
+        border-radius: var(--radius-md) 0 0 var(--radius-md);
+        padding: var(--spacing-12);
+    }
+
+    .fa-user {
+        color: var(--color-muted-gray);
+        margin-right: var(--spacing-8);
     }
 
     td i {

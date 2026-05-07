@@ -1,5 +1,5 @@
 <div class="page-header">
-    <h3>Bienvenido, <?= $user->name ?></h3>
+    <h3><i class="fa-solid fa-chart-simple"></i> Estadísticas del sistema</h3>
 </div>
 
 <div class="content-card" style="padding: var(--spacing-24);">
@@ -20,55 +20,77 @@
             <p style="padding: var(--spacing-16) 0;">Hay <strong><?= $solicitudes['Total'] ?></strong> solicitudes
                 registradas en el sistema.</p>
 
-            <div class="row g-3" style="padding: var(--spacing-16) 0;">
-                <div class="col-md-5">
-                    <div
-                        style="border-left: 4px solid #9333ea; padding-left: var(--spacing-16); margin-bottom: var(--spacing-20);">
-                        <div style="color: var(--color-muted-gray);">Grabaciones de spot</div>
-                        <strong
-                            style="font-size: 1.5rem;"><?= $this->Number->format($solicitudes['TotalGDS']) ?></strong>
-                    </div>
-
-                    <div
-                        style="border-left: 4px solid #22c55e; padding-left: var(--spacing-16); margin-bottom: var(--spacing-20);">
-                        <div style="color: var(--color-muted-gray);">Maestros de ceremonia</div>
-                        <strong
-                            style="font-size: 1.5rem;"><?= $this->Number->format($solicitudes['TotalMDC']) ?></strong>
-                    </div>
-
-                    <div style="border-left: 4px solid #f59e0b; padding-left: var(--spacing-16);">
-                        <div style="color: var(--color-muted-gray);">Controles remotos</div>
-                        <strong
-                            style="font-size: 1.5rem;"><?= $this->Number->format($solicitudes['TotalCR']) ?></strong>
+            <div style="padding: var(--spacing-16) 0;">
+                <div style="margin-bottom: var(--spacing-12);">
+                    <div style="display: table; width: 100%;">
+                        <div style="display: table-cell; width: 41.66%; vertical-align: middle;">
+                            <div style="border-left: 4px solid #9333ea; padding-left: var(--spacing-12);">
+                                <div style="color: var(--color-muted-gray); font-size: 0.875rem;">Grabaciones de spot
+                                </div>
+                                <strong
+                                    style="font-size: 1.25rem;"><?= $this->Number->format($solicitudes['TotalGDS']) ?></strong>
+                            </div>
+                        </div>
+                        <div style="display: table-cell; width: 58.33%; vertical-align: middle;">
+                            <div
+                                style="background-color: var(--color-border-light); height: 50px; border-radius: var(--radius-md); overflow: hidden;">
+                                <div
+                                    style="background-color: #9333ea; width: <?= ($solicitudes['TotalGDS'] / $solicitudes['Total'] * 100) ?>%; height: 100%; border-radius: var(--radius-md); color: #fff; font-size: 1.25rem; padding: var(--spacing-8) var(--spacing-12);">
+                                    <?= $this->Number->format($solicitudes['TotalGDS']) ?>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="col-md-7" style="padding: var(--spacing-16);">
-                    <div
-                        style="background-color: var(--color-border-light); margin-bottom: var(--spacing-12); border-radius: var(--radius-md); height: 32px; overflow: hidden;">
-                        <div
-                            style="background-color: #9333ea; padding: var(--spacing-8); width: <?= ($solicitudes['TotalGDS'] / $solicitudes['Total'] * 100) ?>%; height: 100%; border-radius: var(--radius-md); color: #fff; font-size: 0.875rem;">
-                            <?= $this->Number->format($solicitudes['TotalGDS']) ?>
+                <div style="margin-bottom: var(--spacing-12);">
+                    <div style="display: table; width: 100%;">
+                        <div style="display: table-cell; width: 41.66%; vertical-align: middle;">
+                            <div style="border-left: 4px solid #22c55e; padding-left: var(--spacing-12);">
+                                <div style="color: var(--color-muted-gray); font-size: 0.875rem;">Maestros de ceremonia
+                                </div>
+                                <strong
+                                    style="font-size: 1.25rem;"><?= $this->Number->format($solicitudes['TotalMDC']) ?></strong>
+                            </div>
+                        </div>
+                        <div style="display: table-cell; width: 58.33%; vertical-align: middle;">
+                            <div
+                                style="background-color: var(--color-border-light); height: 50px; border-radius: var(--radius-md); overflow: hidden;">
+                                <div
+                                    style="background-color: #22c55e; width: <?= ($solicitudes['TotalMDC'] / $solicitudes['Total'] * 100) ?>%; height: 100%; border-radius: var(--radius-md); color: #fff; font-size: 1.25rem; padding: var(--spacing-8) var(--spacing-12);">
+                                    <?= $this->Number->format($solicitudes['TotalMDC']) ?>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                </div>
 
-                    <div
-                        style="background-color: var(--color-border-light); margin-bottom: var(--spacing-12); border-radius: var(--radius-md); height: 32px; overflow: hidden;">
-                        <div
-                            style="background-color: #22c55e; padding: var(--spacing-8); width: <?= ($solicitudes['TotalMDC'] / $solicitudes['Total'] * 100) ?>%; height: 100%; border-radius: var(--radius-md); color: #fff; font-size: 0.875rem;">
-                            <?= $this->Number->format($solicitudes['TotalMDC']) ?>
+                <div>
+                    <div style="display: table; width: 100%;">
+                        <div style="display: table-cell; width: 41.66%; vertical-align: middle;">
+                            <div style="border-left: 4px solid #f59e0b; padding-left: var(--spacing-12);">
+                                <div style="color: var(--color-muted-gray); font-size: 0.875rem;">Controles remotos
+                                </div>
+                                <strong
+                                    style="font-size: 1.25rem;"><?= $this->Number->format($solicitudes['TotalCR']) ?></strong>
+                            </div>
                         </div>
-                    </div>
-
-                    <div
-                        style="background-color: var(--color-border-light); margin-bottom: var(--spacing-12); border-radius: var(--radius-md); height: 32px; overflow: hidden;">
-                        <div
-                            style="background-color: #f59e0b; padding: var(--spacing-8); width: <?= ($solicitudes['TotalCR'] / $solicitudes['Total'] * 100) ?>%; height: 100%; border-radius: var(--radius-md); color: #fff; font-size: 0.875rem;">
-                            <?= $this->Number->format($solicitudes['TotalCR']) ?>
+                        <div style="display: table-cell; width: 58.33%; vertical-align: middle;">
+                            <div
+                                style="background-color: var(--color-border-light); height: 50px; border-radius: var(--radius-md); overflow: hidden;">
+                                <div
+                                    style="background-color: #f59e0b; width: <?= ($solicitudes['TotalCR'] / $solicitudes['Total'] * 100) ?>%; height: 100%; border-radius: var(--radius-md); color: #fff; font-size: 1.25rem; padding: var(--spacing-8) var(--spacing-12);">
+                                    <?= $this->Number->format($solicitudes['TotalCR']) ?>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+            <p style="padding: var(--spacing-16) 0;">Las solicitudes van desde el
+                <strong><?= $solicitudes['Oldest']->i18nFormat("d 'de' MMMM 'de' YYYY") ?></strong>
+                hasta el <strong><?= $solicitudes['Newest']->i18nFormat("d 'de' MMMM 'de' YYYY") ?></strong>
+            </p>
         </div>
     </div>
 </div>
@@ -116,7 +138,7 @@
 </div>
 
 <div class="row g-4" style="margin-top: var(--spacing-24);">
-    <div class="col-md-3" id="card-bitacora" style="min-height: 150px;">
+    <div class="col-md-6" id="card-bitacora" style="min-height: 150px;">
         <div class="content-card" style="height: 100%;">
             <h5><i class="fa-solid fa-file-contract"></i> Bitácora Hoy</h5>
             <div class="stat-loading"
@@ -126,7 +148,7 @@
         </div>
     </div>
 
-    <div class="col-md-9" id="card-roles" style="min-height: 120px;">
+    <div class="col-md-6" id="card-roles" style="min-height: 120px;">
         <div class="content-card">
             <h5><i class="fa-solid fa-microphone-lines"></i> Roles de Cabina para la siguiente semana</h5>
             <div class="stat-loading"
@@ -157,10 +179,10 @@
         }
 
         loadCard('<?= $this->Url->build(['controller' => 'Dashboard', 'action' => 'streamingStats']) ?>', 'card-streaming', (data, c) => `
-        <h5><i class="fa-solid fa-radio"></i> Streaming (7 días)</h5>
+        <h5><i class="fa-solid fa-radio"></i> Streaming</h5>
         <div style="padding: var(--spacing-16) 0;">
             <div style="font-size: 2.5rem; font-weight: bold; color: ${c.primary};">${data.totalListeners.toLocaleString()}</div>
-            <div style="color: ${c.text};">oyentes totales</div>
+            <div style="color: ${c.text};">oyentes en los últimos 7 días</div>
             <div style="margin-top: var(--spacing-16); font-size: 0.875rem; color: ${c.success};">
                 <i class="fa-solid fa-arrow-up"></i> ${data.maxDay}
             </div>
@@ -208,14 +230,18 @@
         </div>
     `);
 
-        loadCard('<?= $this->Url->build(['controller' => 'Dashboard', 'action' => 'cabinaRecordsToday']) ?>', 'card-bitacora', (data, c) => `
-        <h5><i class="fa-solid fa-file-contract"></i> Bitácora Hoy</h5>
+        loadCard('<?= $this->Url->build(['controller' => 'Dashboard', 'action' => 'getBitacorasStats']) ?>', 'card-bitacora', (data, c) => `
+        <h5><i class="fa-solid fa-file-contract"></i> Bitácora</h5>
         <div style="padding: var(--spacing-16) 0;">
-            <div style="font-size: 2.5rem; font-weight: bold; color: ${c.primary};">${data.registros}</div>
-            <div style="color: ${c.text};">registros hoy</div>
-            ${data.registros > 0 ? `<a href="<?= $this->Url->build(['controller' => 'BitacoraCabina', 'action' => 'view']) ?>?date=${data.fecha}" style="color: ${c.primary}; margin-top: var(--spacing-16); display: block;">
+            <div style="font-size: 2.5rem; font-weight: bold; color: ${c.primary};">${data.TodayCount}</div>
+            <div style="color: ${c.text}; margin-bottom: var(--spacing-16);">registros hoy</div>
+            <div style="font-size: 0.9rem;">
+                <div style="color: ${c.success};"><i class="fa-solid fa-list"></i> ${data.TotalCount} registros en total</div>
+                <div style="color: ${c.muted}; margin-top: var(--spacing-8);"><i class="fa-solid fa-calendar"></i> ${data.Oldest} hasta ${data.Newest}</div>
+            </div>
+            <a href="<?= $this->Url->build(['controller' => 'BitacoraCabina', 'action' => 'view']) ?>/${data.TodayID}" style="color: ${c.primary}; margin-top: var(--spacing-16); display: block;">
                 <i class="fa-solid fa-arrow-right"></i> Ver bitácora
-            </a>` : ''}
+            </a>
         </div>
     `);
 
@@ -224,6 +250,11 @@
         <div style="padding: var(--spacing-16) 0;">
             ${data.existe
                 ? `<div style="color: ${c.success};"><i class="fa-solid fa-check-circle"></i> El rol para la semana del ${data.semanaInicio} al ${data.semanaFin} ya está registrado</div>`
+                + `<a href="<?= $this->Url->build(['controller' => 'Roles', 'action' => 'view']) ?>/${data.rolID}" style="color: ${c.primary}; margin-top: var(--spacing-16); display: block;">
+                <i class="fa-solid fa-arrow-right"></i> Ver rol de cabina
+            </a>`
+
+
                 : `<div style="color: ${c.warning};"><i class="fa-solid fa-exclamation-circle"></i> No se ha registrado rol de cabina para la próxima semana</div>
                    <a href="<?= $this->Url->build(['controller' => 'Roles', 'action' => 'add']) ?>" style="color: ${c.primary}; margin-top: var(--spacing-16); display: inline-block;">
                        <i class="fa-solid fa-plus"></i> Crear Rol de Cabina

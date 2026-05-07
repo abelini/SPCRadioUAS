@@ -59,7 +59,12 @@
         </nav>
 
         <main class="admin-main">
-            <header class="admin-header"></header>
+            <header class="admin-header">
+                <p class="admin-header-user">
+                    <i class="fa-solid fa-circle-user"></i>
+                    <?= $this->Html->link($user->name, ['controller' => 'Usuarios', 'action' => 'profile']) ?>
+                </p>
+            </header>
 
             <div class="admin-content">
                 <?= $this->Flash->render() ?>

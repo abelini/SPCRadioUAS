@@ -4,14 +4,13 @@ declare(strict_types=1);
 namespace SPC\Model\Table;
 
 use Cake\ORM\Query\SelectQuery;
-use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use SPC\Model\Entity\TipoSolicitud;
 
 
 class SolicitudesTable extends Table
 {
-
     public function initialize(array $config): void
     {
         parent::initialize($config);
@@ -45,12 +44,32 @@ class SolicitudesTable extends Table
             ->setProperty('productorTecnico');
     }
 
-    /**
-     * Default validation rules.
-     *
-     * @param \Cake\Validation\Validator $validator Validator instance.
-     * @return \Cake\Validation\Validator
-     */
+    public function findStats(SelectQuery $query, array $options): SelectQuery
+    {
+        return $query
+            ->select([
+                'Total' => $query->func()->count('*'),
+                'TotalGDS' => $query->func()->count(
+                    $query->expr()->case()->when(['tipoSolicitudID' => TipoSolicitud::GRABACION_DE_SPOT])->then(1)
+                ),
+                'TotalMDC' => $query->func()->count(
+                    $query->expr()->case()->when(['tipoSolicitudID' => TipoSolicitud::MAESTRO_DE_CEREMONIA])->then(1)
+                ),
+                'TotalCR' => $query->func()->count(
+                    $query->expr()->case()->when(['tipoSolicitudID' => TipoSolicitud::CONTROL_REMOTO])->then(1)
+                ),
+                'Oldest' => $query->func()->min('fecha', ['date']),
+                'Newest' => $query->func()->max('fecha', ['date']),
+            ])
+            ->disableHydration();
+    }
+
+    public function findPending(SelectQuery $query): SelectQuery
+    {
+        return $query
+            ->where(['Solicitudes.status' => 0]);
+    }
+
     public function validationDefault(Validator $validator): Validator
     {
         $validator
@@ -76,7 +95,6 @@ class SolicitudesTable extends Table
             ->requirePresence('fecha', 'create')
             ->notEmptyDate('fecha');
 
-
         $validator
             ->integer('primerAsignado')
             ->allowEmptyString('primerAsignado');
@@ -92,8 +110,6 @@ class SolicitudesTable extends Table
         $validator
             ->integer('productorID')
             ->allowEmptyString('productorID');
-
-
 
         return $validator;
     }

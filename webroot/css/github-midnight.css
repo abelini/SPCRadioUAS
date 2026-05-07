@@ -278,15 +278,25 @@ p {
 }
 
 .admin-header {
-  background-color: var(--surface-code-canvas);
-  border-bottom: 1px solid var(--color-subtle-gray);
+  background: linear-gradient(90deg, rgba(9, 105, 218, 0.04) 0%, rgba(130, 80, 223, 0.04) 100%);
+  border-bottom: 1px solid var(--color-border-subtle);
   padding: var(--spacing-12) var(--spacing-24);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  position: sticky;
-  top: 0;
   z-index: 50;
+}
+
+.admin-header .title {
+  font-size: var(--text-heading-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-polar-blue);
+}
+
+.admin-header-user {
+  color: var(--color-vapor-trail-blue);
+  font-size: var(--text-body);
+  margin-left: auto;
 }
 
 .admin-header .title {
@@ -380,10 +390,6 @@ p {
   border-bottom: 1px solid var(--color-subtle-gray);
 }
 
-.data-table tbody tr:hover {
-  background-color: rgba(255, 255, 255, 0.03);
-}
-
 .data-table a {
   color: var(--color-polar-blue);
 }
@@ -433,6 +439,16 @@ p {
 
 .btn-danger {
   background-color: rgba(220, 38, 38, 0.8);
+  color: var(--color-ghost-white);
+}
+
+.btn-success {
+  background-color: rgba(34, 197, 94, 0.8);
+  color: var(--color-ghost-white);
+}
+
+.btn-success:hover {
+  background-color: rgba(34, 197, 94, 1);
   color: var(--color-ghost-white);
 }
 
