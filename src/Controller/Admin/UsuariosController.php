@@ -168,39 +168,39 @@ class UsuariosController extends AppController
 		return $this->redirect(['action' => 'index']);
 	}
 
-public function profile(): Response
-    {
-        $user = $this->Usuarios->find()
-            ->select(['ID', 'empleado', 'username', 'name', 'fullname', 'email', 'base', 'photo'])
-            ->where(['ID' => $this->Authentication->getIdentity()->get('ID')])
-            ->first();
+	public function profile(): Response
+	{
+		$user = $this->Usuarios->find()
+			->select(['ID', 'empleado', 'username', 'name', 'fullname', 'email', 'base', 'photo'])
+			->where(['ID' => $this->Authentication->getIdentity()->get('ID')])
+			->first();
 
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $data = $this->request->getData();
+		if ($this->request->is(['patch', 'post', 'put'])) {
+			$data = $this->request->getData();
 
-            if (!empty($data['new_password'])) {
-                if ($data['new_password'] !== $data['confirm_password']) {
-                    $this->Flash->error('Las contraseñas no coinciden');
-                    $this->set(compact('user'));
-                    return $this->render();
-                }
+			if (!empty($data['new_password'])) {
+				if ($data['new_password'] !== $data['confirm_password']) {
+					$this->Flash->error('Las contraseñas no coinciden');
+					$this->set(compact('user'));
+					return $this->render();
+				}
+				$data['password'] = $data['new_password'];
+			}
 
-                $user->set('password', $data['new_password']);
-            }
+			unset($data['new_password'], $data['confirm_password']);
 
-            unset($data['new_password'], $data['confirm_password']);
-            $user = $this->Usuarios->patchEntity($user, $data);
+			$user = $this->Usuarios->patchEntity($user, $data);
 
-            if ($this->Usuarios->save($user)) {
-                $this->Flash->success('Perfil actualizado correctamente');
-                return $this->redirect(['action' => 'profile']);
-            } else {
-                $this->Flash->error('Error al actualizar. Verifica los datos.');
-            }
-        }
+			if ($this->Usuarios->save($user)) {
+				$this->Flash->success('Perfil actualizado correctamente');
+				return $this->redirect(['action' => 'profile']);
+			} else {
+				$this->Flash->error('Error al actualizar. Verifica los datos.');
+			}
+		}
 
-        $this->set(compact('user'));
-        return $this->render();
-    }
+		$this->set(compact('user'));
+		return $this->render();
+	}
 }
 

@@ -5,14 +5,9 @@
     <?= $this->Html->charset() ?>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= $AppName ?></title>
-    <?= $this->Html->meta('favicon.png', 'https://radio.uas.edu.mx/wp-content/uploads/2020/06/cropped-RADIOUAS-LOGO-IOS-32x32.png', ['type' => 'icon']) ?>
+    <?= $this->Html->meta('icon') ?>
 
-    <?php $theme = isset($_COOKIE['theme']) ? $_COOKIE['theme'] : 'midday'; ?>
-    <?php if ($theme === 'midnight'): ?>
-        <?= $this->Html->css('github-midnight') ?>
-    <?php else: ?>
-        <?= $this->Html->css('github-midday') ?>
-    <?php endif; ?>
+    <?= $this->Html->css('github-' . $this->request->getCookie('theme', 'midday')) ?>
 
     <?= $this->Html->script('jquery-3.7.1') ?>
 
@@ -79,28 +74,20 @@
 
     <script src="https://kit.fontawesome.com/18176e4df9.js" crossorigin="anonymous"></script>
     <script>
-        function w3_open() {
-            document.getElementById("menu").classList.add("open");
-        }
-
-        function w3_close() {
-            document.getElementById("menu").classList.remove("open");
-        }
-
         function toggleTheme() {
-            var currentTheme = '<?= $theme ?>';
-            var newTheme = currentTheme === 'midday' ? 'midnight' : 'midday';
-            var expires = new Date();
+            const currentTheme = '<?= $this->request->getCookie('theme', 'midday') ?>';
+            const newTheme = currentTheme === 'midday' ? 'midnight' : 'midday';
+            const expires = new Date();
             expires.setFullYear(expires.getFullYear() + 1);
             document.cookie = 'theme=' + newTheme + ';expires=' + expires.toUTCString() + ';path=/';
             location.reload();
         }
 
         function updateToggleText() {
-            var currentTheme = '<?= $theme ?>';
-            var btn = document.querySelector('.theme-toggle-btn');
-            var icon = btn.querySelector('i');
-            var span = btn.querySelector('span');
+            const currentTheme = '<?= $this->request->getCookie('theme', 'midday') ?>';
+            const btn = document.querySelector('.theme-toggle-btn');
+            const icon = btn.querySelector('i');
+            const span = btn.querySelector('span');
             if (currentTheme === 'midnight') {
                 icon.className = 'fa-solid fa-sun';
                 span.textContent = 'Modo claro';

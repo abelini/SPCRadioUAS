@@ -54,11 +54,6 @@
         <?= $this->Form->control('confirm_password', ['label' => false, 'class' => 'form-control', 'type' => 'password', 'placeholder' => 'Confirmar contraseña']) ?>
     </div>
 
-    <div class="form-group">
-        <?= $this->Form->label('password', 'Contraseña actual (requerida)') ?>
-        <?= $this->Form->control('password', ['label' => false, 'class' => 'form-control', 'type' => 'password', 'placeholder' => 'Ingresa tu contraseña actual']) ?>
-    </div>
-
     <div class="actions-bar">
         <?= $this->Form->button('<i class="fa-solid fa-check"></i> Cambiar contraseña', ['escapeTitle' => false]) ?>
     </div>

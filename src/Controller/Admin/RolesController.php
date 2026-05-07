@@ -70,7 +70,7 @@ class RolesController extends AppController
 				$rol = $this->Roles->patchEntity($rol, $this->request->getData(), ['associated' => ['Asignaciones']]);
 				if ($this->Roles->save($rol, ['associated' => ['Asignaciones']])) {
 					$this->Flash->success('Rol de cabina guardado');
-					//$this->getMailer('Rol')->new($rol->ID);
+					$this->getMailer('Rol')->new($rol->ID);
 					return $this->redirect(['action' => 'index']);
 				}
 			} else {

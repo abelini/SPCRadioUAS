@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace SPC\Model\Entity;
 
-use Cake\ORM\Entity;
-
 
 class Usuario extends Worker
 {
@@ -36,7 +34,7 @@ class Usuario extends Worker
 		//$password = substr(password_hash(strval(time()), PASSWORD_DEFAULT), 0, 10);
 		$chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_-=+;:,.?";
 		$password = substr(str_shuffle($chars), 0, 12);
-		$this->password = $password;
+		$this->set('password', $password);
 		return $password;
 	}
 }

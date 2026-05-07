@@ -5,14 +5,9 @@
     <?= $this->Html->charset() ?>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= $AppName ?></title>
-    <?= $this->Html->meta('favicon.png', 'https://radio.uas.edu.mx/wp-content/uploads/2020/06/cropped-RADIOUAS-LOGO-IOS-32x32.png', ['type' => 'icon']) ?>
+    <?= $this->Html->meta('icon') ?>
 
-    <?php $theme = isset($_COOKIE['theme']) ? $_COOKIE['theme'] : 'midday'; ?>
-    <?php if ($theme === 'midnight'): ?>
-        <?= $this->Html->css('github-midnight') ?>
-    <?php else: ?>
-        <?= $this->Html->css('github-midday') ?>
-    <?php endif; ?>
+    <?= $this->Html->css('github-' . $this->request->getCookie('theme', 'midday')) ?>
 
     <?= $this->Html->script('jquery-3.7.1') ?>
 
@@ -23,9 +18,9 @@
 
 <body>
     <div class="admin-layout">
-        <nav class="admin-sidebar w3-collapse" id="menu">
+        <nav class="admin-sidebar" id="menu">
             <div class="admin-sidebar-header">
-                <?= $this->Html->image('https://radio.uas.edu.mx/wp-content/images/logo.webp', ['alt' => 'Logo']) ?>
+                <?= $this->Html->image($AppLogo, ['alt' => 'Logo']) ?>
             </div>
 
             <div class="admin-sidebar-header">
@@ -36,20 +31,34 @@
                 <?= $this->Html->link('<i class="fa-solid fa-microphone-lines"></i> Roles de Cabina', ['controller' => 'roles'], ['escape' => false]) ?>
                 <?= $this->Html->link('<i class="fa-regular fa-folder-open"></i> Solicitudes', ['controller' => 'solicitudes'], ['escape' => false]) ?>
                 <?= $this->Html->link('<i class="fa-regular fa-clock"></i> Horas extras', ['controller' => 'locutores', 'action' => 'horas_extras'], ['escape' => false]) ?>
+                <?php //= $this->Html->link('<i class="fa-solid fa-radio"></i> Programas', ['controller' => 'programas'], ['escape' => false]) ?>
+                <?= $this->Html->link('<i class="fa-solid fa-file-contract"></i> Bitácora de cabina', ['controller' => 'bitacora_cabina'], ['escape' => false]) ?>
+                <?= $this->Html->link('<i class="fa-solid fa-file-signature"></i> Registro de incidencias', ['controller' => 'incidencias'], ['escape' => false]) ?>
+                <?= $this->Html->link('<i class="fa-solid fa-chart-pie"></i> Reportes de cabina', ['controller' => 'reportes_cabinas', 'action' => 'reportes'], ['escape' => false]) ?>
+                <?php //= $this->Html->link('<i class="fa-solid fa-users"></i> Usuarios', ['controller' => 'usuarios'], ['escape' => false]) ?>
+                <?php //= $this->Html->link('<i class="fa-solid fa-align-left"></i> Temas de programas', ['controller' => 'TemasProgramas', 'action' => 'index'], ['escape' => false]) ?>
+                <?php //= $this->Html->link('<i class="fa-solid fa-align-left"></i> Categorías de programas', ['controller' => 'CategoriasProgramas', 'action' => 'index'], ['escape' => false]) ?>
+                <?php //= $this->Html->link('<i class="fa-solid fa-tv"></i> Control de Streaming', ['controller' => 'stream'], ['escape' => false]) ?>
+                <?php //= $this->Html->link('<i class="fa-solid fa-chart-simple"></i> Uso de streaming', ['controller' => 'StreamHits', 'action' => 'index'], ['escape' => false]) ?>
 
                 <a href="#" class="theme-toggle-btn" onclick="toggleTheme()">
                     <i class="fa-solid fa-moon"></i> <span>Modo oscuro</span>
                 </a>
 
                 <?= $this->Html->link('<i class="fa-solid fa-right-from-bracket"></i> Salir', ['controller' => 'usuarios', 'action' => 'logout'], ['class' => 'nav-logout', 'escape' => false]) ?>
+
+                <div class="admin-sidebar-footer">
+                    <p>SPC v<?= $AppVersion ?></p>
+                </div>
             </div>
         </nav>
 
         <main class="admin-main">
             <header class="admin-header">
-                <button class="mobile-menu-btn" onclick="w3_open()">
-                    <i class="fa-solid fa-bars"></i>
-                </button>
+                <p class="admin-header-user">
+                    <i class="fa-solid fa-circle-user"></i>
+                    <?= $this->Html->link($user->name, ['controller' => 'Usuarios', 'action' => 'profile']) ?>
+                </p>
             </header>
 
             <div class="admin-content">
@@ -65,28 +74,20 @@
 
     <script src="https://kit.fontawesome.com/18176e4df9.js" crossorigin="anonymous"></script>
     <script>
-        function w3_open() {
-            document.getElementById("menu").classList.add("open");
-        }
-
-        function w3_close() {
-            document.getElementById("menu").classList.remove("open");
-        }
-
         function toggleTheme() {
-            var currentTheme = '<?= $theme ?>';
-            var newTheme = currentTheme === 'midday' ? 'midnight' : 'midday';
-            var expires = new Date();
+            const currentTheme = '<?= $this->request->getCookie('theme', 'midday') ?>';
+            const newTheme = currentTheme === 'midday' ? 'midnight' : 'midday';
+            const expires = new Date();
             expires.setFullYear(expires.getFullYear() + 1);
             document.cookie = 'theme=' + newTheme + ';expires=' + expires.toUTCString() + ';path=/';
             location.reload();
         }
 
         function updateToggleText() {
-            var currentTheme = '<?= $theme ?>';
-            var btn = document.querySelector('.theme-toggle-btn');
-            var icon = btn.querySelector('i');
-            var span = btn.querySelector('span');
+            const currentTheme = '<?= $this->request->getCookie('theme', 'midday') ?>';
+            const btn = document.querySelector('.theme-toggle-btn');
+            const icon = btn.querySelector('i');
+            const span = btn.querySelector('span');
             if (currentTheme === 'midnight') {
                 icon.className = 'fa-solid fa-sun';
                 span.textContent = 'Modo claro';

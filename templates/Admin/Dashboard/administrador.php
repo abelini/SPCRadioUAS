@@ -267,6 +267,6 @@
     document.addEventListener('DOMContentLoaded', loadDashboardCards);
 </script>
 
-<div style="text-align: right; padding: var(--spacing-24); color: var(--color-muted-gray);">
+<div style="text-align: right; padding: var(--spacing-24); color:var(--color-border-light);">
     <?= $datetime->i18nFormat(IntlDateFormatter::FULL) ?>
 </div>
