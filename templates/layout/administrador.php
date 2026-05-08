@@ -7,7 +7,7 @@
     <title><?= $AppName ?></title>
     <?= $this->Html->meta('icon') ?>
 
-    <?= $this->Html->css('github-' . $this->request->getCookie('theme', 'midday')) ?>
+    <?= $this->Html->css('github-' . $this->request->getCookie('Theme', 'midday')) ?>
 
     <?= $this->Html->script('jquery-3.7.1') ?>
 
@@ -75,16 +75,19 @@
     <script src="https://kit.fontawesome.com/18176e4df9.js" crossorigin="anonymous"></script>
     <script>
         function toggleTheme() {
-            const currentTheme = '<?= $this->request->getCookie('theme', 'midday') ?>';
+            const currentTheme = '<?= $this->request->getCookie('Theme', 'midday') ?>';
             const newTheme = currentTheme === 'midday' ? 'midnight' : 'midday';
-            const expires = new Date();
-            expires.setFullYear(expires.getFullYear() + 1);
-            document.cookie = 'theme=' + newTheme + ';expires=' + expires.toUTCString() + ';path=/';
-            location.reload();
+            const formData = new FormData();
+            formData.append('theme', newTheme);
+            formData.append('_csrfToken', '<?= $this->request->getAttribute('csrfToken') ?>');
+            fetch('<?= $this->Url->build(['controller' => 'Usuarios', 'action' => 'setTheme']) ?>', {
+                method: 'POST',
+                body: formData
+            }).then((response) => location.reload());
         }
 
         function updateToggleText() {
-            const currentTheme = '<?= $this->request->getCookie('theme', 'midday') ?>';
+            const currentTheme = '<?= $this->request->getCookie('Theme', 'midday') ?>';
             const btn = document.querySelector('.theme-toggle-btn');
             const icon = btn.querySelector('i');
             const span = btn.querySelector('span');

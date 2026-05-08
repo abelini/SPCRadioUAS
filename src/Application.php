@@ -2,25 +2,23 @@
 declare(strict_types=1);
 
 namespace SPC;
-/* Auth */
+
 use Authentication\AuthenticationService;
 use Authentication\AuthenticationServiceInterface;
 use Authentication\AuthenticationServiceProviderInterface;
-use Authentication\Authenticator\FormAuthenticator;
-use Authentication\Authenticator\SessionAuthenticator;
 use Authentication\Identifier\PasswordIdentifier;
 use Authentication\Middleware\AuthenticationMiddleware;
-use Cake\Routing\Router;
 use Psr\Http\Message\ServerRequestInterface;
-/* ---- */
 use Cake\Core\Configure;
 use Cake\Core\ContainerInterface;
 use Cake\Datasource\FactoryLocator;
 use Cake\Error\Middleware\ErrorHandlerMiddleware;
 use Cake\Http\BaseApplication;
+use Cake\Http\Cookie\CookieInterface;
 use Cake\Http\Middleware\BodyParserMiddleware;
 use Cake\Http\Middleware\CsrfProtectionMiddleware;
 use Cake\Http\MiddlewareQueue;
+use Cake\I18n\DateTime;
 use Cake\ORM\Locator\TableLocator;
 use Cake\Routing\Middleware\AssetMiddleware;
 use Cake\Routing\Middleware\RoutingMiddleware;
@@ -107,31 +105,49 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
 			'queryParam' => 'redirect',
 		]);
 
+		$fields = [
+			PasswordIdentifier::CREDENTIAL_USERNAME => 'username',
+			PasswordIdentifier::CREDENTIAL_PASSWORD => 'password',
+		];
+
 		$identifier = [
 			'className' => 'Authentication.Password',
-			'fields' => [
-				PasswordIdentifier::CREDENTIAL_USERNAME => 'username',
-				PasswordIdentifier::CREDENTIAL_PASSWORD => 'password',
-			],
+			'fields' => $fields,
 			'resolver' => [
 				'className' => 'Authentication.Orm',
 				'userModel' => 'Usuarios',
 			],
 		];
 
-		$service->loadAuthenticator('Authentication.Session');
 		$service->loadAuthenticator('Authentication.Form', [
 			'identifier' => $identifier,
-			'fields' => [
-				PasswordIdentifier::CREDENTIAL_USERNAME => 'username',
-				PasswordIdentifier::CREDENTIAL_PASSWORD => 'password',
-			],
+			'fields' => $fields,
 			'loginUrl' => [
 				'prefix' => 'Admin',
 				'plugin' => null,
 				'controller' => 'Usuarios',
 				'action' => 'auth',
 			],
+		]);
+
+		$service->loadAuthenticator('Authentication.Session');
+
+		$service->loadAuthenticator('Authentication.Cookie', [
+			'identifier' => 'Authentication.Password',
+			'cookie' => [
+				'name' => 'CookieAuth',
+				'expire' => new DateTime('+30 days'),
+				'secure' => true,
+				'httponly' => true,
+				'samesite' => CookieInterface::SAMESITE_LAX,
+			],
+			'fields' => $fields,
+			'loginUrl' => [
+				'prefix' => 'Admin',
+				'plugin' => null,
+				'controller' => 'Usuarios',
+				'action' => 'auth',
+			]
 		]);
 
 		return $service;

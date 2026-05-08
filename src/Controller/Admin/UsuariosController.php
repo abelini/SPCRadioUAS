@@ -6,6 +6,7 @@ namespace SPC\Controller\Admin;
 use SPC\Controller\AppController;
 use Authentication\Authenticator\ResultInterface;
 use Cake\Event\EventInterface;
+use Cake\Http\Cookie\Cookie;
 use Cake\Http\Response;
 use Cake\Mailer\MailerAwareTrait;
 
@@ -18,20 +19,22 @@ class UsuariosController extends AppController
 	public function beforeFilter(EventInterface $event)
 	{
 		parent::beforeFilter($event);
-		$this->Authentication->allowUnauthenticated(['auth', 'retrieve']);
+		$this->Authentication->allowUnauthenticated(['auth', 'retrieve', 'setTheme']);
 	}
 
 	public function auth(): Response
 	{
 		$result = $this->Authentication->getResult();
-		// If the user is logged in send them away.
 
 		if ($result->isValid()) {
+			if (!$this->request->getCookie('Theme')) {
+				$this->response = $this->response->withCookie(new Cookie('Theme', 'midday', parent::$datetime->addDays(30)));
+			}
 			return $this->Authentication->redirectAfterLogin();
 		}
 		if ($this->request->is('post')) {
 			$message = match ($result->getStatus()) {
-				ResultInterface::FAILURE_IDENTITY_NOT_FOUND => 'El usuario no existe',
+				ResultInterface::FAILURE_IDENTITY_NOT_FOUND => 'Credenciales inválidas',
 				ResultInterface::FAILURE_CREDENTIALS_MISSING => 'Por favor rellene todos los campos',
 				ResultInterface::FAILURE_CREDENTIALS_INVALID => 'Credenciales inválidas',
 				default => 'Error de autenticación',
@@ -49,18 +52,14 @@ class UsuariosController extends AppController
 	{
 		if ($this->request->is('post')) {
 
-			$id = $this->request->getData('identifier');
+			$identifier = $this->request->getData('identifier');
 
-			if (filter_var($id, FILTER_VALIDATE_EMAIL)) {
-				$condition = ['email' => $id];
-			} else {
-				$condition = ['username' => $id];
+			if (!filter_var($identifier, FILTER_VALIDATE_EMAIL) && !ctype_alpha($identifier)) {
+				$this->Flash->error('El nombre o correo proporcionado no es válido');
+				return $this->render();
 			}
 
-			$user = $this->Usuarios
-				->find()
-				->where($condition)
-				->first();
+			$user = $this->Usuarios->findAllByUsernameOrEmail($identifier, $identifier)->first();
 
 			if ($user === null) {
 				$this->Flash->error('El nombre o correo proporcionado no está registrado en la plataforma');
@@ -76,6 +75,13 @@ class UsuariosController extends AppController
 			return $this->render('auth');
 		}
 		return $this->render();
+	}
+
+	public function setTheme(): Response
+	{
+		$theme = $this->request->getData('theme');
+		$this->response = $this->response->withCookie(new Cookie('Theme', $theme, parent::$datetime->addDays(30)));
+		return $this->redirect($this->request->referer());
 	}
 
 

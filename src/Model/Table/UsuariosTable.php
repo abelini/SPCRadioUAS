@@ -28,6 +28,17 @@ class UsuariosTable extends Table
         ]);
     }
 
+    public function findByIdentifier(SelectQuery $query, string $identifier): SelectQuery
+    {
+        return $query
+            ->where([
+                'OR' => [
+                    'username' => $identifier,
+                    'email' => $identifier,
+                ],
+            ]);
+    }
+
 
     public function validationDefault(Validator $validator): Validator
     {

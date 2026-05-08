@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace SPC\Model\Entity;
 
+use Cake\Utility\Security;
+
 
 class Usuario extends Worker
 {
@@ -29,11 +31,14 @@ class Usuario extends Worker
 		return password_hash($password, PASSWORD_DEFAULT);
 	}
 
+	/**
+	 * Genera un string random de 18 caracteres, lo hashea y lo guarda en el Usuario
+	 *
+	 * @return string
+	 */
 	public function generateAndSetPassword(): string
 	{
-		//$password = substr(password_hash(strval(time()), PASSWORD_DEFAULT), 0, 10);
-		$chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_-=+;:,.?";
-		$password = substr(str_shuffle($chars), 0, 12);
+		$password = Security::randomString(18);
 		$this->set('password', $password);
 		return $password;
 	}

@@ -44,7 +44,7 @@ class DashboardController extends AppController
         $this->set('solicitudes', $this->solicitudes);
         //$this->set('bitacoras', $this->bitacoras);
         //$this->set('programas', $this->programas);
-        $this->set('theme', isset($_COOKIE['theme']) ? $_COOKIE['theme'] : 'midday');
+        $this->set('theme', $this->request->getCookie('Theme', 'midday'));
 
         $this->viewBuilder()->setTemplate($this->viewBuilder()->getLayout());
         return $this->render();
