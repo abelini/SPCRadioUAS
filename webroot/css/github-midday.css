@@ -813,6 +813,7 @@ input[type="email"],
 input[type="number"],
 input[type="time"],
 input[type="date"],
+input[type="datetime-local"],
 select,
 textarea {
   width: 100%;

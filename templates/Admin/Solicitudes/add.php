@@ -27,7 +27,7 @@
 
     <div class="form-group">
         <?= $this->Form->label('fecha', 'Fecha del evento') ?>
-        <?= $this->Form->text('fecha', ['id' => 'fecha', 'class' => 'form-control']) ?>
+        <?= $this->Form->dateTime('fecha', ['id' => 'fecha', 'class' => 'form-control']) ?>
     </div>
 
     <div class="form-group">
@@ -49,7 +49,7 @@
 
     <div class="form-group">
         <?= $this->Form->label('autorizanteID', 'Autoriza') ?>
-        <?= $this->Form->select('autorizanteID', $autorizante, ['class' => 'form-control']) ?>
+        <?= $this->Form->select('autorizanteID', $autorizante, ['class' => 'form-control', 'empty' => false]) ?>
     </div>
 
     <div class="actions-bar">
@@ -60,26 +60,13 @@
     <?= $this->Form->end() ?>
 </div>
 
-<?= $this->Html->css('jquery.datetimepicker.min.css', ['block' => true])?>
-<?= $this->Html->script('jquery.datetimepicker.full.min.js', ['block' => true])?>
-
 <script type="text/javascript">
-    jQuery.datetimepicker.setLocale('es');
-    jQuery('#fecha').datetimepicker({format:'Y-m-d H:i', lang:'es', minDate:'2013/12/03', step:30,
-        value:'',
-        i18n:{
-            es:{
-                months:['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
-                dayOfWeek:['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
-            }
-        }
-    });
-</script>
-<script type="text/javascript">
-    $(document).ready(function() {
-        $("#TipoSolicitud").on("change", function() {
-            if($(this).val() == 2 || $(this).val() == 3) {
+    $(document).ready(function () {
+        $("#TipoSolicitud").on("change", function () {
+            if ($(this).val() == 2 || $(this).val() == 3) {
                 $("#productorID").val(0).parent().hide();
+            } else {
+                $("#productorID").val(0).parent().show();
             }
         });
     });
