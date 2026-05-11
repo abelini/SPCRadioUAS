@@ -174,6 +174,28 @@ class UsuariosController extends AppController
 		return $this->redirect(['action' => 'index']);
 	}
 
+	public function changePassword(string $id): Response
+	{
+		$this->request->allowMethod(['get', 'delete']);
+		$usuario = $this->Usuarios->get($id);
+		if ($this->request->is('delete')) {
+			$data = $this->request->getData();
+			if ($data['new_password'] !== $data['confirm_password']) {
+				$this->Flash->error('Las contraseñas no coinciden');
+				$this->set(compact('usuario'));
+				return $this->render();
+			}
+			$usuario = $this->Usuarios->patchEntity($usuario, ['password' => $data['new_password']]);
+			if ($this->Usuarios->save($usuario)) {
+				$this->Flash->success('Contraseña actualizada correctamente');
+				return $this->redirect(['action' => 'index']);
+			}
+			$this->Flash->error('Error al actualizar la contraseña');
+		}
+		$this->set(compact('usuario'));
+		return $this->render();
+	}
+
 	public function profile(): Response
 	{
 		$user = $this->Usuarios->find()

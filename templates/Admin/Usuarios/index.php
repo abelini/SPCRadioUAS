@@ -29,6 +29,7 @@
                         <td>
                             <?= $this->Html->link('<i class="fa-solid fa-eye"></i>', ['action' => 'view', $usuario->ID], ['escapeTitle' => false]) ?>
                             <?= $this->Html->link('<i class="fa-regular fa-pen-to-square"></i>', ['action' => 'edit', $usuario->ID], ['escapeTitle' => false]) ?>
+                            <?= $this->Html->link('<i class="fa-solid fa-key"></i>', ['action' => 'changePassword', $usuario->ID], ['escapeTitle' => false]) ?>
                             <?= $this->Form->deleteLink('<i class="fa-regular fa-trash-can"></i>', ['action' => 'delete', $usuario->ID], ['confirm' => '¿Estás seguro de eliminar este usuario?', 'escapeTitle' => false]) ?>
                         </td>
                     </tr>
