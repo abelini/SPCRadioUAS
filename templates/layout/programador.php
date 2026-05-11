@@ -73,7 +73,7 @@
             const newTheme = currentTheme === 'midday' ? 'midnight' : 'midday';
             const formData = new FormData();
             formData.append('theme', newTheme);
-            formData.append('_csrfToken', '<?= Cake\csrfToken() ?>');
+            formData.append('_csrfToken', '<?= $this->request->getAttribute('csrfToken') ?>');
             fetch('<?= $this->Url->build(['controller' => 'Usuarios', 'action' => 'setTheme']) ?>', {
                 method: 'POST',
                 body: formData
