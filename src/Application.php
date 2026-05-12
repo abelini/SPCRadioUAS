@@ -120,21 +120,10 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
 			],
 		];
 
-		$service->loadAuthenticator('Authentication.Form', [
-			'identifier' => $identifier,
-			'fields' => $fields,
-			'loginUrl' => [
-				'prefix' => 'Admin',
-				'plugin' => null,
-				'controller' => 'Usuarios',
-				'action' => 'auth',
-			],
-		]);
-
 		$service->loadAuthenticator('Authentication.Session');
 
 		$service->loadAuthenticator('Authentication.Cookie', [
-			'identifier' => $identifier, //'Authentication.Password',
+			'identifier' => $identifier,
 			'cookie' => [
 				'name' => 'CookieAuth',
 				'expire' => new DateTime('+30 days'),
@@ -149,6 +138,17 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
 				'controller' => 'Usuarios',
 				'action' => 'auth',
 			]
+		]);
+
+		$service->loadAuthenticator('Authentication.Form', [
+			'identifier' => $identifier,
+			'fields' => $fields,
+			'loginUrl' => [
+				'prefix' => 'Admin',
+				'plugin' => null,
+				'controller' => 'Usuarios',
+				'action' => 'auth',
+			],
 		]);
 
 		return $service;
