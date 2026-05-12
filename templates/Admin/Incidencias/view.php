@@ -14,8 +14,7 @@
 		</tr>
 	</table>
 	
-	<div class="stats-section">
-		<strong style="color: var(--color-ghost-white);">Observaciones</strong>
+	<strong style="color: var(--color-ghost-white);">Observaciones</strong>
 		<blockquote class="blockquote">
 			<i class="fa-solid fa-quote-left" style="font-size: 2rem; color: var(--color-subtle-gray);"></i>
 			<?= $this->Text->autoParagraph(h($incidencia->observaciones)); ?>
@@ -27,10 +26,9 @@
 			<?= $this->Html->image($this->Url->image('Incidencias/' . $incidencia->attachment), ['style' => 'max-width: 100%; border: 1px solid var(--color-subtle-gray); border-radius: var(--radius-md); padding: var(--spacing-8);'])?>
 		</div>
 		<?php endif; ?>
-	</div>
 	
 	<div class="stats-section">
-		<div class="page-header">
+		<div class="page-subheader">
 			<h5><i class="fa-solid fa-clipboard-list"></i> Detalle</h5>
 		</div>
 		
@@ -61,7 +59,7 @@
 	</div>
 	
 	<div class="stats-section">
-		<div class="page-header">
+		<div class="page-subheader">
 			<h5><i class="fa-solid fa-clock-rotate-left"></i> Seguimiento</h5>
 		</div>
 		
@@ -118,7 +116,6 @@
 				)?>
 			</div>
 		<?php endif; ?>
-	</div>
 </div>
 
 <div class="actions-bar">

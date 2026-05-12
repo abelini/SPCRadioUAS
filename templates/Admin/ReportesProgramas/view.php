@@ -14,8 +14,7 @@
         </tr>
     </table>
         
-    <div class="stats-section">
-        <div class="page-header">
+    <div class="page-subheader">
             <h5><i class="fa-solid fa-list-check"></i> Bitácora</h5>
         </div>
     
@@ -37,7 +36,6 @@
                 <td><?= $reporte->reporte->horaInicio ?> - <?= $reporte->reporte->horaFin ?></td>
             </tr>
         </table>
-    </div>
 
     <div class="actions-bar">
         <?= $this->Html->link('<i class="fa-regular fa-pen-to-square"></i> Modificar', ['action' => 'edit', $reporte->ID], ['class' => 'btn btn-outlined', 'escapeTitle' => false]) ?>

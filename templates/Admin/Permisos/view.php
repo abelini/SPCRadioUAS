@@ -38,8 +38,7 @@
     </div>
 
     <?php if (!empty($permiso->usuarios)): ?>
-    <div class="stats-section">
-        <div class="page-header">
+    <div class="page-subheader">
             <h5><i class="fa-solid fa-users"></i> <?= __('Related Usuarios') ?></h5>
         </div>
         <table class="data-table">
@@ -71,6 +70,5 @@
                 <?php endforeach; ?>
             </tbody>
         </table>
-    </div>
     <?php endif; ?>
 </div>

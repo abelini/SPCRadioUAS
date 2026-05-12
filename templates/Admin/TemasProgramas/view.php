@@ -86,7 +86,7 @@
 </div>
 
 <div id="resultado-ia-container" class="content-card" style="display:none; margin-top: var(--spacing-16);">
-    <div class="page-header">
+    <div class="page-subheader">
         <h5><i class="fa-solid fa-sparkles"></i> Respuesta de Gemini</h5>
     </div>
 

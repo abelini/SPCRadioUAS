@@ -8,7 +8,7 @@
 			<div class="content-card" style="border-left: 4px solid var(--color-polar-blue);">
 				<h6>Por programa</h6>
 				
-				<?= $this->Form->create(null, ['type' => 'GET', 'class' => 'w3-section']) ?>
+				<?= $this->Form->create(null, ['type' => 'GET', 'class' => 'mt-3']) ?>
 				
 				<div class="form-group">
 					<?= $this->Form->label('p', 'Programa') ?>
@@ -38,7 +38,7 @@
 			<div class="content-card" style="border-left: 4px solid var(--color-polar-blue);">
 				<h6>Por mes</h6>
 				
-				<?= $this->Form->create(null, ['type' => 'GET', 'class' => 'w3-section']) ?>
+				<?= $this->Form->create(null, ['type' => 'GET', 'class' => 'mt-3']) ?>
 				
 				<div class="form-group">
 					<?= $this->Form->label('m', 'Mes') ?>
@@ -55,7 +55,7 @@
 			<div class="content-card" style="border-left: 4px solid var(--color-polar-blue);">
 				<h6>Por cuatrimestre</h6>
 				
-				<?= $this->Form->create(null, ['type' => 'GET', 'class' => 'w3-section']) ?>
+				<?= $this->Form->create(null, ['type' => 'GET', 'class' => 'mt-3']) ?>
 				
 				<div class="form-group">
 					<?= $this->Form->label('m', 'Cuatrimestre') ?>
@@ -114,10 +114,6 @@
 </script>
 
 <style>
-	h6 {
-		color: #fff;
-	}
-
 	.mt-3 {
 		margin-top: var(--spacing-16);
 	}

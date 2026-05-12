@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace SPC\Model\Table;
 
 use SPC\Model\Entity\Permiso;
+use Cake\I18n\DateTime;
+use Cake\Database\Expression\QueryExpression;
 use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -26,16 +28,12 @@ class LocutoresTable extends Table
 		$this->hasMany('Asignaciones', [
 			'foreignKey' => 'locutorID',
 		]);
-		/*$this->hasMany('ReportesCabinas', [
-			'foreignKey' => 'usuario_id',
-		]);
-		$this->hasMany('Solicitudes', [
-			'foreignKey' => 'usuario_id',
-		]);*/
+
 		$this->hasMany('Solicitudes', [
 			'foreignKey' => 'primerAsignadoID',
 			'bindingKey' => 'ID',
 		]);
+
 		$this->belongsToMany('Permisos', [
 			'foreignKey' => 'usuarioID',
 			'targetForeignKey' => 'permisoID',
@@ -62,6 +60,42 @@ class LocutoresTable extends Table
 				return $query->where(['Permisos.ID' => Permiso::LOCUTOR]);
 			});
 		return parent::findList($finder, keyField: $keyField, valueField: $valueField);
+	}
+
+	public function findDiasFeriadosAsignados(SelectQuery $query, array $diasFeriados, DateTime $today): SelectQuery
+	{
+		$query
+			->enableAutoFields(false)
+			->where(['base' => true]);
+
+		if (count($diasFeriados) > 0) {
+			$ors = [];
+			foreach ($diasFeriados as $feriado) {
+				$ors[] = [
+					'Asignaciones.diaID' => $feriado->dayOfWeek,
+					'Roles.fechaInicio' => $feriado->startOfWeek(),
+				];
+			}
+
+			$query
+				->matching('Asignaciones')
+				->innerJoinWith('Asignaciones.Roles')
+				->where(fn(QueryExpression $exp) => $exp->or($ors));
+		} else {
+			$query->matching('Asignaciones')->where(['Asignaciones.diaID' => 0]);
+		}
+
+		return $query;
+	}
+
+	public function findMaestrosAsignados(SelectQuery $query, DateTime $empieza, DateTime $termina): SelectQuery
+	{
+		return $query
+			->enableAutoFields(false)
+			->where(['base' => true])
+			->matching('Solicitudes', fn(SelectQuery $query) => $query
+				->select(['ID', 'evento', 'fecha'])
+				->where(fn(QueryExpression $exp) => $exp->between('fecha', $empieza, $termina)));
 	}
 }
 

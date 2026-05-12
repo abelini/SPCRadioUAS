@@ -4,7 +4,7 @@
 
 <?php foreach ($permisos as $tipoDeUsuario): ?>
 
-    <div class="page-header">
+    <div class="page-subheader">
         <h5><?= $tipoDeUsuario->icon ?> <?= $tipoDeUsuario->plural ?></h5>
     </div>
 

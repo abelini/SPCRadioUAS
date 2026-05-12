@@ -23,8 +23,7 @@
         </tr>
     </table>
 
-    <div class="stats-section">
-        <div class="page-header">
+    <div class="page-subheader">
             <h5><i class="fa-solid fa-calendar-day"></i> Días relacionados</h5>
         </div>
 
@@ -50,7 +49,6 @@
                 <?php endforeach; ?>
             </tbody>
         </table>
-    </div>
 
     <div class="actions-bar">
         <?= $this->Html->link('<i class="fa-regular fa-pen-to-square"></i> Modificar', ['action' => 'edit', $horario->ID], ['class' => 'btn btn-outlined', 'escapeTitle' => false]) ?>

@@ -24,8 +24,7 @@
         </tr>
     </table>
 
-    <div class="stats-section">
-        <div class="page-header">
+    <div class="page-subheader">
             <h5><i class="fa-solid fa-calendar-week"></i> Asignaciones de la semana</h5>
         </div>
 
@@ -74,7 +73,6 @@
                 </tr>
             <?php endforeach; ?>
         </table>
-    </div>
 
     <div class="actions-bar">
         <?= $this->Html->link('<i class="fa-regular fa-pen-to-square"></i> Modificar', ['action' => 'edit', $rol->ID], ['class' => 'btn btn-success', 'escapeTitle' => false]) ?>

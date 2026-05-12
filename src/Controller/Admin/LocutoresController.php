@@ -6,6 +6,7 @@ namespace SPC\Controller\Admin;
 use SPC\Controller\AppController;
 use Cake\Collection\Collection;
 use Cake\Database\Expression\QueryExpression;
+use Cake\Http\Response;
 use Cake\I18n\DateTime;
 use Cake\ORM\Query\SelectQuery;
 
@@ -13,15 +14,14 @@ use Cake\ORM\Query\SelectQuery;
 class LocutoresController extends AppController
 {
 
+	protected const int PRIMERA_QUINCENA = 1;
+	protected const int SEGUNDA_QUINCENA = 2;
 	protected const int HORAS_EXTRAS_POR_TURNO = 6;
-
 	protected const int HORAS_EXTRAS_POR_EVENTO = 4;
-
 	protected const array DIAS_INHABILES = [
 		'Feb 5th',
 		'Mar 21st',
-		//'Apr 18th', // <--- prueba
-		//'Apr 21st', // <--   "
+		'Apr 21st',
 		'May 1st',
 		'May 5th',
 		'May 10th',
@@ -31,20 +31,20 @@ class LocutoresController extends AppController
 		'Nov 20th',
 	];
 
-	public function horasExtras()
+	public function horasExtras(): Response
 	{
-		$today = DateTime::now();
-		$quincenaDelMes = ($today->day >= 1 && $today->day <= 15) ? 2 : 1;
+		$today = parent::$datetime;
+		$quincenaDelMes = ($today->day >= 1 && $today->day <= 15) ? self::SEGUNDA_QUINCENA : self::PRIMERA_QUINCENA;
 
-		$today = ($quincenaDelMes == 2) ? $today->modify('-1 month') : $today;
+		$today = ($quincenaDelMes == self::SEGUNDA_QUINCENA) ? $today->modify('-1 month') : $today;
 
 		$empieza = match ($quincenaDelMes) {
-			1 => $today->startOfMonth(),
-			2 => $today->day(16),
+			self::PRIMERA_QUINCENA => $today->startOfMonth(),
+			self::SEGUNDA_QUINCENA => $today->day(16),
 		};
 		$termina = match ($quincenaDelMes) {
-			1 => $today->day(15),
-			2 => $today->endOfMonth(),
+			self::PRIMERA_QUINCENA => $today->day(15),
+			self::SEGUNDA_QUINCENA => $today->endOfMonth(),
 		};
 
 		$feriadosDeLaQuincena = array();
@@ -57,107 +57,59 @@ class LocutoresController extends AppController
 				}
 			}
 		}
-		/*	--------------------------------------------------------------------------------------------------------------------
-		//	--------------------------------------------------------------------------------------------------------------------
-		//	Esta consulta funciona para cuando solo hay dias feriados EN UNA SOLA SEMANA/ROL
-		//	--------------------------------------------------------------------------------------------------------------------
-		//	--------------------------------------------------------------------------------------------------------------------
-		*/
-		$locutoresAsignados = $this->Locutores->find()
-			->enableAutoFields(false)
-			->where(['base' => true])
-			->matching('Asignaciones', function (SelectQuery $query) use ($feriadosDeLaQuincena) {
-				$cond = [];
-				if (count($feriadosDeLaQuincena) > 0) {
-					foreach ($feriadosDeLaQuincena as $f) {
-						$cond[] = ['diaID' => $f->dayOfWeek];
-					}
-				} else {
-					$cond = ['diaID' => 0];
-				}
-				return $query->where(
-					conditions: function (QueryExpression $exp, SelectQuery $query) use ($cond) {
-						return $exp->or($cond);
-					},
-					overwrite: true
-				);
-			})
-			->matching('Asignaciones.Roles', function (SelectQuery $query) use ($feriadosDeLaQuincena, $today) {
-				$cond = [];
-				if (count($feriadosDeLaQuincena) > 0) {
-					foreach ($feriadosDeLaQuincena as $f) {
-						$cond[] = ['fechaInicio' => $f->startOfWeek()];
-					}
-				} else {
-					$cond = ['fechaInicio' => $today->startOfWeek()];
-				}
-				return $query->where(function (QueryExpression $exp, SelectQuery $query) use ($cond) {
-					return $exp->or($cond);
-				});
-			})
-			->all();
 
+		$locutoresAsignados = $this->Locutores->find('DiasFeriadosAsignados', diasFeriados: $feriadosDeLaQuincena, today: $today)->all();
 
 		$locutores = new Collection($this->Locutores->find()->where(['base' => true])->all());
 		$horasXCabina = array();
 		$horasXEvento = array();
 
 		foreach ($locutores as $id => $locutor) {
-			$locs = (new Collection($locutoresAsignados))->match(['ID' => $locutor->ID]);
-			if ($locs->count() == 0)
+			$asignaciones = (new Collection($locutoresAsignados))->match(['ID' => $locutor->ID]);
+			if ($asignaciones->isEmpty()) {
 				continue;
-
-			$horasXCabina[$id]['horas'] = 0;
-			foreach ($locs as $loc) {
-				$horasXCabina[$id]['horas'] += self::HORAS_EXTRAS_POR_TURNO;
 			}
-			$horasXCabina[$id]['locutor'] = $locutor;
+
+			$horasXCabina[$id] = [
+				'locutor' => $locutor,
+				'horas' => $asignaciones->count() * self::HORAS_EXTRAS_POR_TURNO,
+			];
 		}
 
-		$maestrosAsignados = $this->Locutores->find()
-			->enableAutoFields()
-			->distinct()
-			->where(['base' => true])
-			->matching('Solicitudes', function (SelectQuery $query) use ($empieza, $termina) {
-				return $query
-					->select(['ID', 'evento', 'fecha'])
-					->where(function (QueryExpression $exp, SelectQuery $query) use ($empieza, $termina) {
-						return $exp->between('fecha', $empieza, $termina);
-					});
-			})
-			->all();
+		$maestrosAsignados = $this->Locutores->find('MaestrosAsignados', empieza: $empieza, termina: $termina)->all();
 
 		foreach ($locutores as $id => $locutor) {
-			$locs = (new Collection($maestrosAsignados))->match(['ID' => $locutor->ID]);
-			if ($locs->count() == 0)
+			$eventos = (new Collection($maestrosAsignados))->match(['ID' => $locutor->ID]);
+			if ($eventos->isEmpty()) {
 				continue;
-
-			$horasXEvento[$id]['horas'] = 0;
-			foreach ($locs as $loc) {
-				$horasXEvento[$id]['horas'] += self::HORAS_EXTRAS_POR_EVENTO;
-				$horasXEvento[$id]['eventos'][] = $loc->_matchingData['Solicitudes'];
 			}
-			$horasXEvento[$id]['locutor'] = $locutor;
 
+			$horasXEvento[$id] = [
+				'locutor' => $locutor,
+				'horas' => $eventos->count() * self::HORAS_EXTRAS_POR_EVENTO,
+				'eventos' => $eventos->extract('_matchingData.Solicitudes')->toList(),
+			];
 		}
 
 		$this->set(compact('empieza', 'termina'));
 		$this->set(compact('feriadosDeLaQuincena', 'horasXCabina', 'horasXEvento'));
 
-
+		return $this->render();
 	}
 
-	public function index()
+	public function index(): Response
 	{
 		$query = $this->Locutores->find();
 		$locutores = $this->paginate($query);
 		$this->set(compact('locutores'));
+		return $this->render();
 	}
 
-	public function view($id = null)
+	public function view($id = null): Response
 	{
 		$locutore = $this->Locutores->get($id, contain: ['Permisos', 'Asignaciones']);
 		$this->set(compact('locutore'));
+		return $this->render();
 	}
 
 }

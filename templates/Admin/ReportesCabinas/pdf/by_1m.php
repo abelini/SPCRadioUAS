@@ -27,27 +27,23 @@
 	</div>
 </div>
 
-<div class="stats-section">
-	<div class="page-header">
+<div class="page-subheader">
 		<h4><i class="fa-solid fa-tower-cell"></i> Informe de enlaces remotos en el período</h4>
 	</div>
-</div>
 
-<div class="row g-2">
+<ul class="cr-list">
 	<?php foreach($crs as $cr) : ?>
-		<div class="col-12" style="padding: var(--spacing-8);">
-			<span title="<?= $this->Time->i18nFormat(\DateTime::createFromFormat('U', $cr['fecha']), "d 'de' MMMM yyy") ?>" style="text-transform:uppercase; padding: var(--spacing-4) var(--spacing-8); border-bottom: 1px solid var(--color-subtle-gray); display: block;">
-				<i class="fa-solid fa-satellite-dish"></i> <?= $cr['cr'] ?>
-			</span>
-		</div>
+		<li title="<?= $this->Time->i18nFormat(\DateTime::createFromFormat('U', $cr['fecha']), "d 'de' MMMM yyy") ?>">
+			<i class="fa-solid fa-satellite-dish"></i>
+			<span class="cr-name"><?= $cr['cr'] ?></span>
+			<span class="cr-date"><?= $this->Time->i18nFormat(\DateTime::createFromFormat('U', $cr['fecha']), 'd MMM yyy') ?></span>
+		</li>
 	<?php endforeach; ?>
-</div>
+</ul>
 
-<div class="stats-section">
-	<div class="page-header">
+<div class="page-subheader">
 		<h4><i class="fa-solid fa-chart-line"></i> Reportes individuales de cumplimiento</h4>
 	</div>
-</div>
 
 <div class="row g-3">
 	<?php foreach($programas as $programa) : ?>

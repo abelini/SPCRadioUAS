@@ -30,14 +30,12 @@
         </tr>
     </table>
 
-    <div class="stats-section">
-        <div class="page-header">
+    <div class="page-subheader">
             <h5><?= __('Updates') ?></h5>
         </div>
         <blockquote class="blockquote">
             <?= $this->Text->autoParagraph(h($ticket->updates)); ?>
         </blockquote>
-    </div>
 
     <div class="actions-bar">
         <?= $this->Html->link('<i class="fa-regular fa-pen-to-square"></i> Modificar', ['action' => 'edit', $ticket->ID], ['class' => 'btn btn-outlined', 'escapeTitle' => false]) ?>

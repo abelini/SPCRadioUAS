@@ -14,8 +14,7 @@
         </tr>
     </table>
 
-    <div class="stats-section">
-        <div class="page-header">
+    <div class="page-subheader">
             <h5><i class="fa-solid fa-clock"></i> Horarios relacionados</h5>
         </div>
 
@@ -43,10 +42,8 @@
                 <?php endforeach; ?>
             </tbody>
         </table>
-    </div>
 
-    <div class="stats-section">
-        <div class="page-header">
+    <div class="page-subheader">
             <h5><i class="fa-solid fa-radio"></i> Programas relacionados</h5>
         </div>
 
@@ -80,10 +77,9 @@
                 <?php endforeach; ?>
             </tbody>
         </table>
-    </div>
 
     <div class="stats-section">
-        <div class="page-header">
+        <div class="page-subheader">
             <h5><i class="fa-solid fa-calendar-check"></i> Asignaciones relacionadas</h5>
         </div>
 
@@ -115,7 +111,6 @@
                 <?php endforeach; ?>
             </tbody>
         </table>
-    </div>
 
     <div class="actions-bar">
         <?= $this->Html->link('<i class="fa-regular fa-pen-to-square"></i> Modificar', ['action' => 'edit', $dia->ID], ['class' => 'btn btn-outlined', 'escapeTitle' => false]) ?>

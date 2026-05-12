@@ -16,23 +16,19 @@
         </tr>
     </table>
 
-    <div class="stats-section">
-        <div class="page-header">
+    <div class="page-subheader">
             <h5><?= __('Name') ?></h5>
         </div>
         <blockquote class="blockquote">
             <?= $this->Text->autoParagraph(h($tipoBitacora->name)); ?>
         </blockquote>
-    </div>
 
-    <div class="stats-section">
-        <div class="page-header">
+    <div class="page-subheader">
             <h5><?= __('Turnos') ?></h5>
         </div>
         <blockquote class="blockquote">
             <?= $this->Text->autoParagraph(h($tipoBitacora->turnos)); ?>
         </blockquote>
-    </div>
 
     <div class="actions-bar">
         <?= $this->Html->link('<i class="fa-regular fa-pen-to-square"></i> Modificar', ['action' => 'edit', $tipoBitacora->ID], ['class' => 'btn btn-outlined', 'escapeTitle' => false]) ?>

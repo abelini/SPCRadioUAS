@@ -25,8 +25,7 @@
     </table>
 
     <?php if ($programa->reportable): ?>
-        <div class="stats-section">
-            <div class="page-header">
+        <div class="page-subheader">
                 <h5><i class="fa-solid fa-chart-simple"></i> Estadísticas del
                     <?= $fechaInicial->i18nFormat("d 'de' MMMM 'de' YYYY") ?> a la fecha (<?= $diff ?>)</h5>
             </div>
@@ -73,7 +72,6 @@
                     chart.draw(data, options);
                 }
             </script>
-        </div>
     <?php endif; ?>
 
     <div class="actions-bar">

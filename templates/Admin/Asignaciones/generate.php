@@ -8,8 +8,7 @@
 <?php $x = 0; ?>
 
 <?php foreach ($turno as $dia): ?>
-    <div class="stats-section">
-        <div class="page-header">
+    <div class="page-subheader">
             <h6>
                 <?= $dia->name ?>
                 <?= $starts->addDays($offset++)->i18nFormat("d 'de' MMMM") ?>
@@ -38,5 +37,4 @@
             <?php endforeach; ?>
         </div>
 
-    </div>
 <?php endforeach; ?>

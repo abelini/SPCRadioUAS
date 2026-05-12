@@ -23,15 +23,13 @@
             </tr>
         </table>
 	
-	    <div class="stats-section">
-            <strong><?= ($reporte->controles > 0) ? 'Lista de enlaces remotos' : 'Reporte de cabina' ?></strong>
+	    <strong><?= ($reporte->controles > 0) ? 'Lista de enlaces remotos' : 'Reporte de cabina' ?></strong>
             <blockquote class="blockquote">
                 <?= $reporte->getPrintableReport(); ?>
             </blockquote>
-        </div>
 	
 	    <div class="stats-section">
-            <div class="page-header">
+            <div class="page-subheader">
                 <h5><i class="fa-solid fa-radio"></i> Reportes individuales de programas</h5>
             </div>
 	
@@ -64,8 +62,7 @@
 	
  	        <?php else: ?>
 		        <p class="no-results"><i class="fa-regular fa-file-excel"></i> No se reportaron programas en este turno</p>
- 	        <?php endif; ?>
-        </div>
+            <?php endif; ?>
     </div>
 	
 	<div class="actions-bar">

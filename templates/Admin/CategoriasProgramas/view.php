@@ -24,7 +24,7 @@
         </tr>
     </table>
 
-    <div class="page-header">
+    <div class="page-subheader">
         <h5><i class="fa-solid fa-calendar-check"></i> Programas relacionados</h5>
     </div>
     <div class="table-responsive">

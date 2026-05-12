@@ -54,7 +54,8 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
 	public function middleware(MiddlewareQueue $middlewareQueue): MiddlewareQueue
 	{
 		$csrf = new CsrfProtectionMiddleware([
-			'httponly' => true,
+			'httponly' => false,
+			'samesite' => CookieInterface::SAMESITE_LAX,
 		]);
 		$csrf->skipCheckCallback(function ($request) {
 			if ($request->getParam('prefix') === 'Api') {
@@ -133,7 +134,7 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
 		$service->loadAuthenticator('Authentication.Session');
 
 		$service->loadAuthenticator('Authentication.Cookie', [
-			'identifier' => 'Authentication.Password',
+			'identifier' => $identifier, //'Authentication.Password',
 			'cookie' => [
 				'name' => 'CookieAuth',
 				'expire' => new DateTime('+30 days'),
