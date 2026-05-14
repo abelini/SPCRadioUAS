@@ -52,33 +52,38 @@
                     </div>
                 </div>
 
+                <div class="solicitud-status">
+                    <?= $solicitud->getStatus() ?>
+                </div>
+
                 <ul class="solicitud-roles">
-                    <li>
-                        <span class="role-label">1er Locutor</span>
-                        <span class="role-name"><?= h($solicitud->primerAsignado->name ?? '-') ?></span>
-                    </li>
-                    <li>
-                        <span class="role-label">2do Locutor</span>
-                        <span class="role-name"><?= h($solicitud->segundoAsignado->name ?? '-') ?></span>
-                    </li>
-                    <li>
-                        <span class="role-label">Autoriza</span>
-                        <span class="role-name"><?= h($solicitud->autorizante->name ?? '-') ?></span>
-                    </li>
-                    <li>
-                        <span class="role-label">Productor</span>
-                        <span class="role-name"><?= h($solicitud->productorTecnico->name ?? '-') ?></span>
-                    </li>
+                    <?php if ($solicitud->tipoSolicitudID == 1): ?>
+                        <li>
+                            <span class="role-label">Voz asignada</span>
+                            <span class="role-name"><?= h($solicitud->primerAsignado->name ?? '-') ?></span>
+                        </li>
+                        <li>
+                            <span class="role-label">Productor técnico</span>
+                            <span class="role-name"><?= h($solicitud->productorTecnico->name ?? '-') ?></span>
+                        </li>
+                    <?php elseif ($solicitud->tipoSolicitudID == 2): ?>
+                        <li>
+                            <span class="role-label">Maestro de ceremonias</span>
+                            <span class="role-name"><?= h($solicitud->primerAsignado->name ?? '-') ?></span>
+                        </li>
+                        <li>
+                            <span class="role-label">Suplente</span>
+                            <span class="role-name"><?= h($solicitud->segundoAsignado->name ?? '-') ?></span>
+                        </li>
+                    <?php elseif ($solicitud->tipoSolicitudID == 3): ?>
+                        <li>
+                            <span class="role-label">Autoriza</span>
+                            <span class="role-name"><?= h($solicitud->autorizante->name ?? '-') ?></span>
+                        </li>
+                    <?php endif; ?>
                 </ul>
 
-                <div class="solicitud-foot">
-                    <div>
-                        <?php //= $solicitud->getStatus() ?>
-                    </div>
-                    <div>
-                        <?= $solicitud->getStatus() ?>
-                    </div>
-                </div>
+
             </li>
         <?php endforeach; ?>
     </ul>

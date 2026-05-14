@@ -1001,11 +1001,10 @@ textarea.form-control {
   color: var(--color-faded-silver);
 }
 
-.solicitud-foot {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: var(--spacing-16);
+.solicitud-status {
+  display: block;
+  float: right;
+  margin-top: 55px;
 }
 
 .accepted {
