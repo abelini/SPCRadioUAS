@@ -3,9 +3,11 @@ declare(strict_types=1);
 
 namespace SPC\Model\Table;
 
+use Cake\Database\Expression\QueryExpression;
 use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use SPC\Model\Entity\Solicitud;
 use SPC\Model\Entity\TipoSolicitud;
 
 
@@ -49,17 +51,26 @@ class SolicitudesTable extends Table
         return $query
             ->select([
                 'Total' => $query->func()->count('*'),
-                'TotalGDS' => $query->func()->count(
-                    $query->expr()->case()->when(['tipoSolicitudID' => TipoSolicitud::GRABACION_DE_SPOT])->then(1)
-                ),
-                'TotalMDC' => $query->func()->count(
-                    $query->expr()->case()->when(['tipoSolicitudID' => TipoSolicitud::MAESTRO_DE_CEREMONIA])->then(1)
-                ),
-                'TotalCR' => $query->func()->count(
-                    $query->expr()->case()->when(['tipoSolicitudID' => TipoSolicitud::CONTROL_REMOTO])->then(1)
-                ),
                 'Oldest' => $query->func()->min('fecha', ['date']),
                 'Newest' => $query->func()->max('fecha', ['date']),
+                'TotalGDS' => $query->func()->count(
+                    $query->expr()
+                        ->case()
+                        ->when(['tipoSolicitudID' => TipoSolicitud::SPOT_RECORDING])
+                        ->then(1)
+                ),
+                'TotalMDC' => $query->func()->count(
+                    $query->expr()
+                        ->case()
+                        ->when(['tipoSolicitudID' => TipoSolicitud::CEREMONY_MASTER])
+                        ->then(1)
+                ),
+                'TotalCR' => $query->func()->count(
+                    $query->expr()
+                        ->case()
+                        ->when(['tipoSolicitudID' => TipoSolicitud::REMOTE_BROADCAST])
+                        ->then(1)
+                )
             ])
             ->disableHydration();
     }
@@ -67,7 +78,39 @@ class SolicitudesTable extends Table
     public function findPending(SelectQuery $query): SelectQuery
     {
         return $query
-            ->where(['Solicitudes.status' => 0]);
+            ->select([
+                'UnrecordedSpots' => $query->func()->count(
+                    $query->expr()
+                        ->case()
+                        ->when([
+                            'tipoSolicitudID' => TipoSolicitud::SPOT_RECORDING,
+                            'status' => Solicitud::NOT_STARTED,
+                        ])
+                        ->then(1)
+                ),
+                'UnnacceptedCeremonyMasters' => $query->func()->count(
+                    $query->expr()
+                        ->case()
+                        ->when([
+                            'tipoSolicitudID' => TipoSolicitud::CEREMONY_MASTER,
+                            'aceptado' => Solicitud::UNACCEPTED,
+                        ])
+                        ->then(1)
+                ),
+            ])
+            ->disableHydration();
+    }
+
+    public function findSearch(SelectQuery $query, array $options): SelectQuery
+    {
+        $q = $options['q'] ?? '';
+        return $query
+            ->contain(['TipoSolicitud', 'PrimerAsignado', 'SegundoAsignado', 'Autorizante', 'ProductorTecnico'])
+            ->where(fn(QueryExpression $exp) => $exp->or([
+                'Solicitudes.solicitante LIKE' => '%' . $q . '%',
+                'Solicitudes.evento LIKE' => '%' . $q . '%',
+            ]))
+            ->orderByDesc('Solicitudes.fecha');
     }
 
     public function validationDefault(Validator $validator): Validator

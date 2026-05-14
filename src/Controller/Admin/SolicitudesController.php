@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace SPC\Controller\Admin;
 
 use SPC\Controller\AppController;
+use Cake\Http\Response;
 
 
 class SolicitudesController extends AppController
@@ -18,6 +19,27 @@ class SolicitudesController extends AppController
 		$solicitudes = $this->paginate($query);
 
 		$this->set(compact('solicitudes'));
+	}
+
+	public function search(): Response
+	{
+		$q = $this->request->getQuery('q', '');
+
+		if (strlen($q) > 0) {
+			$solicitudes = $this->paginate(
+				$this->Solicitudes->find('search', q: $q)
+			);
+		} else {
+			$solicitudes = [];
+		}
+
+		$this->set(compact('q', 'solicitudes'));
+
+		if ($this->request->is('ajax')) {
+			return $this->render('search_results', 'ajax');
+		}
+
+		return $this->render();
 	}
 
 	public function view($id = null)
@@ -66,13 +88,6 @@ class SolicitudesController extends AppController
 		$this->set(compact('solicitud', 'tipos', 'primerAsignado', 'segundoAsignado', 'autorizante', 'productorTecnico'));
 	}
 
-	/**
-	 * Delete method
-	 *
-	 * @param string|null $id Solicitude id.
-	 * @return \Cake\Http\Response|null Redirects to index.
-	 * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-	 */
 	public function delete($id = null)
 	{
 		$this->request->allowMethod(['post', 'delete']);

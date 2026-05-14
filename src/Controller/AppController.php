@@ -6,7 +6,6 @@ namespace SPC\Controller;
 use SPC\Model\Entity\Permiso;
 use SPC\Model\Entity\Usuario;
 use Cake\Controller\Controller;
-//use Cake\Datasource\EntityInterface;
 use Cake\Event\EventInterface;
 use Cake\I18n\DateTime;
 
@@ -22,7 +21,7 @@ class AppController extends Controller
 
 	protected const string LOGO = 'https://radio.uas.edu.mx/wp-content/images/logo.webp';
 
-	protected const string VERSION = '3.5.1';
+	protected const string VERSION = '3.5.2';
 
 	protected array $paginate = [
 		'limit' => 40,
@@ -67,6 +66,11 @@ class AppController extends Controller
 		$this->loadComponent('Flash');
 		$this->loadComponent('Authentication.Authentication');
 		//$this->loadComponent('FormProtection');
+	}
+
+	public static function getDateNow(): DateTime
+	{
+		return self::$datetime;
 	}
 }
 

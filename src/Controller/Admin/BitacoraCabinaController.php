@@ -28,7 +28,7 @@ class BitacoraCabinaController extends AppController
 		$this->set(compact('bitacora'));
 		return $this->render();
 	}
-
+	/*
 	public function reportes(): Response
 	{
 		$this->setViewVars();
@@ -66,9 +66,9 @@ class BitacoraCabinaController extends AppController
 	{
 		$programas = $this->ProgramsRepository
 			->find('list')
-			->orderAsc('name')
+			->orderByAsc('name')
 			->all();
-		$end = DateTime::now();
+		$end = clone parent::getDateNow();
 		$start = $end->addYears(-1);
 		$interval = new \DateInterval('P1M');
 		$period = new \DatePeriod($start, $interval, $end, \DatePeriod::INCLUDE_END_DATE);
@@ -82,7 +82,7 @@ class BitacoraCabinaController extends AppController
 
 		$this->set(compact('programas', 'meses'));
 	}
-
+*/
 	public function add()
 	{
 		$bitacora = $this->BitacoraCabina->newEmptyEntity();
@@ -98,14 +98,6 @@ class BitacoraCabinaController extends AppController
 		$this->set(compact('bitacora'));
 	}
 
-
-	/**
-	 * Delete method
-	 *
-	 * @param string|null $id Bitacora Cabina id.
-	 * @return \Cake\Http\Response|null Redirects to index.
-	 * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-	 */
 	public function delete($id = null)
 	{
 		$this->request->allowMethod(['post', 'delete']);

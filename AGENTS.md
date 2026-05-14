@@ -1,140 +1,57 @@
 # AGENTS.md
 
-## Project Information
+## Project: SPC (Sistema de Producción y Cabina)
 
-- This project uses **CakePHP 5.3.4**.
-- Target PHP version: **8.5.5**.
-- **No deprecated code** is permitted; use only non-deprecated APIs and practices for the specified versions.
+Radio UAS internal operations system. CakePHP 5.3.4 on PHP 8.5.
 
-## Coding Guidelines
+## Rules
 
-When generating code for this project, follow these rules strictly.
+- **Namespace**: `SPC` — never use `App`
+- **Not `App`**: `src/Controller/` uses `Cake\Controller\Controller`, and the project's namespace root is `SPC`.
+- **Layout from entity**: `AppController::beforeFilter()` sets the layout from `$user->permisos[0]->name`.
+- **CRITICAL**: `routes.php` and `src/Application.php` must NOT be modified — authentication configuration and routing live there. Changing either will break login/redirect/CSRF.
+- **Only modify**: templates (HTML/CSS/JS), controllers, models — NOT config/Application.php.
+- **Login page**: Root `/` maps to `templates/Pages/home.php` with layout `templates/layout/home.php`. Form POSTs to `Admin/Usuarios::auth`.
+- **Theme system**: Two CSS files (`github-midday.css`, `github-midnight.css`) using custom properties. Cookie `Theme` set server-side via `Admin/Usuarios::setTheme`.
+- **Never touch `$_COOKIE`**: use `$this->request->getCookie()` instead.
 
-### General Principles
-- Prefer **Object-Oriented Programming (OOP)**.
-- Follow **clean code** and **modern best practices**.
-- Write **clear, maintainable, and strongly typed code** whenever the language allows it.
-- Keep implementations simple and readable.
+## Commands
 
-### Language Conventions
-- All **identifiers must be written in English**:
-  - Variables
-  - Constants
-  - Properties
-  - Methods
-  - Classes
-  - Functions
-- Use **camelCase** for:
-  - variables
-  - methods
-  - functions
-  - properties
-- Use **PascalCase** for:
-  - class names
-
-Example:
-
-```php
-class UserRepository
-{
-    private DatabaseConnection $databaseConnection;
-
-    public function __construct(DatabaseConnection $databaseConnection)
-    {
-        $this->databaseConnection = $databaseConnection;
-    }
-
-    public function findUserById(int $userId): ?User
-    {
-        // Implementation
-    }
-}
-````
-
-### PHP Requirements
-
-When writing PHP code:
-
-* Use **strict typing**.
-
-```php
-declare(strict_types=1);
+```bash
+composer test           # phpunit
+composer cs-check       # phpcs
+composer cs-fix         # phpcbf
+composer stan           # phpstan analyse
+bin/cake migrations migrate
+bin/cake reset_stream   # reboot MediaCP stream (cron-friendly)
 ```
 
-* **No deprecated code**: Avoid all deprecated PHP 8.5.5 and CakePHP 5.3.4 features and APIs.
+## Architecture
 
-Everything in this project is under the namespace SPC, avoid using App
+- **Prefix routing**: `Admin/*` (authenticated panels), `Api/*` (REST, CSRF-skipped)
+- **Auth**: CakePHP Authentication plugin. `loginUrl` configured in `Application.php` as `['prefix' => 'Admin', 'controller' => 'Usuarios', 'action' => 'auth']`.
+- **Permisos** (Permissions): Each user has one or more permissions stored in `permisos` table. The `Permiso` entity has constants like `ADMINISTRATOR`, `CAPTURISTA`, `FONOTECARIO`.
+- **Layouts**: `home` (login), `administrador`, `capturista`, `programador`, `default`.
+- **Table finders**: Custom finders declared in Table classes (e.g. `findDiasFeriadosAsignados`, `findMaestrosAsignados`). Use matching/contain for complex queries.
 
-```php
-namespace SPC\Controller\Api;
-```
+## Conventions
 
-* Code must be **fully typed**:
+- DocBlocks in **Spanish** — method names in **English**
+- Fully typed (params, return, properties)
+- `declare(strict_types=1);` on every PHP file
+- One class per file, file name = class name
+- camelCase for vars/methods, PascalCase for classes
+- Models use CakePHP ORM conventions: table class = plural, entity class = singular
 
-  * Method parameters
-  * Return types
-  * Properties
+## Notable quirks
 
-Example:
+- **CSRF is skipped** only for `Api/` prefix — all admin POST requests require `_csrfToken`.
+- **`form.php` overrides**: CakePHP Form Helper overrides in `github-midday.css` (lines ~810) style inputs globally.
+- **Small dataset**: ~5 locutors, pagination default `limit: 40`.
+- **Custom DateTime** via `AppController::getDateNow()` — use this instead of `new DateTime()` for consistent "today" across the request.
+- **`<h5>` in `.page-header`**: these get gradient background + white uppercase text via CSS.
 
-```php
-private int $userId;
-```
+## Testing
 
-### File Structure
-
-* **One class per file**
-* File name must match the class name.
-
-Example:
-
-```
-UserService.php
-UserRepository.php
-DatabaseConnection.php
-```
-
-### Comments
-
-Avoid excessive or obvious comments.
-
-#### Inline comments
-
-* Use **short and simple comments**
-* Only when the logic is not immediately clear
-
-Example:
-
-```php
-// Prevent duplicate user creation
-```
-
-#### Method documentation (Required)
-
-Every method must include a **DocBlock in Spanish** describing what it does. Use **English** for the method name.
-Even when the description takes one line, use a minimum of three lines for the DocBlock.
-
-Example:
-
-```php
-/**
- * Obtiene un usuario a partir de su identificador.
- */
-public function findUserById(int $userId): ?User
-{
-}
-```
-
-### Summary of Mandatory Rules
-
-* OOP architecture
-* One class per file
-* English identifiers
-* camelCase naming
-* Fully typed code
-* `declare(strict_types=1);`
-* No deprecated code
-* Minimal inline comments
-* Spanish DocBlocks for every method
-
-```
+- PHPUnit with fixtures in `tests/Fixture/`.
+- Test files parallel the `src/` structure under `tests/TestCase/`.

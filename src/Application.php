@@ -126,7 +126,7 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
 			'identifier' => $identifier,
 			'cookie' => [
 				'name' => 'CookieAuth',
-				'expire' => new DateTime('+30 days'),
+				'expires' => new DateTime()->addDays(30),
 				'secure' => true,
 				'httponly' => true,
 				'samesite' => CookieInterface::SAMESITE_LAX,

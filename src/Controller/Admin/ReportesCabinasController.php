@@ -190,7 +190,7 @@ class ReportesCabinasController extends AppController
 			->find()
 			->select(['ID', 'name'])
 			->where(['reportable' => true])
-			->orderAsc('name')
+			->orderByAsc('name')
 			->contain('ReportesProgramas', function (SelectQuery $query) {
 				return $query
 					->select(['ID', 'programaID', 'status'])
@@ -307,7 +307,7 @@ class ReportesCabinasController extends AppController
 			->find('list')
 			->orderByAsc('name')
 			->all();
-		$end = DateTime::now();
+		$end = parent::getDateNow(); //DateTime::now();
 		$start = new DateTime(self::REPORTING_START_DATE);
 		$mInterval = DateTime::createInterval(months: 1);
 		$mPeriod = new \DatePeriod($start, $mInterval, $end, \DatePeriod::INCLUDE_END_DATE);
@@ -349,7 +349,7 @@ class ReportesCabinasController extends AppController
 
 	public function index()
 	{
-		$query = $this->ReportesCabinas->find()->orderDesc('bitacoraID')->orderAsc('horaInicio');
+		$query = $this->ReportesCabinas->find()->orderByDesc('bitacoraID')->orderByAsc('horaInicio');
 		$reportesCabinas = $this->paginate($query);
 		$this->set(compact('reportesCabinas'));
 	}

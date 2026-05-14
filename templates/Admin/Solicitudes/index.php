@@ -1,5 +1,6 @@
-<div class="page-header">
+<div class="page-header" style="display: flex; align-items: center; justify-content: space-between;">
     <h5><i class="fa-solid fa-folder-open"></i> Solicitudes</h5>
+    <?= $this->Html->link('<i class="fa-solid fa-magnifying-glass"></i> Buscar', ['action' => 'search'], ['class' => 'btn btn-outlined btn-pill', 'escapeTitle' => false, 'style' => 'background: #fff;']) ?>
 </div>
 
 <div class="content-card">
@@ -8,15 +9,13 @@
             <?php
             $typeIcon = match ($solicitud->tipoSolicitudID) {
                 1 => '<i class="fa-solid fa-file-waveform"></i>',
-                2 => '<i class="fa-solid fa-satellite-dish"></i>',
-                3 => '<i class="fa-solid fa-user-tie"></i>',
-                default => '<i class="fa-solid fa-file-lines"></i>'
+                2 => '<i class="fa-solid fa-user-tie"></i>',
+                3 => '<i class="fa-solid fa-satellite-dish"></i>',
             };
             $typeColor = match ($solicitud->tipoSolicitudID) {
                 1 => 'var(--color-cosmic-violet)',
                 2 => 'var(--color-vapor-trail-blue)',
                 3 => 'var(--color-spring-green)',
-                default => 'var(--color-ui-gray)'
             };
             ?>
             <li class="solicitud-item" style="border-left-color: <?= $typeColor ?>;">
@@ -74,17 +73,10 @@
 
                 <div class="solicitud-foot">
                     <div>
-                        <?php if ($solicitud->tipoSolicitudID == 1): ?>
-                            <?= $solicitud->getStatus() ?>
-                        <?php endif; ?>
+                        <?php //= $solicitud->getStatus() ?>
                     </div>
                     <div>
-                        <?php if (in_array($solicitud->tipoSolicitudID, [1, 2])): ?>
-                            <?= $solicitud->aceptado
-                                ? '<span class="accepted"><i class="fa-solid fa-check-circle"></i> Aceptado</span>'
-                                : '<span class="pending"><i class="fa-solid fa-circle-xmark"></i> Pendiente</span>'
-                                ?>
-                        <?php endif; ?>
+                        <?= $solicitud->getStatus() ?>
                     </div>
                 </div>
             </li>

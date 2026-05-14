@@ -7,6 +7,7 @@ use SPC\Controller\AppController;
 use Authentication\Authenticator\ResultInterface;
 use Cake\Event\EventInterface;
 use Cake\Http\Cookie\Cookie;
+use Cake\Http\Cookie\CookieInterface;
 use Cake\Http\Response;
 use Cake\Mailer\MailerAwareTrait;
 
@@ -28,7 +29,16 @@ class UsuariosController extends AppController
 
 		if ($result->isValid()) {
 			if (!$this->request->getCookie('Theme')) {
-				$this->response = $this->response->withCookie(new Cookie('Theme', 'midday', parent::$datetime->addDays(30)));
+				$this->response = $this->response->withCookie(
+					new Cookie(
+						name: 'Theme',
+						value: 'midday',
+						expiresAt: parent::$datetime->addDays(30),
+						sameSite: CookieInterface::SAMESITE_LAX,
+						httpOnly: false,
+						secure: true,
+					)
+				);
 			}
 			return $this->Authentication->redirectAfterLogin();
 		}
@@ -80,7 +90,16 @@ class UsuariosController extends AppController
 	public function setTheme(): Response
 	{
 		$theme = $this->request->getData('theme');
-		$this->response = $this->response->withCookie(new Cookie('Theme', $theme, parent::$datetime->addDays(30)));
+		$this->response = $this->response->withCookie(
+			new Cookie(
+				name: 'Theme',
+				value: $theme,
+				expiresAt: parent::$datetime->addDays(30),
+				sameSite: CookieInterface::SAMESITE_LAX,
+				httpOnly: false,
+				secure: true,
+			)
+		);
 		return $this->redirect($this->request->referer());
 	}
 

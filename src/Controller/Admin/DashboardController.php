@@ -104,15 +104,20 @@ class DashboardController extends AppController
             ]));
     }
 
-    public function getPendingRequests(): Response
-    {
-        $this->disableAutoRender();
+	public function getPendingRequests(): Response
+	{
+		$this->disableAutoRender();
 
-        $count = $this->getTableLocator()->get('Solicitudes')->find('pending')->count();
+		$stats = $this->getTableLocator()->get('Solicitudes')->find('pending')->all()->toArray()[0];
+		$total = (int) ($stats['UnrecordedSpots'] ?? 0) + (int) ($stats['UnnacceptedCeremonyMasters'] ?? 0);
 
-        return $this->response->withType('json')
-            ->withStringBody(json_encode(['pending' => $count]));
-    }
+		return $this->response->withType('json')
+			->withStringBody(json_encode([
+				'total' => $total,
+				'UnrecordedSpots' => (int) ($stats['UnrecordedSpots'] ?? 0),
+				'UnnacceptedCeremonyMasters' => (int) ($stats['UnnacceptedCeremonyMasters'] ?? 0),
+			]));
+	}
 
     public function getOpenIncidences(): Response
     {

@@ -202,9 +202,17 @@
         loadCard('<?= $this->Url->build(['controller' => 'Dashboard', 'action' => 'getPendingRequests']) ?>', 'card-solicitudes', (data, c) => `
         <h5><i class="fa-solid fa-folder-open"></i> Solicitudes Pendientes</h5>
         <div style="padding: var(--spacing-16) 0;">
-            <div style="font-size: 2.5rem; font-weight: bold; color: ${data.pending > 0 ? c.warning : c.success};">${data.pending}</div>
-            <div style="color: ${c.text};">sin atender</div>
-            ${data.pending > 0 ? `<a href="<?= $this->Url->build(['controller' => 'Solicitudes', 'status' => 'pendiente']) ?>" style="color: ${c.primary}; margin-top: var(--spacing-16); display: block;">
+            <div style="font-size: 2.5rem; font-weight: bold; color: ${data.total > 0 ? c.warning : c.success};">${data.total}</div>
+            <div style="color: ${c.text}; margin-bottom: var(--spacing-8);">sin atender</div>
+            <div style="font-size: 0.9rem;">
+                ${data.UnrecordedSpots > 0 ? `<div style="color: ${c.danger}; margin-bottom: var(--spacing-4);">
+                    <i class="fa-solid fa-circle"></i> ${data.UnrecordedSpots} grabaciones pendientes
+                </div>` : ''}
+                ${data.UnnacceptedCeremonyMasters > 0 ? `<div style="color: ${c.warning};">
+                    <i class="fa-solid fa-circle"></i> ${data.UnnacceptedCeremonyMasters} MC sin aceptar
+                </div>` : ''}
+            </div>
+            ${data.total > 0 ? `<a href="<?= $this->Url->build(['controller' => 'Solicitudes', 'status' => 'pendiente']) ?>" style="color: ${c.primary}; margin-top: var(--spacing-16); display: block;">
                 <i class="fa-solid fa-arrow-right"></i> Ver solicitudes
             </a>` : ''}
         </div>

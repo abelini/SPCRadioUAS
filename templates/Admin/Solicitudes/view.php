@@ -84,3 +84,26 @@
         <?= $this->Form->deleteLink('<i class="fa-regular fa-trash-can"></i> Eliminar', ['action' => 'delete', $solicitud->ID], ['confirm' => '¿Estás seguro de eliminar esta solicitud?', 'class' => 'btn btn-danger', 'escapeTitle' => false]) ?>
     </div>
 </div>
+
+<div id="back-btn" style="display: none; text-align: center; margin-top: var(--spacing-24);">
+    <a href="#" style="display: inline-flex; align-items: center; gap: var(--spacing-8); padding: var(--spacing-12) var(--spacing-24); background: var(--color-polar-blue); color: #fff; border-radius: var(--radius-pill); text-decoration: none; font-weight: var(--font-weight-medium); transition: background 0.2s;" onmouseover="this.style.background='#0550ae'" onmouseout="this.style.background='var(--color-polar-blue)'" onclick="goBack()">
+        <i class="fa-solid fa-arrow-left"></i> Volver a resultados
+    </a>
+</div>
+
+<script>
+(function() {
+    const saved = sessionStorage.getItem('searchQuery');
+    if (saved) {
+        document.getElementById('back-btn').style.display = 'flex';
+    }
+})();
+
+function goBack() {
+    const q = sessionStorage.getItem('searchQuery');
+    if (q) {
+        sessionStorage.removeItem('searchQuery');
+        window.location.href = '<?= $this->Url->build(['action' => 'search']) ?>?q=' + encodeURIComponent(q);
+    }
+}
+</script>
