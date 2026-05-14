@@ -22,9 +22,9 @@ class DeviceDetectorService
         '/Lavf/i' => 'FFmpeg / Lavf (Reproductor/Stream)',
         '/ORB HisBot/i' => 'Online Radio Box Bot',
         '/Go-http-client/i' => 'Go HTTP Client (Bot)',
-        '/RadioUAS-Android/i' => 'RadioUAS Android App',
-        '/RadioUAS-iOS/i' => 'RadioUAS iOS App',
-        '/RadioUAS-Alexa/i' => 'RadioUAS Alexa Skill',
+        '/RadioUAS Android/i' => 'RadioUAS Android App',
+        '/RadioUAS iOS/i' => 'RadioUAS iOS App',
+        '/RadioUAS Alexa/i' => 'RadioUAS Alexa Skill',
     ];
 
     /**
