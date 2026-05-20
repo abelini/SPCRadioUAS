@@ -6,6 +6,7 @@ namespace SPC\Controller\Admin;
 use SPC\Controller\AppController;
 use SPC\Model\Entity\Programa;
 use SPC\Model\Entity\ReportesPrograma;
+use Cake\Cache\Cache;
 use Cake\I18n\DateTime;
 use Cake\ORM\Query\SelectQuery;
 
@@ -89,6 +90,10 @@ class ProgramasController extends AppController
 		$programa = $this->Programas->get($id, admin: true, contain: ['Dias']);
 		if ($this->request->is(['patch', 'post', 'put'])) {
 			$programa = $this->Programas->patchEntity($programa, $this->request->getData());
+			//Borrar cache de la API cuando se edite el programa
+			$cacheKey = 'programa_info_' . md5(strtolower(trim($programa->name)));
+			Cache::delete($cacheKey, 'programas_api');
+
 			if ($this->Programas->save($programa)) {
 				$this->Flash->success(__('The programa has been saved.'));
 

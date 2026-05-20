@@ -100,6 +100,13 @@ return [
             'path' => CACHE,
             'url' => env('CACHE_DEFAULT_URL', null),
         ],
+        
+        'programas_api' => [
+            'className' => FileEngine::class,
+            'path' => CACHE,
+            'duration' => '+7 days',
+            'prefix' => 'programas_api_',
+        ],
 
         /*
          * Configure the cache used for general framework caching.
