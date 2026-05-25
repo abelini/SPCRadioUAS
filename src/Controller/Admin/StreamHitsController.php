@@ -16,6 +16,33 @@ use SPC\Service\DeviceDetectorService;
 class StreamHitsController extends AppController
 {
     private const int DEFAULT_BACK_DAYS = 7;
+
+    private DateTime $from;
+
+    private DateTime $to;
+
+    public function initialize(): void
+    {
+        parent::initialize();
+
+        try {
+            $from = $this->request->getQuery('from');
+            $to = $this->request->getQuery('to');
+
+            $this->from = $from
+                ? DateTime::createFromFormat('Y-m-d', $from)
+                : new DateTime()->subDays(self::DEFAULT_BACK_DAYS);
+            $this->to = $to
+                ? DateTime::createFromFormat('Y-m-d', $to)
+                : new DateTime();
+        } catch (\DateMalformedStringException $e) {
+            $this->from = (new DateTime())->subDays(self::DEFAULT_BACK_DAYS);
+            $this->to = DateTime::now();
+        }
+    }
+
+
+
     /**
      * Index method
      *
@@ -26,15 +53,8 @@ class StreamHitsController extends AppController
      */
     public function index(): Response
     {
-        $fromParam = $this->request->getQuery('from');
-        $toParam = $this->request->getQuery('to');
-
-        $from = $fromParam
-            ? DateTime::createFromFormat('Y-m-d', $fromParam)
-            : new DateTime()->subDays(self::DEFAULT_BACK_DAYS);
-        $to = $toParam
-            ? DateTime::createFromFormat('Y-m-d', $toParam)
-            : new DateTime();
+        $from = $this->from;
+        $to = $this->to;
 
         $formatLabel = ['mp3' => 'AUDIO', 'hls' => 'VIDEO', 'm3u8' => 'VIDEO'];
         $refererLabel = ['android' => 'Android', 'ios' => 'iOS'];
@@ -50,14 +70,14 @@ class StreamHitsController extends AppController
     public function apiSummary(): Response
     {
         $this->disableAutoRender();
-        try {
+        /*try {
             $from = DateTime::createFromFormat('Y-m-d', $this->request->getQuery('from')) ?? new DateTime()->subDays(self::DEFAULT_BACK_DAYS);
             $to = DateTime::createFromFormat('Y-m-d', $this->request->getQuery('to')) ?? DateTime::now();
         } catch (\DateMalformedStringException $e) {
             $from = (new DateTime())->subDays(self::DEFAULT_BACK_DAYS);
             $to = DateTime::now();
-        }
-        $data = $this->StreamHits->getSummaryStats($from, $to);
+        }*/
+        $data = $this->StreamHits->getSummaryStats($this->from, $this->to);
 
         return $this->response->withType('json')->withStringBody(json_encode($data));
     }
@@ -69,10 +89,10 @@ class StreamHitsController extends AppController
     {
         $this->disableAutoRender();
 
-        $from = DateTime::createFromFormat('Y-m-d', $this->request->getQuery('from') ?? (new DateTime('-30 days'))->format('Y-m-d'));
-        $to = DateTime::createFromFormat('Y-m-d', $this->request->getQuery('to') ?? (new DateTime())->format('Y-m-d'));
+        /*$from = DateTime::createFromFormat('Y-m-d', $this->request->getQuery('from') ?? (new DateTime('-30 days'))->format('Y-m-d'));
+        $to = DateTime::createFromFormat('Y-m-d', $this->request->getQuery('to') ?? (new DateTime())->format('Y-m-d'));*/
 
-        $data = $this->StreamHits->getChartsData($from, $to);
+        $data = $this->StreamHits->getChartsData($this->from, $this->to);
 
         return $this->response->withType('json')->withStringBody(json_encode($data));
     }
@@ -84,10 +104,10 @@ class StreamHitsController extends AppController
     {
         $this->disableAutoRender();
 
-        $from = $this->request->getQuery('from') ?? (new DateTime('-30 days'))->format('Y-m-d');
-        $to = $this->request->getQuery('to') ?? (new DateTime())->format('Y-m-d');
+        /*$from = $this->request->getQuery('from') ?? (new DateTime('-30 days'))->format('Y-m-d');
+        $to = $this->request->getQuery('to') ?? (new DateTime())->format('Y-m-d');*/
 
-        $data = $this->StreamHits->getTopsData($from, $to);
+        $data = $this->StreamHits->getTopsData($this->from, $this->to);
 
         $UAFinder = new DeviceDetectorService();
 
@@ -103,10 +123,10 @@ class StreamHitsController extends AppController
     {
         $this->disableAutoRender();
 
-        $from = $this->request->getQuery('from') ?? (new DateTime('-30 days'))->format('Y-m-d');
-        $to = $this->request->getQuery('to') ?? (new DateTime())->format('Y-m-d');
+        /*$from = $this->request->getQuery('from') ?? (new DateTime('-30 days'))->format('Y-m-d');
+        $to = $this->request->getQuery('to') ?? (new DateTime())->format('Y-m-d');*/
 
-        $data = $this->StreamHits->getGeoData($from, $to);
+        $data = $this->StreamHits->getGeoData($this->from, $this->to);
 
         return $this->response->withType('json')->withStringBody(json_encode($data));
     }
@@ -133,84 +153,4 @@ class StreamHitsController extends AppController
         return $userAgents;
     }
 
-    /**
-     * View method
-     *
-     * @param string|null $id Stream Hit id.
-     * @return \Cake\Http\Response|null|void Renders view
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function view($id = null): Response
-    {
-        $streamHit = $this->StreamHits->get($id, contain: []);
-        $this->set(compact('streamHit'));
-
-        return $this->render();
-    }
-
-    /**
-     * Add method
-     *
-     * @return \Cake\Http\Response|null|void Redirects on successful add, renders view otherwise.
-     */
-    public function add(): Response
-    {
-        $streamHit = $this->StreamHits->newEmptyEntity();
-        if ($this->request->is('post')) {
-            $streamHit = $this->StreamHits->patchEntity($streamHit, $this->request->getData());
-            if ($this->StreamHits->save($streamHit)) {
-                $this->Flash->success(__('The stream hit has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The stream hit could not be saved. Please, try again.'));
-        }
-        $this->set(compact('streamHit'));
-
-        return $this->render();
-    }
-
-    /**
-     * Edit method
-     *
-     * @param string|null $id Stream Hit id.
-     * @return \Cake\Http\Response|null|void Redirects on successful edit, renders view otherwise.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function edit($id = null): Response
-    {
-        $streamHit = $this->StreamHits->get($id, contain: []);
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $streamHit = $this->StreamHits->patchEntity($streamHit, $this->request->getData());
-            if ($this->StreamHits->save($streamHit)) {
-                $this->Flash->success(__('The stream hit has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The stream hit could not be saved. Please, try again.'));
-        }
-        $this->set(compact('streamHit'));
-
-        return $this->render();
-    }
-
-    /**
-     * Delete method
-     *
-     * @param string|null $id Stream Hit id.
-     * @return \Cake\Http\Response|null Redirects to index.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function delete($id = null): Response
-    {
-        $this->request->allowMethod(['post', 'delete']);
-        $streamHit = $this->StreamHits->get($id);
-        if ($this->StreamHits->delete($streamHit)) {
-            $this->Flash->success(__('The stream hit has been deleted.'));
-        } else {
-            $this->Flash->error(__('The stream hit could not be deleted. Please, try again.'));
-        }
-
-        return $this->redirect(['action' => 'index']);
-    }
 }

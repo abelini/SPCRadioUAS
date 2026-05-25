@@ -122,17 +122,17 @@ class StreamHitsTable extends Table
     /**
      * Devuelve datos para gráficas
      */
-    public function getChartsData(string $from, string $to): array
+    public function getChartsData(DateTime $from, DateTime $to): array
     {
         $conn = $this->getConnection();
 
-        $byFormat = $conn->execute('SELECT format, COUNT(*) as total FROM stream_hits WHERE created BETWEEN ? AND ? GROUP BY format ORDER BY total DESC LIMIT 10', [$from . ' 00:00:00', $to])->fetchAll('assoc');
-        $byDay = $conn->execute('SELECT DATE(created) as day, format, COUNT(*) as total FROM stream_hits WHERE created BETWEEN ? AND ? GROUP BY day, format ORDER BY day ASC LIMIT 14', [$from . ' 00:00:00', $to])->fetchAll('assoc');
-        $byHour = $conn->execute('SELECT HOUR(created) as hour, COUNT(*) as total FROM stream_hits WHERE created BETWEEN ? AND ? GROUP BY hour ORDER BY hour ASC', [$from . ' 00:00:00', $to])->fetchAll('assoc');
+        $byFormat = $conn->execute('SELECT format, COUNT(*) as total FROM stream_hits WHERE created BETWEEN ? AND ? GROUP BY format ORDER BY total DESC LIMIT 10', [$from->format('Y-m-d H:i:s'), $to->format('Y-m-d H:i:s')])->fetchAll('assoc');
+        $byDay = $conn->execute('SELECT DATE(created) as day, format, COUNT(*) as total FROM stream_hits WHERE created BETWEEN ? AND ? GROUP BY day, format ORDER BY day ASC LIMIT 14', [$from->format('Y-m-d H:i:s'), $to->format('Y-m-d H:i:s')])->fetchAll('assoc');
+        $byHour = $conn->execute('SELECT HOUR(created) as hour, COUNT(*) as total FROM stream_hits WHERE created BETWEEN ? AND ? GROUP BY hour ORDER BY hour ASC', [$from->format('Y-m-d H:i:s'), $to->format('Y-m-d H:i:s')])->fetchAll('assoc');
 
         $audioVsVideo = $conn->execute(
             'SELECT DATE(created) as day, SUM(CASE WHEN format = "mp3" THEN 1 ELSE 0 END) as audio, SUM(CASE WHEN format IN ("hls", "m3u8") THEN 1 ELSE 0 END) as video FROM stream_hits WHERE created BETWEEN ? AND ? GROUP BY day ORDER BY day ASC LIMIT 14',
-            [$from . ' 00:00:00', $to]
+            [$from->format('Y-m-d H:i:s'), $to->format('Y-m-d H:i:s')]
         )->fetchAll('assoc');
 
         return compact('byFormat', 'byDay', 'byHour', 'audioVsVideo');
@@ -141,14 +141,14 @@ class StreamHitsTable extends Table
     /**
      * Devuelve datos de tops
      */
-    public function getTopsData(string $from, string $to): array
+    public function getTopsData(DateTime $from, DateTime $to): array
     {
         $conn = $this->getConnection();
 
-        $topDomains = $conn->execute('SELECT referer, COUNT(*) as total FROM stream_hits WHERE created BETWEEN ? AND ? AND refererType = "domain" GROUP BY referer ORDER BY total DESC LIMIT 15', [$from . ' 00:00:00', $to])->fetchAll('assoc');
-        $topApps = $conn->execute('SELECT referer, COUNT(*) as total FROM stream_hits WHERE created BETWEEN ? AND ? AND refererType = "app" GROUP BY referer ORDER BY total DESC LIMIT 15', [$from . ' 00:00:00', $to])->fetchAll('assoc');
-        $topCountries = $conn->execute('SELECT country, countryCode, COUNT(*) as total FROM stream_hits WHERE created BETWEEN ? AND ? AND country IS NOT NULL AND country != "" GROUP BY countryCode ORDER BY total DESC LIMIT 15', [$from . ' 00:00:00', $to])->fetchAll('assoc');
-        $topUserAgents = $conn->execute('SELECT userAgent, COUNT(*) as total FROM stream_hits WHERE created BETWEEN ? AND ? GROUP BY userAgent ORDER BY total DESC LIMIT 20', [$from . ' 00:00:00', $to])->fetchAll('assoc');
+        $topDomains = $conn->execute('SELECT referer, COUNT(*) as total FROM stream_hits WHERE created BETWEEN ? AND ? AND refererType = "domain" GROUP BY referer ORDER BY total DESC LIMIT 15', [$from->format('Y-m-d H:i:s'), $to->format('Y-m-d H:i:s')])->fetchAll('assoc');
+        $topApps = $conn->execute('SELECT referer, COUNT(*) as total FROM stream_hits WHERE created BETWEEN ? AND ? AND refererType = "app" GROUP BY referer ORDER BY total DESC LIMIT 15', [$from->format('Y-m-d H:i:s'), $to->format('Y-m-d H:i:s')])->fetchAll('assoc');
+        $topCountries = $conn->execute('SELECT country, countryCode, COUNT(*) as total FROM stream_hits WHERE created BETWEEN ? AND ? AND country IS NOT NULL AND country != "" GROUP BY countryCode ORDER BY total DESC LIMIT 15', [$from->format('Y-m-d H:i:s'), $to->format('Y-m-d H:i:s')])->fetchAll('assoc');
+        $topUserAgents = $conn->execute('SELECT userAgent, COUNT(*) as total FROM stream_hits WHERE created BETWEEN ? AND ? GROUP BY userAgent ORDER BY total DESC LIMIT 20', [$from->format('Y-m-d H:i:s'), $to->format('Y-m-d H:i:s')])->fetchAll('assoc');
 
         return compact('topDomains', 'topApps', 'topCountries', 'topUserAgents');
     }
@@ -156,7 +156,7 @@ class StreamHitsTable extends Table
     /**
      * Devuelve datos geográficos agrupados por ciudad
      */
-    public function getGeoData(string $from, string $to): array
+    public function getGeoData(DateTime $from, DateTime $to): array
     {
         $conn = $this->getConnection();
 
@@ -167,7 +167,7 @@ class StreamHitsTable extends Table
              WHERE created BETWEEN ? AND ? AND lat IS NOT NULL AND lon IS NOT NULL AND city IS NOT NULL 
              GROUP BY LOWER(TRIM(city)), country, countryCode 
              ORDER BY total DESC LIMIT 100',
-            [$from . ' 00:00:00', $to]
+            [$from->format('Y-m-d H:i:s'), $to->format('Y-m-d H:i:s')]
         )->fetchAll('assoc');
     }
 
