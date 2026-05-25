@@ -30,14 +30,14 @@ class StreamHitsController extends AppController
             $to = $this->request->getQuery('to');
 
             $this->from = $from
-                ? DateTime::createFromFormat('Y-m-d', $from)
-                : new DateTime()->subDays(self::DEFAULT_BACK_DAYS);
+                ? DateTime::createFromFormat('Y-m-d', $from)->setTime(0, 0, 0, 0)
+                : new DateTime()->subDays(self::DEFAULT_BACK_DAYS)->setTime(0, 0, 0, 0);
             $this->to = $to
-                ? DateTime::createFromFormat('Y-m-d', $to)
-                : new DateTime();
+                ? DateTime::createFromFormat('Y-m-d', $to)->setTime(23, 59, 59, 999)
+                : new DateTime()->setTime(23, 59, 59, 999);
         } catch (\DateMalformedStringException $e) {
-            $this->from = (new DateTime())->subDays(self::DEFAULT_BACK_DAYS);
-            $this->to = DateTime::now();
+            $this->from = (new DateTime())->subDays(self::DEFAULT_BACK_DAYS)->setTime(0, 0, 0, 0);
+            $this->to = DateTime::now()->setTime(23, 59, 59, 999);
         }
     }
 

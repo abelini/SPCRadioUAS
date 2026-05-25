@@ -81,8 +81,9 @@ class StreamHitsTable extends Table
 
         if (in_array('hitsToday', $requestedFields)) {
             $result['hitsToday'] = (int) ($conn->execute(
-                'SELECT COUNT(*) as cnt FROM stream_hits WHERE created >= ?',
-                [$today]
+                'SELECT COUNT(*) as cnt FROM stream_hits WHERE created >= :created',
+                ['created' => DateTime::now()],
+                ['created' => 'datetime']
             )->fetch('assoc')['cnt'] ?? 0);
         }
 
