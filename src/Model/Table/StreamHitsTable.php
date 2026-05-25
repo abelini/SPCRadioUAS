@@ -58,8 +58,8 @@ class StreamHitsTable extends Table
         $format = 'Y-m-d H:i:s';
         $conn = $this->getConnection();
         $today = new DateTime()->format($format);
-        $from = $from->format($format);
-        $to = $to->format($format);
+        //$from = $from->format($format);
+        //$to = $to->format($format);
         $result = [];
 
         $defaultFields = ['totalHits', 'uniqueReferers', 'hitsToday', 'uniqueIpsToday', 'topFormat', 'topCountry', 'maxDay'];
@@ -67,51 +67,57 @@ class StreamHitsTable extends Table
 
         if (in_array('totalHits', $requestedFields)) {
             $result['totalHits'] = (int) ($conn->execute(
-                'SELECT COUNT(*) as cnt FROM stream_hits WHERE created BETWEEN ? AND ?',
-                [$from, $to]
+                'SELECT COUNT(*) as cnt FROM stream_hits WHERE created BETWEEN :from AND :to',
+                ['from' => $from, 'to' => $to],
+                ['from' => 'datetime', 'to' => 'datetime']
             )->fetch('assoc')['cnt'] ?? 0);
         }
 
         if (in_array('uniqueReferers', $requestedFields)) {
             $result['uniqueReferers'] = (int) ($conn->execute(
-                'SELECT COUNT(DISTINCT referer) as cnt FROM stream_hits WHERE created BETWEEN ? AND ?',
-                [$from, $to]
+                'SELECT COUNT(DISTINCT referer) as cnt FROM stream_hits WHERE created BETWEEN :from AND :to',
+                ['from' => $from, 'to' => $to],
+                ['from' => 'datetime', 'to' => 'datetime']
             )->fetch('assoc')['cnt'] ?? 0);
         }
 
         if (in_array('hitsToday', $requestedFields)) {
             $result['hitsToday'] = (int) ($conn->execute(
                 'SELECT COUNT(*) as cnt FROM stream_hits WHERE created >= :created',
-                ['created' => DateTime::now()],
+                ['created' => new DateTime()->setTime(0, 0, 0, 0)],
                 ['created' => 'datetime']
             )->fetch('assoc')['cnt'] ?? 0);
         }
 
         if (in_array('uniqueIpsToday', $requestedFields)) {
             $result['uniqueIpsToday'] = (int) ($conn->execute(
-                'SELECT COUNT(DISTINCT ip) as cnt FROM stream_hits WHERE created >= ?',
-                [$today]
+                'SELECT COUNT(DISTINCT ip) as cnt FROM stream_hits WHERE created >= :created',
+                ['created' => new DateTime()->setTime(0, 0, 0, 0)],
+                ['created' => 'datetime']
             )->fetch('assoc')['cnt'] ?? 0);
         }
 
         if (in_array('topFormat', $requestedFields)) {
             $result['topFormat'] = $conn->execute(
-                'SELECT format, COUNT(*) as cnt FROM stream_hits WHERE created BETWEEN ? AND ? GROUP BY format ORDER BY cnt DESC LIMIT 1',
-                [$from, $to]
+                'SELECT format, COUNT(*) as cnt FROM stream_hits WHERE created BETWEEN :from AND :to GROUP BY format ORDER BY cnt DESC LIMIT 1',
+                ['from' => $from, 'to' => $to],
+                ['from' => 'datetime', 'to' => 'datetime']
             )->fetch('assoc') ?: [];
         }
 
         if (in_array('topCountry', $requestedFields)) {
             $result['topCountry'] = $conn->execute(
-                'SELECT country, countryCode, COUNT(*) as cnt FROM stream_hits WHERE created BETWEEN ? AND ? AND country IS NOT NULL AND country != "" GROUP BY countryCode ORDER BY cnt DESC LIMIT 1',
-                [$from, $to]
+                'SELECT country, countryCode, COUNT(*) as cnt FROM stream_hits WHERE created BETWEEN :from AND :to AND country IS NOT NULL AND country != "" GROUP BY countryCode ORDER BY cnt DESC LIMIT 1',
+                ['from' => $from, 'to' => $to],
+                ['from' => 'datetime', 'to' => 'datetime']
             )->fetch('assoc') ?: [];
         }
 
         if (in_array('maxDay', $requestedFields)) {
             $maxDayRow = $conn->execute(
-                'SELECT DATE(created) as day, COUNT(*) as cnt FROM stream_hits WHERE created BETWEEN ? AND ? GROUP BY DATE(created) ORDER BY cnt DESC LIMIT 1',
-                [$from, $to]
+                'SELECT DATE(created) as day, COUNT(*) as cnt FROM stream_hits WHERE created BETWEEN :from AND :to GROUP BY DATE(created) ORDER BY cnt DESC LIMIT 1',
+                ['from' => $from, 'to' => $to],
+                ['from' => 'datetime', 'to' => 'datetime']
             )->fetch('assoc');
             $dayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
             $result['maxDay'] = $maxDayRow ? $dayNames[(new DateTime($maxDayRow['day']))->format('w')] : null;
@@ -127,13 +133,14 @@ class StreamHitsTable extends Table
     {
         $conn = $this->getConnection();
 
-        $byFormat = $conn->execute('SELECT format, COUNT(*) as total FROM stream_hits WHERE created BETWEEN ? AND ? GROUP BY format ORDER BY total DESC LIMIT 10', [$from->format('Y-m-d H:i:s'), $to->format('Y-m-d H:i:s')])->fetchAll('assoc');
-        $byDay = $conn->execute('SELECT DATE(created) as day, format, COUNT(*) as total FROM stream_hits WHERE created BETWEEN ? AND ? GROUP BY day, format ORDER BY day ASC LIMIT 14', [$from->format('Y-m-d H:i:s'), $to->format('Y-m-d H:i:s')])->fetchAll('assoc');
-        $byHour = $conn->execute('SELECT HOUR(created) as hour, COUNT(*) as total FROM stream_hits WHERE created BETWEEN ? AND ? GROUP BY hour ORDER BY hour ASC', [$from->format('Y-m-d H:i:s'), $to->format('Y-m-d H:i:s')])->fetchAll('assoc');
+        $byFormat = $conn->execute('SELECT format, COUNT(*) as total FROM stream_hits WHERE created BETWEEN :from AND :to GROUP BY format ORDER BY total DESC LIMIT 10', ['from' => $from, 'to' => $to], ['from' => 'datetime', 'to' => 'datetime'])->fetchAll('assoc');
+        $byDay = $conn->execute('SELECT DATE(created) as day, format, COUNT(*) as total FROM stream_hits WHERE created BETWEEN :from AND :to GROUP BY day, format ORDER BY day ASC LIMIT 14', ['from' => $from, 'to' => $to], ['from' => 'datetime', 'to' => 'datetime'])->fetchAll('assoc');
+        $byHour = $conn->execute('SELECT HOUR(created) as hour, COUNT(*) as total FROM stream_hits WHERE created BETWEEN :from AND :to GROUP BY hour ORDER BY hour ASC', ['from' => $from, 'to' => $to], ['from' => 'datetime', 'to' => 'datetime'])->fetchAll('assoc');
 
         $audioVsVideo = $conn->execute(
-            'SELECT DATE(created) as day, SUM(CASE WHEN format = "mp3" THEN 1 ELSE 0 END) as audio, SUM(CASE WHEN format IN ("hls", "m3u8") THEN 1 ELSE 0 END) as video FROM stream_hits WHERE created BETWEEN ? AND ? GROUP BY day ORDER BY day ASC LIMIT 14',
-            [$from->format('Y-m-d H:i:s'), $to->format('Y-m-d H:i:s')]
+            'SELECT DATE(created) as day, SUM(CASE WHEN format = "mp3" THEN 1 ELSE 0 END) as audio, SUM(CASE WHEN format IN ("hls", "m3u8") THEN 1 ELSE 0 END) as video FROM stream_hits WHERE created BETWEEN :from AND :to GROUP BY day ORDER BY day ASC LIMIT 14',
+            ['from' => $from, 'to' => $to],
+            ['from' => 'datetime', 'to' => 'datetime']
         )->fetchAll('assoc');
 
         return compact('byFormat', 'byDay', 'byHour', 'audioVsVideo');
@@ -146,10 +153,10 @@ class StreamHitsTable extends Table
     {
         $conn = $this->getConnection();
 
-        $topDomains = $conn->execute('SELECT referer, COUNT(*) as total FROM stream_hits WHERE created BETWEEN ? AND ? AND refererType = "domain" GROUP BY referer ORDER BY total DESC LIMIT 15', [$from->format('Y-m-d H:i:s'), $to->format('Y-m-d H:i:s')])->fetchAll('assoc');
-        $topApps = $conn->execute('SELECT referer, COUNT(*) as total FROM stream_hits WHERE created BETWEEN ? AND ? AND refererType = "app" GROUP BY referer ORDER BY total DESC LIMIT 15', [$from->format('Y-m-d H:i:s'), $to->format('Y-m-d H:i:s')])->fetchAll('assoc');
-        $topCountries = $conn->execute('SELECT country, countryCode, COUNT(*) as total FROM stream_hits WHERE created BETWEEN ? AND ? AND country IS NOT NULL AND country != "" GROUP BY countryCode ORDER BY total DESC LIMIT 15', [$from->format('Y-m-d H:i:s'), $to->format('Y-m-d H:i:s')])->fetchAll('assoc');
-        $topUserAgents = $conn->execute('SELECT userAgent, COUNT(*) as total FROM stream_hits WHERE created BETWEEN ? AND ? GROUP BY userAgent ORDER BY total DESC LIMIT 20', [$from->format('Y-m-d H:i:s'), $to->format('Y-m-d H:i:s')])->fetchAll('assoc');
+        $topDomains = $conn->execute('SELECT referer, COUNT(*) as total FROM stream_hits WHERE created BETWEEN :from AND :to AND refererType = "domain" GROUP BY referer ORDER BY total DESC LIMIT 15', ['from' => $from, 'to' => $to], ['from' => 'datetime', 'to' => 'datetime'])->fetchAll('assoc');
+        $topApps = $conn->execute('SELECT referer, COUNT(*) as total FROM stream_hits WHERE created BETWEEN :from AND :to AND refererType = "app" GROUP BY referer ORDER BY total DESC LIMIT 15', ['from' => $from, 'to' => $to], ['from' => 'datetime', 'to' => 'datetime'])->fetchAll('assoc');
+        $topCountries = $conn->execute('SELECT country, countryCode, COUNT(*) as total FROM stream_hits WHERE created BETWEEN :from AND :to AND country IS NOT NULL AND country != "" GROUP BY countryCode ORDER BY total DESC LIMIT 15', ['from' => $from, 'to' => $to], ['from' => 'datetime', 'to' => 'datetime'])->fetchAll('assoc');
+        $topUserAgents = $conn->execute('SELECT userAgent, COUNT(*) as total FROM stream_hits WHERE created BETWEEN :from AND :to GROUP BY userAgent ORDER BY total DESC LIMIT 20', ['from' => $from, 'to' => $to], ['from' => 'datetime', 'to' => 'datetime'])->fetchAll('assoc');
 
         return compact('topDomains', 'topApps', 'topCountries', 'topUserAgents');
     }
@@ -165,10 +172,11 @@ class StreamHitsTable extends Table
             'SELECT country, countryCode, city, 
                     MIN(lat) as lat, MIN(lon) as lon, COUNT(*) as total 
              FROM stream_hits 
-             WHERE created BETWEEN ? AND ? AND lat IS NOT NULL AND lon IS NOT NULL AND city IS NOT NULL 
+             WHERE created BETWEEN :from AND :to AND lat IS NOT NULL AND lon IS NOT NULL AND city IS NOT NULL 
              GROUP BY LOWER(TRIM(city)), country, countryCode 
              ORDER BY total DESC LIMIT 100',
-            [$from->format('Y-m-d H:i:s'), $to->format('Y-m-d H:i:s')]
+            ['from' => $from, 'to' => $to],
+            ['from' => 'datetime', 'to' => 'datetime']
         )->fetchAll('assoc');
     }
 
