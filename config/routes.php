@@ -58,6 +58,11 @@ return function (RouteBuilder $routes): void {
             'action' => 'now'
         ], ['_method' => 'GET']);
 
+        $routes->connect('/locutores?ahora', [
+            'controller' => 'Locutores',
+            'action' => 'index'
+        ], ['_method' => 'GET']);
+
         // Catch-all for unmatched routes (no fallbacks!)
         $routes->connect('/{controller}/{action}', [
             'controller' => 'Error',
