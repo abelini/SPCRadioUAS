@@ -58,7 +58,12 @@ return function (RouteBuilder $routes): void {
             'action' => 'now'
         ], ['_method' => 'GET']);
 
-        $routes->connect('/locutores?ahora', [
+        $routes->connect('/locutores', [
+            'controller' => 'Locutores',
+            'action' => 'index'
+        ], ['_method' => 'GET']);
+
+        $routes->connect('/cabina/locutor', [
             'controller' => 'Locutores',
             'action' => 'index'
         ], ['_method' => 'GET']);
