@@ -56,6 +56,11 @@
     </div>
 
     <div class="form-group">
+        <?= $this->Form->label('imagen_file', 'Imagen de fondo') ?>
+        <?= $this->Form->control('imagen_file', ['type' => 'file', 'label' => false, 'class' => 'form-control']) ?>
+    </div>
+
+    <div class="form-group">
         <?= $this->Form->label('outOfAir', '¿Salió del aire?') ?>
         <?= $this->Form->control('outOfAir', ['label' => false]) ?>
     </div>

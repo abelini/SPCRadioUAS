@@ -68,6 +68,11 @@ return function (RouteBuilder $routes): void {
             'action' => 'index'
         ], ['_method' => 'GET']);
 
+        $routes->connect('/programas/list', [
+            'controller' => 'Programas',
+            'action' => 'list'
+        ], ['_method' => 'GET']);
+
         // Catch-all for unmatched routes (no fallbacks!)
         $routes->connect('/{controller}/{action}', [
             'controller' => 'Error',

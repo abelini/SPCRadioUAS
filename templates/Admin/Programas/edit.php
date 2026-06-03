@@ -56,6 +56,19 @@
     </div>
 
     <div class="form-group">
+        <?= $this->Form->label('imagen_file', 'Imagen de fondo') ?>
+        <?= $this->Form->control('imagen_file', ['type' => 'file', 'label' => false, 'class' => 'form-control']) ?>
+        <?php if ($programa->imagen): ?>
+            <div style="margin-top:8px">
+                <img src="/img/programas/<?= h($programa->imagen) ?>" alt="Preview" style="max-width:200px;border-radius:6px">
+                <label style="display:block;margin-top:4px">
+                    <?= $this->Form->checkbox('remove_imagen') ?> Eliminar imagen actual
+                </label>
+            </div>
+        <?php endif; ?>
+    </div>
+
+    <div class="form-group">
         <?= $this->Form->label('outOfAir', '¿Salió del aire?') ?>
         <?= $this->Form->control('outOfAir', ['label' => false]) ?>
     </div>

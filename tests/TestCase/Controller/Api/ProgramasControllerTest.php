@@ -62,4 +62,41 @@ class ProgramasControllerTest extends TestCase
         $this->assertArrayHasKey('message', $response);
         $this->assertEquals('No se encontró el programa 99 en SPC', $response['message']);
     }
+
+    /**
+     * Prueba el endpoint /api/programas/list — respuesta JSON con estructura correcta.
+     *
+     * @return void
+     */
+    public function testListReturnsJson(): void
+    {
+        $this->get('/api/programas/list');
+
+        $this->assertResponseOk();
+        $this->assertHeader('Content-Type', 'application/json');
+
+        $response = json_decode((string)$this->_response->getBody(), true);
+        $this->assertIsArray($response);
+    }
+
+    /**
+     * Prueba que cada programa tenga la estructura esperada.
+     *
+     * @return void
+     */
+    public function testListEntryStructure(): void
+    {
+        $this->get('/api/programas/list');
+
+        $response = json_decode((string)$this->_response->getBody(), true);
+        if (!empty($response)) {
+            $entry = $response[0];
+            $this->assertArrayHasKey('program', $entry);
+            $this->assertArrayHasKey('produccion', $entry);
+            $this->assertArrayHasKey('conduccion', $entry);
+            $this->assertArrayHasKey('musical', $entry);
+            $this->assertArrayHasKey('schedule', $entry);
+            $this->assertIsArray($entry['schedule']);
+        }
+    }
 }

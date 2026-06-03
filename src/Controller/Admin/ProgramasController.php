@@ -73,6 +73,7 @@ class ProgramasController extends AppController
 		$programa = $this->Programas->newEmptyEntity();
 		if ($this->request->is('post')) {
 			$programa = $this->Programas->patchEntity($programa, $this->request->getData());
+			$this->_handleImageUpload($programa);
 			if ($this->Programas->save($programa)) {
 				$this->Flash->success(__('The programa has been saved.'));
 
@@ -89,7 +90,16 @@ class ProgramasController extends AppController
 	{
 		$programa = $this->Programas->get($id, admin: true, contain: ['Dias']);
 		if ($this->request->is(['patch', 'post', 'put'])) {
+			$removeImage = (bool)$this->request->getData('remove_imagen');
 			$programa = $this->Programas->patchEntity($programa, $this->request->getData());
+
+			if ($removeImage && $programa->imagen) {
+				$this->_deleteImageFile($programa->imagen);
+				$programa->imagen = null;
+			}
+
+			$this->_handleImageUpload($programa);
+
 			//Borrar cache de la API cuando se edite el programa
 			$cacheKey = 'programa_info_' . md5(strtolower(trim($programa->name)));
 			Cache::delete($cacheKey, 'programas_api');
@@ -106,10 +116,43 @@ class ProgramasController extends AppController
 		$this->set(compact('programa', 'dias', 'categorias'));
 	}
 
+	/**
+	 * Maneja la subida de imagen de programa.
+	 */
+	protected function _handleImageUpload(Programa $programa): void
+	{
+		$image = $this->request->getData('imagen_file');
+		if ($image === null || $image->getError() !== UPLOAD_ERR_OK) {
+			return;
+		}
+
+		$ext = strtolower(pathinfo($image->getClientFilename(), PATHINFO_EXTENSION));
+		$filename = md5((string)time()) . '.' . $ext;
+		$dest = getcwd() . DS . 'img' . DS . 'programas' . DS . $filename;
+
+		$image->moveTo($dest);
+		$programa->imagen = $filename;
+	}
+
+	/**
+	 * Elimina un archivo de imagen del disco.
+	 */
+	protected function _deleteImageFile(?string $filename): void
+	{
+		if ($filename === null) {
+			return;
+		}
+		$path = getcwd() . DS . 'img' . DS . 'programas' . DS . $filename;
+		if (file_exists($path)) {
+			unlink($path);
+		}
+	}
+
 	public function delete($id = null)
 	{
 		$this->request->allowMethod(['post', 'delete']);
 		$programa = $this->Programas->get($id, admin: true);
+		$this->_deleteImageFile($programa->imagen);
 		if ($this->Programas->delete($programa)) {
 			$this->Flash->success(__('The programa has been deleted.'));
 		} else {

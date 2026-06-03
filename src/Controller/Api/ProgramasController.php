@@ -14,6 +14,83 @@ use Cake\Http\Response;
 class ProgramasController extends ApiController
 {
     /**
+     * Lista todos los programas agrupados por nombre con horario semanal.
+     *
+     * GET /api/programas/list
+     *
+     * Los programas con horarios distintos (mismo nombre) aparecen agrupados,
+     * incluyendo todos sus días y horas de transmisión.
+     *
+     * @return \Cake\Http\Response
+     */
+    public function list(): Response
+    {
+        $this->autoRender = false;
+
+        $programas = $this->getTableLocator()->get('Programas')
+            ->find()
+            ->where(['Programas.musical' => false])
+            ->contain(['CategoriasProgramas', 'Dias'])
+            ->orderBy('Programas.name')
+            ->all();
+
+        $grouped = [];
+        foreach ($programas as $p) {
+            $name = $p->name;
+            if (!isset($grouped[$name])) {
+                $grouped[$name] = [
+                    'program' => $name,
+                    'produccion' => $p->produccion,
+                    'conduccion' => $p->conduccion,
+                    //                    'musical' => (bool)$p->musical,
+                    'imagen_url' => $p->imagen_url,
+                    'category' => $p->categoria ? [
+                        'name' => $p->categoria->name,
+                        'slug' => $p->categoria->slug,
+                        //'icon' => $p->categoria->icon,
+                    ] : null,
+                    'schedule' => [],
+                ];
+            }
+
+            $startTime = $p->horaInicio ? $p->horaInicio->format('H:i') : '00:00';
+            $endTime = $p->horaFin ? $p->horaFin->format('H:i') : '00:00';
+
+            if ($p->dias) {
+                foreach ($p->dias as $dia) {
+                    $grouped[$name]['schedule'][] = [
+                        'day' => $dia->name,
+                        'start' => $startTime,
+                        'end' => $endTime,
+                        '_day_id' => $dia->ID,
+                        '_start_time' => $p->horaInicio ? $p->horaInicio->format('H:i:s') : '00:00:00',
+                    ];
+                }
+            }
+        }
+
+        foreach ($grouped as &$program) {
+            usort($program['schedule'], function (array $a, array $b): int {
+                if ($a['_day_id'] === $b['_day_id']) {
+                    return strcmp($a['_start_time'], $b['_start_time']);
+                }
+                return $a['_day_id'] <=> $b['_day_id'];
+            });
+
+            $program['schedule'] = array_map(fn(array $item): array => [
+                'day' => $item['day'],
+                'start' => $item['start'],
+                'end' => $item['end'],
+            ], $program['schedule']);
+        }
+        unset($program);
+
+        return $this->response
+            ->withType('application/json')
+            ->withStringBody(json_encode(array_values($grouped), JSON_UNESCAPED_UNICODE));
+    }
+
+    /**
      * Obtiene los detalles y horarios de un programa por su nombre.
      *
      * GET /api/programas/get?name={Nombre}
