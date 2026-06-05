@@ -29,6 +29,13 @@ return function (RouteBuilder $routes): void {
      */
     $routes->setRouteClass(DashedRoute::class);
 
+    // Redirección para acoplar el estándar de RadioDNS con la API del SPC
+    $routes->redirect('/radiodns/epg/epg.xml', [
+        'prefix' => 'Api',
+        'controller' => 'Schedule',
+        'action' => 'xml'
+    ]);
+
     $routes->prefix('Admin', function (RouteBuilder $routes) {
         /*$routes->connect('/dashboard/streaming-stats', ['controller' => 'Dashboard', 'action' => 'streamingStats']);
         $routes->connect('/dashboard/solicitudes-pendientes', ['controller' => 'Dashboard', 'action' => 'solicitudesPendientes']);
