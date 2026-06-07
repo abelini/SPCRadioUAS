@@ -30,10 +30,10 @@ return function (RouteBuilder $routes): void {
     $routes->setRouteClass(DashedRoute::class);
 
     // Redirección para acoplar el estándar de RadioDNS con la API del SPC
-    $routes->redirect('/radiodns/epg/epg.xml', [
+    $routes->redirect('/radiodns/spi/3.1/SI.xml', [
         'prefix' => 'Api',
         'controller' => 'Schedule',
-        'action' => 'xml'
+        'action' => 'si'
     ]);
 
     $routes->prefix('Admin', function (RouteBuilder $routes) {

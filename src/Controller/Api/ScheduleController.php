@@ -145,17 +145,37 @@ class ScheduleController extends ApiController
 			->withStringBody(json_encode($programas));
 	}
 
-	/**
-	 * Devuelve el EPG en formato XML (RadioDNS EPG v10)
-	 * con toda la programación semanal
-	 *
-	 * GET /api/schedule/xml
-	 */
+	public function si(): Response
+	{
+		$this->autoRender = false;
+
+		$xml = new EpgBuilder()->buildSI();
+
+		return $this->response
+			->withHeader('Access-Control-Allow-Origin', '*')
+			->withHeader('Content-Disposition', 'inline; filename="SI.xml"')
+			->withType('application/xml')
+			->withStringBody($xml);
+	}
+
+	public function epg(): Response
+	{
+		$this->autoRender = false;
+
+		$xml = (new EpgBuilder())->buildEpgSchedule();
+
+		return $this->response
+			->withHeader('Access-Control-Allow-Origin', '*')
+			->withHeader('Content-Disposition', 'inline; filename="epg.xml"')
+			->withType('application/xml')
+			->withStringBody($xml);
+	}
+
 	public function xml(): Response
 	{
 		$this->autoRender = false;
 
-		$xml = (new EpgBuilder())->build();
+		$xml = (new EpgBuilder())->buildEpg();
 
 		return $this->response
 			->withHeader('Access-Control-Allow-Origin', '*')
