@@ -158,28 +158,36 @@ class ScheduleController extends ApiController
 			->withStringBody($xml);
 	}
 
-	public function epg(): Response
+	public function pi(): Response
 	{
 		$this->autoRender = false;
 
-		$xml = (new EpgBuilder())->buildEpgSchedule();
+		$dateParam = $this->request->getParam('date');
+
+		try {
+			$date = DateTime::createFromFormat('Ymd', substr($dateParam, 0, 8));
+		} catch (InvalidArgumentException $e) {
+			$date = DateTime::now();
+		}
+
+		$xml = (new EpgBuilder())->buildPI($date);
 
 		return $this->response
 			->withHeader('Access-Control-Allow-Origin', '*')
-			->withHeader('Content-Disposition', 'inline; filename="epg.xml"')
+			->withHeader('Content-Disposition', 'inline; filename="' . $date->format('Ymd') . '_PI.xml"')
 			->withType('application/xml')
 			->withStringBody($xml);
 	}
 
-	public function xml(): Response
+	public function epg(): Response
 	{
 		$this->autoRender = false;
 
-		$xml = (new EpgBuilder())->buildEpg();
+		$xml = (new EpgBuilder())->buildPI(DateTime::now());
 
 		return $this->response
 			->withHeader('Access-Control-Allow-Origin', '*')
-			->withHeader('Content-Disposition', 'inline; filename="epg.xml"')
+			->withHeader('Content-Disposition', 'inline; filename="PI.xml"')
 			->withType('application/xml')
 			->withStringBody($xml);
 	}

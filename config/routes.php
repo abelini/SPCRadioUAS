@@ -4,44 +4,23 @@ use Cake\Http\Exception\NotFoundException;
 use Cake\Routing\Route\DashedRoute;
 use Cake\Routing\RouteBuilder;
 
-/*
- * This file is loaded in the context of the `Application` class.
- * So you can use  `$this` to reference the application class instance
- * if required.
- */
 return function (RouteBuilder $routes): void {
-    /*
-     * The default class to use for all routes
-     *
-     * The following route classes are supplied with CakePHP and are appropriate
-     * to set as the default:
-     *
-     * - Route
-     * - InflectedRoute
-     * - DashedRoute
-     *
-     * If no call is made to `Router::defaultRouteClass()`, the class used is
-     * `Route` (`Cake\Routing\Route\Route`)
-     *
-     * Note that `Route` does not do any inflections on URLs which will result in
-     * inconsistently cased URLs when used with `{plugin}`, `{controller}` and
-     * `{action}` markers.
-     */
+
     $routes->setRouteClass(DashedRoute::class);
 
-    // Redirección para acoplar el estándar de RadioDNS con la API del SPC
     $routes->redirect('/radiodns/spi/3.1/SI.xml', [
         'prefix' => 'Api',
         'controller' => 'Schedule',
         'action' => 'si'
     ]);
 
+    $routes->connect('/radiodns/spi/3.1/radiouas/{date}', [
+        'prefix' => 'Api',
+        'controller' => 'Schedule',
+        'action' => 'pi',
+    ])->setPatterns(['date' => '[0-9]{8}_PI\.xml']);
+
     $routes->prefix('Admin', function (RouteBuilder $routes) {
-        /*$routes->connect('/dashboard/streaming-stats', ['controller' => 'Dashboard', 'action' => 'streamingStats']);
-        $routes->connect('/dashboard/solicitudes-pendientes', ['controller' => 'Dashboard', 'action' => 'solicitudesPendientes']);
-        $routes->connect('/dashboard/incidencias-abiertas', ['controller' => 'Dashboard', 'action' => 'incidenciasAbiertas']);
-        $routes->connect('/dashboard/bitacora-hoy', ['controller' => 'Dashboard', 'action' => 'bitacoraHoy']);
-        $routes->connect('/dashboard/roles-proxima-semana', ['controller' => 'Dashboard', 'action' => 'rolesProximaSemana']);*/
         $routes->fallbacks(DashedRoute::class);
     });
 

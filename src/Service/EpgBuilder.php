@@ -3,10 +3,13 @@ declare(strict_types=1);
 
 namespace SPC\Service;
 
+use Cake\Core\Configure;
 use Cake\I18n\DateTime;
 use Cake\ORM\TableRegistry;
 use Cake\ORM\Query\SelectQuery;
 use Cake\View\View;
+use DOMDocument;
+use InvalidArgumentException;
 
 /**
  * Construye el documento XML de programación electrónica de guía (EPG)
@@ -24,7 +27,7 @@ class EpgBuilder
     private const string BEARER_URI = 'fm:ae4.a961.09610';
     private const string SI_VERSION = '3.5';
     private const string RADIODNS_FQDN = 'spc.radiouas.org';
-    private const string RADIODNS_SID = 'id/spc.radiouas.org/radio_uas';
+    private const string RADIODNS_SID = 'radiouas';
 
     private const string NS_RADIODNS = 'https://schemas.radiodns.org/epg/10';
     private const string NS_EPG_DATA = 'https://www.worlddab.org/schemas/epgDataTypes/14';
@@ -52,25 +55,40 @@ class EpgBuilder
      */
     public function buildSI(): string
     {
-        $dom = new \DOMDocument(self::XML_VERSION, self::XML_ENCODING);
+        $dom = new DOMDocument(self::XML_VERSION, self::XML_ENCODING);
         $dom->formatOutput = true;
 
-        $epg = $dom->createElementNS('http://www.radiodns.org/spi/3.5', 'epg');
-        $epg->setAttributeNS(
+        // 1. CREACIÓN DEL ELEMENTO RAÍZ CON EL NAMESPACE DE WORLDDAB
+        $nsWorldDab = 'http://www.worlddab.org/schemas/spi';
+        $serviceInfo = $dom->createElementNS($nsWorldDab, 'serviceInformation');
+        
+        // Atributo: xmlns:xsi
+        $serviceInfo->setAttributeNS(
             'http://www.w3.org/2000/xmlns/',
             'xmlns:xsi',
             'http://www.w3.org/2001/XMLSchema-instance'
         );
-        $epg->setAttributeNS(
+        
+        // Atributo: xmlns:xml (Exigido en tu ejemplo)
+        $serviceInfo->setAttributeNS(
+            'http://www.w3.org/2000/xmlns/',
+            'xmlns:xml',
+            'http://www.w3.org/XML/1998/namespace'
+        );
+        
+        // Atributo: xsi:schemaLocation (Apuntando a spi_34.xsd como tu ejemplo)
+        $serviceInfo->setAttributeNS(
             'http://www.w3.org/2001/XMLSchema-instance',
             'xsi:schemaLocation',
-            'http://www.radiodns.org/spi/3.5 http://www.radiodns.org/spi/3.5/spi_3.5.xsd'
+            'http://www.worlddab.org/schemas/spi http://www.worlddab.org/schemas/spi/spi_34.xsd'
         );
-        $epg->setAttribute('xml:lang', self::XML_LANG);
-        $dom->appendChild($epg);
 
-        $serviceInfo = $dom->createElement('serviceInformation');
-        $epg->appendChild($serviceInfo);
+        // 2. ATRIBUTOS DIRECTOS EN LA RAÍZ (Igual que tu ejemplo)
+        $serviceInfo->setAttribute('creationTime', DateTime::now('UTC')->format('Y-m-d\TH:i:s\Z'));
+        $serviceInfo->setAttribute('originator', self::MEDIUM_NAME); // Ej: "Radio UAS"
+        $serviceInfo->setAttribute('xml:lang', self::XML_LANG);
+        
+        $dom->appendChild($serviceInfo);
 
         $services = $dom->createElement('services');
         $serviceInfo->appendChild($services);
@@ -97,32 +115,43 @@ class EpgBuilder
         $multimedia->setAttribute('height', '600');
         $mediaDescription->appendChild($multimedia);
 
+        $link = $dom->createElement('link');
+        $scheduleUrl = (new View())->Url->build('/api/schedule/epg', ['fullBase' => true]);
+        $link->setAttribute('uri', $scheduleUrl);
+        $link->setAttribute('mimeValue', 'application/xml+pi');
+        $service->appendChild($link);
+
+        $linkWeb = $dom->createElement('link');
+        $linkWeb->setAttribute('uri', 'https://radio.uas.edu.mx');
+        $linkWeb->setAttribute('mimeValue', 'text/html');
+        $service->appendChild($linkWeb);
+
         $bearer = $dom->createElement('bearer');
         $bearer->setAttribute('id', self::BEARER_URI);
         $bearer->setAttribute('cost', '0');
         $service->appendChild($bearer);
+
+        $bearerStream = $dom->createElement('bearer');
+        $bearerStream->setAttribute('id', Configure::read('MP3StreamURI'));
+        $bearerStream->setAttribute('mimeValue', 'audio/mpeg');
+        $bearerStream->setAttribute('bitrate', '64');
+        $bearerStream->setAttribute('cost', '10');
+        $service->appendChild($bearerStream);
 
         $radiodns = $dom->createElement('radiodns');
         $radiodns->setAttribute('fqdn', self::RADIODNS_FQDN);
         $radiodns->setAttribute('serviceIdentifier', self::RADIODNS_SID);
         $service->appendChild($radiodns);
 
-        $epgSchedule = $dom->createElement('epgSchedule');
-        $service->appendChild($epgSchedule);
-
-        $schedule = $dom->createElement('schedule');
-        $scheduleUrl = (new View())->Url->build('/api/schedule/epg', ['fullBase' => true]);
-        $schedule->setAttribute('url', $scheduleUrl);
-        $epgSchedule->appendChild($schedule);
-
         return (string) $dom->saveXML();
     }
+
 
     public function buildEpgSchedule(): string
     {
         $programmes = $this->fetchAllProgrammes();
 
-        $dom = new \DOMDocument(self::XML_VERSION, self::XML_ENCODING);
+        $dom = new DOMDocument(self::XML_VERSION, self::XML_ENCODING);
         $dom->formatOutput = true;
 
         $epg = $dom->createElementNS('http://www.radiodns.org/spi/3.5', 'epg');
@@ -223,6 +252,124 @@ class EpgBuilder
             $location = $dom->createElement('location');
             $timeInfo = $dom->createElement('timeInformation');
             $timeInfo->setAttribute('start', $startUtc->format('Y-m-d\TH:i:s\Z'));
+            $timeInfo->setAttribute('duration', $p['duration']);
+            $location->appendChild($timeInfo);
+            $progEl->appendChild($location);
+
+            $schedule->appendChild($progEl);
+        }
+
+        return (string) $dom->saveXML();
+    }
+
+    /**
+     * Genera el XML de Programme Information (PI) para una fecha específica,
+     * en formato RadioDNS SPI 3.5, con los programas que se transmiten ese día.
+     */
+    public function buildPI(DateTime $date): string
+    {
+        $programmes = $this->fetchAllProgrammes();
+        $dayOfWeek = $date->dayOfWeek;
+
+        $dom = new DOMDocument(self::XML_VERSION, self::XML_ENCODING);
+        $dom->formatOutput = true;
+
+        $epg = $dom->createElementNS('http://www.worlddab.org/schemas/spi', 'epg');
+        
+        $epg->setAttributeNS(
+            'http://www.w3.org/2000/xmlns/',
+            'xmlns:xsi',
+            'http://www.w3.org/2001/XMLSchema-instance'
+        );
+        
+        $epg->setAttributeNS(
+            'http://www.w3.org/2000/xmlns/',
+            'xmlns:xml',
+            'http://www.w3.org/XML/1998/namespace'
+        );
+        
+        $epg->setAttributeNS(
+            'http://www.w3.org/2001/XMLSchema-instance',
+            'xsi:schemaLocation',
+            'http://www.worlddab.org/schemas/spi http://www.worlddab.org/schemas/spi/spi_34.xsd'
+        );
+        $epg->setAttribute('xml:lang', self::XML_LANG);
+        $dom->appendChild($epg);
+
+        $dayStart = $date->startOfDay();
+        $dayEnd = $date->endOfDay();
+
+        $schedule = $dom->createElement('schedule');
+        $schedule->setAttribute('creationTime', DateTime::now()->toIso8601String());
+        $schedule->setAttribute('originator', self::MEDIUM_NAME);
+        $schedule->setAttribute('version', '1');
+        $epg->appendChild($schedule);
+
+        $scope = $dom->createElement('scope');
+        $scope->setAttribute('startTime', $dayStart->toIso8601String());
+        $scope->setAttribute('stopTime', $dayEnd->toIso8601String());
+        $schedule->appendChild($scope);
+
+        $serviceScope = $dom->createElement('serviceScope');
+        $serviceScope->setAttribute('id', self::BEARER_URI);
+        $scope->appendChild($serviceScope);
+
+        $entries = [];
+        foreach ($programmes as $programme) {
+            if (!in_array($dayOfWeek, $programme['days'], true)) {
+                continue;
+            }
+
+            $timeStr = substr($programme['startTime'], 1);
+            $local = DateTime::now()->setTimeFromTimeString($timeStr);
+
+            $entries[] = [
+                'startUtc' => $local,
+                'programme' => $programme,
+            ];
+        }
+
+        usort($entries, fn(array $a, array $b): int => $a['startUtc'] <=> $b['startUtc']);
+
+        foreach ($entries as $entry) {
+            $p = $entry['programme'];
+            $startUtc = $entry['startUtc'];
+
+            $progEl = $dom->createElement('programme');
+            $progEl->setAttribute('shortId', (string) $p['ID']);
+            $progEl->setAttribute('id', self::STATION_CRID . 'schedule/' . $p['ID'] . '/' . $date->format('Y-m-d'));
+            $progEl->setAttribute('version', '1');
+            $progEl->setAttribute('recommendation', 'no');
+            $progEl->setAttribute('broadcast', 'on-air');
+
+            $mediumName = $dom->createElement(
+                'mediumName',
+                htmlspecialchars($p['name'], ENT_XML1)
+            );
+            $mediumName->setAttribute('xml:lang', self::XML_LANG);
+            $progEl->appendChild($mediumName);
+
+            $descParts = [];
+            if (!empty($p['conduccion'])) {
+                $descParts[] = 'Conducción: ' . $p['conduccion'];
+            }
+            if (!empty($p['produccion'])) {
+                $descParts[] = $p['produccion'];
+            }
+            if ($descParts !== []) {
+                $mediaDesc = $dom->createElement('mediaDescription');
+                $shortDesc = $dom->createElement(
+                    'shortDescription',
+                    htmlspecialchars(mb_substr(implode('. ', $descParts), 0, 180), ENT_XML1)
+                );
+                $shortDesc->setAttribute('xml:lang', self::XML_LANG);
+                $mediaDesc->appendChild($shortDesc);
+                $progEl->appendChild($mediaDesc);
+            }
+
+            $location = $dom->createElement('location');
+            $timeInfo = $dom->createElement('timeInformation');
+            $timeInfo->setAttribute('start', $startUtc->toIso8601String());
             $timeInfo->setAttribute('duration', $p['duration']);
             $location->appendChild($timeInfo);
             $progEl->appendChild($location);
