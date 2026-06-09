@@ -57,34 +57,29 @@ class EpgBuilder
         $dom = new DOMDocument(self::XML_VERSION, self::XML_ENCODING);
         $dom->formatOutput = true;
 
-        // 1. CREACIÓN DEL ELEMENTO RAÍZ CON EL NAMESPACE DE WORLDDAB
         $nsWorldDab = 'http://www.worlddab.org/schemas/spi';
         $serviceInfo = $dom->createElementNS($nsWorldDab, 'serviceInformation');
         
-        // Atributo: xmlns:xsi
         $serviceInfo->setAttributeNS(
             'http://www.w3.org/2000/xmlns/',
             'xmlns:xsi',
             'http://www.w3.org/2001/XMLSchema-instance'
         );
         
-        // Atributo: xmlns:xml (Exigido en tu ejemplo)
         $serviceInfo->setAttributeNS(
             'http://www.w3.org/2000/xmlns/',
             'xmlns:xml',
             'http://www.w3.org/XML/1998/namespace'
         );
         
-        // Atributo: xsi:schemaLocation (Apuntando a spi_34.xsd como tu ejemplo)
         $serviceInfo->setAttributeNS(
             'http://www.w3.org/2001/XMLSchema-instance',
             'xsi:schemaLocation',
             'http://www.worlddab.org/schemas/spi http://www.worlddab.org/schemas/spi/spi_34.xsd'
         );
 
-        // 2. ATRIBUTOS DIRECTOS EN LA RAÍZ (Igual que tu ejemplo)
-        $serviceInfo->setAttribute('creationTime', DateTime::now('UTC')->format('Y-m-d\TH:i:s\Z'));
-        $serviceInfo->setAttribute('originator', self::MEDIUM_NAME); // Ej: "Radio UAS"
+        $serviceInfo->setAttribute('creationTime', DateTime::now()->toIso8601String());
+        $serviceInfo->setAttribute('originator', self::MEDIUM_NAME);
         $serviceInfo->setAttribute('xml:lang', self::XML_LANG);
         
         $dom->appendChild($serviceInfo);
@@ -141,122 +136,6 @@ class EpgBuilder
         $radiodns->setAttribute('fqdn', self::RADIODNS_FQDN);
         $radiodns->setAttribute('serviceIdentifier', self::RADIODNS_SID);
         $service->appendChild($radiodns);
-
-        return (string) $dom->saveXML();
-    }
-
-
-    public function buildEpgSchedule(): string
-    {
-        $programmes = $this->fetchAllProgrammes();
-
-        $dom = new DOMDocument(self::XML_VERSION, self::XML_ENCODING);
-        $dom->formatOutput = true;
-
-        $epg = $dom->createElementNS('http://www.radiodns.org/spi/3.5', 'epg');
-        $epg->setAttributeNS(
-            'http://www.w3.org/2000/xmlns/',
-            'xmlns:xsi',
-            'http://www.w3.org/2001/XMLSchema-instance'
-        );
-        $epg->setAttributeNS(
-            'http://www.w3.org/2001/XMLSchema-instance',
-            'xsi:schemaLocation',
-            'http://www.radiodns.org/spi/3.5 http://www.radiodns.org/spi/3.5/spi_3.5.xsd'
-        );
-        $epg->setAttribute('xml:lang', self::XML_LANG);
-        $dom->appendChild($epg);
-
-        $now = DateTime::now(self::TIMEZONE);
-        $todayStart = $now->startOfDay();
-        $tomorrowEnd = $todayStart->addDays(2)->subSeconds(1);
-        $today = $now->startOfDay();
-        $tomorrow = $today->addDays(1);
-
-        $schedule = $dom->createElement('schedule');
-        $schedule->setAttribute('creationTime', $now->setTimezone('UTC')->format('Y-m-d\TH:i:s\Z'));
-        $schedule->setAttribute('originator', self::MEDIUM_NAME);
-        $schedule->setAttribute('version', '1');
-        $epg->appendChild($schedule);
-
-        $scope = $dom->createElement('scope');
-        $scope->setAttribute('startTime', $todayStart->setTimezone('UTC')->format('Y-m-d\TH:i:s\Z'));
-        $scope->setAttribute('stopTime', $tomorrowEnd->setTimezone('UTC')->format('Y-m-d\TH:i:s\Z'));
-        $schedule->appendChild($scope);
-
-        $serviceScope = $dom->createElement('serviceScope');
-        $serviceScope->setAttribute('id', self::BEARER_URI);
-        $scope->appendChild($serviceScope);
-
-        $tzMaz = new \DateTimeZone(self::TIMEZONE);
-        $tzUtc = new \DateTimeZone('UTC');
-
-        $entries = [];
-        foreach ($programmes as $programme) {
-            $timeStr = substr($programme['startTime'], 1);
-
-            foreach ([$today, $tomorrow] as $dayDate) {
-                $local = new \DateTime(
-                    $dayDate->format('Y-m-d') . ' ' . $timeStr,
-                    $tzMaz
-                );
-                $local->setTimezone($tzUtc);
-                $entries[] = [
-                    'startUtc' => $local,
-                    'programme' => $programme,
-                    'dayDate' => $dayDate,
-                ];
-            }
-        }
-
-        usort($entries, fn(array $a, array $b): int => $a['startUtc'] <=> $b['startUtc']);
-
-        foreach ($entries as $entry) {
-            $p = $entry['programme'];
-            $startUtc = $entry['startUtc'];
-            $dayDate = $entry['dayDate'];
-
-            $progEl = $dom->createElement('programme');
-            $progEl->setAttribute('shortId', (string) $p['ID']);
-            $progEl->setAttribute('id', self::STATION_CRID . 'schedule/' . $p['ID'] . '/' . $dayDate->format('Y-m-d'));
-            $progEl->setAttribute('version', '1');
-            $progEl->setAttribute('recommendation', 'no');
-            $progEl->setAttribute('broadcast', 'on-air');
-
-            $mediumName = $dom->createElement(
-                'mediumName',
-                htmlspecialchars($p['name'], ENT_XML1)
-            );
-            $mediumName->setAttribute('xml:lang', self::XML_LANG);
-            $progEl->appendChild($mediumName);
-
-            $descParts = [];
-            if (!empty($p['conduccion'])) {
-                $descParts[] = 'Conducción: ' . $p['conduccion'];
-            }
-            if (!empty($p['produccion'])) {
-                $descParts[] = $p['produccion'];
-            }
-            if ($descParts !== []) {
-                $mediaDesc = $dom->createElement('mediaDescription');
-                $shortDesc = $dom->createElement(
-                    'shortDescription',
-                    htmlspecialchars(mb_substr(implode('. ', $descParts), 0, 180), ENT_XML1)
-                );
-                $shortDesc->setAttribute('xml:lang', self::XML_LANG);
-                $mediaDesc->appendChild($shortDesc);
-                $progEl->appendChild($mediaDesc);
-            }
-
-            $location = $dom->createElement('location');
-            $timeInfo = $dom->createElement('timeInformation');
-            $timeInfo->setAttribute('start', $startUtc->format('Y-m-d\TH:i:s\Z'));
-            $timeInfo->setAttribute('duration', $p['duration']);
-            $location->appendChild($timeInfo);
-            $progEl->appendChild($location);
-
-            $schedule->appendChild($progEl);
-        }
 
         return (string) $dom->saveXML();
     }
@@ -319,7 +198,7 @@ class EpgBuilder
                 continue;
             }
 
-            $local = DateTime::now()->setTimeFromTimeString($programme['startTime']);
+            $local = clone $date->setTimeFromTimeString($programme['startTime']);
 
             $entries[] = [
                 'startUtc' => $local,
@@ -379,10 +258,10 @@ class EpgBuilder
     }
 
     /**
-     * Genera el XML EPG completo con todos los programas de la semana,
+     * Genera el XML EPG v 1.0 con todos los programas de la semana,
      * en un único <r:service> con su <s:schedule> y los <s:programmeGroup>.
      */
-    public function buildEpg(): string
+    public function buildEpg10(): string
     {
         $programmes = $this->fetchAllProgrammes();
 

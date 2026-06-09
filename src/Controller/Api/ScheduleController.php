@@ -167,7 +167,7 @@ class ScheduleController extends ApiController
 			$date = DateTime::now();
 		}
 
-		$xml = (new EpgBuilder())->buildPI($date);
+		$xml = new EpgBuilder()->buildPI($date);
 
 		return $this->response
 			->withHeader('Access-Control-Allow-Origin', '*')
@@ -178,7 +178,7 @@ class ScheduleController extends ApiController
 
 	public function epg(): Response
 	{
-		$xml = (new EpgBuilder())->buildPI(DateTime::now());
+		$xml = new EpgBuilder()->buildPI(DateTime::now());
 
 		return $this->response
 			->withHeader('Access-Control-Allow-Origin', '*')
@@ -189,7 +189,7 @@ class ScheduleController extends ApiController
 
 	public function xml(): Response
 	{
-		$xml = new EpgBuilder()->buildEpg();
+		$xml = new EpgBuilder()->buildEpg10();
 
 		return $this->response
 			->withHeader('Access-Control-Allow-Origin', '*')
