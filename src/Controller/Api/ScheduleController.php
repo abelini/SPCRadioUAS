@@ -5,92 +5,35 @@ namespace SPC\Controller\Api;
 
 use SPC\Controller\ApiController;
 use SPC\Service\EpgBuilder;
-use SPC\Trait\APICacheTrait;
-use Cake\Cache\Cache;
+use SPC\Service\NowPlayingService;
 use Cake\Event\EventInterface;
 use Cake\Http\Response;
 use Cake\I18n\DateTime;
-use Cake\I18n\Time;
 use Cake\ORM\Query\SelectQuery;
 
 
 class ScheduleController extends ApiController
 {
-	use APICacheTrait;
-
-	protected const string DEFAULT_PROGRAM_NAME = 'Paisajes sonoros';
-
-	protected const string DEFAULT_PRODUCTION_NAME = 'Fonoteca';
-
 	protected const string RADIOUAS_URI = 'https://radio.uas.edu.mx';
 
 	public function now(): Response
 	{
-		$controlRemoto = Cache::read(self::CONTROL_REMOTO_CACHE);
-		$JSONFeed = null;
-		$plainTextFeed = null;
+		$nowPlaying = (new NowPlayingService())->get();
+		$plainText = $nowPlaying['produccion'] . ' - ' . $nowPlaying['programa'];
 
-		if ($controlRemoto) {
-			$tiempoTranscurrido = time() - $controlRemoto['inicio'];
-
-			if ($tiempoTranscurrido > self::MAX_REMOTE_CONTROL_TIME) {
-				Cache::delete(self::CONTROL_REMOTO_CACHE);
-			} else {
-				$JSONFeed = [
-					'programa' => $controlRemoto['evento'],
-					'produccion' => $controlRemoto['produccion']
-				];
-				$plainTextFeed = $controlRemoto['produccion'] . ' - ' . $controlRemoto['evento'];
-			}
-		}
-
-		if (!$JSONFeed) {
-			$programas = $this->getTableLocator()
-				->get('Programas')
-				->find()
-				->matching('Dias', function (SelectQuery $query) {
-					return $query->where(['Dias.ID' => new DateTime()->dayOfWeek]);
-				})
-				->orderByAsc('horaInicio')
-				->all();
-
-			$programa = $programas->filter(function ($programa, $key) {
-				$now = Time::now();
-				if ($programa->horaFin->lessThan($programa->horaInicio)) {
-					return $now->greaterThanOrEquals($programa->horaInicio) || $now->lessThanOrEquals($programa->horaFin);
-				}
-				return $now->between($programa->horaInicio, $programa->horaFin);
-			});
-
-			if ($programa->count() == 0) {
-				$JSONFeed = [
-					'programa' => self::DEFAULT_PROGRAM_NAME,
-					'produccion' => self::DEFAULT_PRODUCTION_NAME
-				];
-				$plainTextFeed = self::DEFAULT_PRODUCTION_NAME . ' - ' . self::DEFAULT_PROGRAM_NAME;
-			} else {
-				$JSONFeed = [
-					'programa' => $programa->first()->get('name'),
-					'produccion' => $programa->first()->get('produccion')
-				];
-				$plainTextFeed = $programa->first()->get('produccion') . ' - ' . $programa->first()->get('name');
-			}
-		}
-
-		$response = $this->render()
-			->withHeader('Access-Control-Allow-Origin', self::RADIOUAS_URI);
-
-		if (($this->request->getQuery('format')) !== null && $this->request->getQuery('format') == 'json') {
-			return $response
+		if ($this->request->getQuery('format') === 'json') {
+			return $this->render()
+				->withHeader('Access-Control-Allow-Origin', self::RADIOUAS_URI)
 				->withType('application/json')
-				->withStringBody(json_encode($JSONFeed));
+				->withStringBody(json_encode($nowPlaying));
 		}
 
 		$this->viewBuilder()->setLayout(null);
 
-		return $response
+		return $this->render()
+			->withHeader('Access-Control-Allow-Origin', self::RADIOUAS_URI)
 			->withType('text/plain')
-			->withStringBody($plainTextFeed);
+			->withStringBody($plainText);
 	}
 
 	public function daily(): Response

@@ -10,31 +10,28 @@ use Cake\Console\ConsoleIo;
 use Cake\Core\Configure;
 use Cake\Http\Client;
 use RuntimeException;
+use SPC\Service\NowPlayingService;
 
 class UpdateMetadataCommand extends Command
 {
-    private const API_SCHEDULE_ENDPOINT = '/now';
-    private const API_UPDATE_ENDPOINT = '/update';
-    private const REQUEST_TIMEOUT = 10;
-    private const CACHE_KEY = 'last_sent_metadata';
+    private const string API_UPDATE_ENDPOINT = '/update';
+    private const int REQUEST_TIMEOUT = 10;
+    private const string CACHE_KEY = 'last_sent_metadata';
 
     /**
      * Comando para actualizar metadatos desde un cron job
-     * 
-     * Consulta /api/schedule/now para obtener la metadata actual
-     * y la envía a /api/metadata/update para actualizar SHOUTcast
-     * Solo envía si la metadata ha cambiado desde la última ejecución
-     * 
+     *
+     * Consulta el programa actual vía NowPlayingService y lo envía
+     * a /api/metadata/update para actualizar SHOUTcast.
+     * Solo envía si la metadata ha cambiado desde la última ejecución.
+     *
      * Uso: bin/cake update_metadata
      */
     public function execute(Arguments $args, ConsoleIo $io): int
     {
         try {
-            $metadata = $this->fetchCurrentMetadata();
-
-            if ($metadata === null) {
-                return self::CODE_SUCCESS;
-            }
+            $data = (new NowPlayingService())->get();
+            $metadata = $data['produccion'] . ' - ' . $data['programa'];
 
             if ($this->hasMetadataChanged($metadata)) {
                 $this->sendMetadataUpdate($metadata);
@@ -49,35 +46,6 @@ class UpdateMetadataCommand extends Command
             $io->error('Failed to update metadata: ' . $e->getMessage());
             return self::CODE_ERROR;
         }
-    }
-
-    /**
-     * Consulta el endpoint para obtener la metadata programada actual
-     */
-    private function fetchCurrentMetadata(): ?string
-    {
-        $http = new Client([
-            'scheme' => 'https',
-            'host' => 'spc.radiouas.org',
-            'basePath' => 'api/schedule',
-            'timeout' => self::REQUEST_TIMEOUT,
-        ]);
-
-        $response = $http->get(self::API_SCHEDULE_ENDPOINT);
-
-        if ($response->getStatusCode() === 404) {
-            return null;
-        }
-
-        if (!$response->isOk()) {
-            throw new RuntimeException(
-                sprintf('Schedule API returned status %d', $response->getStatusCode())
-            );
-        }
-
-        $text = trim($response->getStringBody());
-
-        return $text !== '' ? $text : null;
     }
 
     /**
