@@ -325,7 +325,7 @@ class EpgBuilder
 
         $shortName = $dom->createElement(
             'e:shortName',
-            htmlspecialchars($this->truncate($programme['name'], self::MAX_SHORT_NAME_LENGTH), ENT_XML1)
+            htmlspecialchars(mb_substr($programme['name'], 0, self::MAX_SHORT_NAME_LENGTH), ENT_XML1)
         );
         $group->appendChild($shortName);
 
@@ -414,16 +414,5 @@ class EpgBuilder
         $minutes = $interval->i;
 
         return sprintf('PT%dH%02dM', $hours, $minutes);
-    }
-
-    /**
-     * Trunca un string a un máximo de caracteres.
-     */
-    private function truncate(string $text, int $maxLength): string
-    {
-        if (mb_strlen($text) <= $maxLength) {
-            return $text;
-        }
-        return mb_substr($text, 0, $maxLength);
     }
 }
