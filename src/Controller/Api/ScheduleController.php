@@ -7,6 +7,7 @@ use SPC\Controller\ApiController;
 use SPC\Service\EpgBuilder;
 use SPC\Trait\APICacheTrait;
 use Cake\Cache\Cache;
+use Cake\Event\EventInterface;
 use Cake\Http\Response;
 use Cake\I18n\DateTime;
 use Cake\I18n\Time;
@@ -147,8 +148,6 @@ class ScheduleController extends ApiController
 
 	public function si(): Response
 	{
-		$this->autoRender = false;
-
 		$xml = new EpgBuilder()->buildSI();
 
 		return $this->response
@@ -160,8 +159,6 @@ class ScheduleController extends ApiController
 
 	public function pi(): Response
 	{
-		$this->autoRender = false;
-
 		$dateParam = $this->request->getParam('date');
 
 		try {
@@ -181,13 +178,22 @@ class ScheduleController extends ApiController
 
 	public function epg(): Response
 	{
-		$this->autoRender = false;
-
 		$xml = (new EpgBuilder())->buildPI(DateTime::now());
 
 		return $this->response
 			->withHeader('Access-Control-Allow-Origin', '*')
 			->withHeader('Content-Disposition', 'inline; filename="PI.xml"')
+			->withType('application/xml')
+			->withStringBody($xml);
+	}
+
+	public function xml(): Response
+	{
+		$xml = new EpgBuilder()->buildEpg();
+
+		return $this->response
+			->withHeader('Access-Control-Allow-Origin', '*')
+			->withHeader('Content-Disposition', 'inline; filename="epg.xml"')
 			->withType('application/xml')
 			->withStringBody($xml);
 	}
@@ -200,5 +206,10 @@ class ScheduleController extends ApiController
 		} else {
 			return (new DateTime())->dayOfWeek;
 		}
+	}
+
+	public function beforeRender(EventInterface $event): void
+	{
+		$this->autoRender = false;
 	}
 }

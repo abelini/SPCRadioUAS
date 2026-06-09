@@ -9,6 +9,7 @@ use Cake\ORM\TableRegistry;
 use Cake\ORM\Query\SelectQuery;
 use Cake\View\View;
 use DOMDocument;
+use DOMElement;
 use InvalidArgumentException;
 
 /**
@@ -24,7 +25,7 @@ class EpgBuilder
     private const string MEDIUM_NAME = 'Radio UAS';
     private const string LONG_NAME = 'Radio UAS 96.1 FM';
 
-    private const string BEARER_URI = 'fm:ae4.a961.09610';
+    private const string BEARER_URI = 'fm:fa5.f4e2.09610';
     private const string SI_VERSION = '3.5';
     private const string RADIODNS_FQDN = 'spc.radiouas.org';
     private const string RADIODNS_SID = 'radiouas';
@@ -37,8 +38,6 @@ class EpgBuilder
     private const string STATION_CRID = 'crid://radio.uas.edu.mx/';
     private const string TIMEZONE = 'America/Mazatlan';
     private const int MAX_SHORT_NAME_LENGTH = 8;
-
-    /** Mapeo del dayOfWeek de la app (1=lunes … 7=domingo) a abreviaturas RFC */
     private const array DAY_ABBREVIATIONS = [
         1 => 'MO',
         2 => 'TU',
@@ -320,8 +319,7 @@ class EpgBuilder
                 continue;
             }
 
-            $timeStr = substr($programme['startTime'], 1);
-            $local = DateTime::now()->setTimeFromTimeString($timeStr);
+            $local = DateTime::now()->setTimeFromTimeString($programme['startTime']);
 
             $entries[] = [
                 'startUtc' => $local,
@@ -337,7 +335,7 @@ class EpgBuilder
 
             $progEl = $dom->createElement('programme');
             $progEl->setAttribute('shortId', (string) $p['ID']);
-            $progEl->setAttribute('id', self::STATION_CRID . 'schedule/' . $p['ID'] . '/' . $date->format('Y-m-d'));
+            $progEl->setAttribute('id', $this->getCrid($p['ID'], $date));
             $progEl->setAttribute('version', '1');
             $progEl->setAttribute('recommendation', 'no');
             $progEl->setAttribute('broadcast', 'on-air');
@@ -388,29 +386,25 @@ class EpgBuilder
     {
         $programmes = $this->fetchAllProgrammes();
 
-        $dom = new \DOMDocument(self::XML_VERSION, self::XML_ENCODING);
+        $dom = new DOMDocument(self::XML_VERSION, self::XML_ENCODING);
         $dom->formatOutput = true;
 
-        // Raíz <radio> con los tres namespaces
         $radio = $dom->createElement('radio');
         $radio->setAttribute('xmlns:r', self::NS_RADIODNS);
         $radio->setAttribute('xmlns:e', self::NS_EPG_DATA);
         $radio->setAttribute('xmlns:s', self::NS_EPG_SCHEDULE);
         $dom->appendChild($radio);
 
-        // <r:service>
         $service = $dom->createElement('r:service');
         $service->setAttribute('id', self::STATION_CRID);
         $service->setAttribute('xml:lang', self::XML_LANG);
         $radio->appendChild($service);
 
-        // <e:link> hacia la URL de la emisora
         $link = $dom->createElement('e:link');
         $link->setAttribute('url', self::STATION_URL);
         $link->setAttribute('description', 'Escuchar en vivo');
         $service->appendChild($link);
 
-        // <s:schedule> con una entrada <s:programme> por cada ocurrencia (programa + día)
         $schedule = $dom->createElement('s:schedule');
         $service->appendChild($schedule);
 
@@ -419,11 +413,11 @@ class EpgBuilder
                 $prog = $dom->createElement('s:programme');
 
                 $memberOf = $dom->createElement('e:memberOf');
-                $memberOf->setAttribute('id', $this->programCrid($programme['ID']));
+                $memberOf->setAttribute('id', $this->getCrid($programme['ID']));
                 $prog->appendChild($memberOf);
 
                 $time = $dom->createElement('s:time');
-                $time->setAttribute('time', $programme['startTime']);
+                $time->setAttribute('time', 'T' . $programme['startTime']);
                 $time->setAttribute('duration', $programme['duration']);
                 $time->setAttribute('recurs', self::DAY_ABBREVIATIONS[$dayOfWeek]);
                 $prog->appendChild($time);
@@ -432,7 +426,6 @@ class EpgBuilder
             }
         }
 
-        // <s:programmeGroup> por cada programa único (metadatos)
         foreach ($programmes as $programme) {
             $radio->appendChild(
                 $this->buildProgrammeGroup($dom, $programme)
@@ -445,11 +438,11 @@ class EpgBuilder
     /**
      * Construye el nodo <s:programmeGroup> con los metadatos de un programa.
      */
-    private function buildProgrammeGroup(\DOMDocument $dom, array $programme): \DOMElement
+    private function buildProgrammeGroup(DOMDocument $dom, array $programme): DOMElement
     {
         $group = $dom->createElement('s:programmeGroup');
         $group->setAttribute('xml:lang', self::XML_LANG);
-        $group->setAttribute('id', $this->programCrid($programme['ID']));
+        $group->setAttribute('id', $this->getCrid($programme['ID']));
 
         $shortName = $dom->createElement(
             'e:shortName',
@@ -491,39 +484,19 @@ class EpgBuilder
      */
     private function fetchAllProgrammes(): array
     {
-        /** @var \SPC\Model\Table\ProgramasTable $table */
-        $table = TableRegistry::getTableLocator()->get('Programas');
-
-        $results = $table->find()
-            ->select([
-                'Programas.ID',
-                'Programas.name',
-                'Programas.horaInicio',
-                'Programas.horaFin',
-                'Programas.produccion',
-                'Programas.conduccion',
-            ])
-            ->contain('Dias', function (SelectQuery $q) {
-                return $q->select(['Dias.ID']);
-            })
-            ->orderByAsc('Programas.horaInicio')
+        $results = TableRegistry::getTableLocator()
+            ->get('Programas')
+            ->find('allForSchedule')
             ->all();
 
         $programmes = [];
 
         foreach ($results as $programme) {
-            $startDt = new \DateTimeImmutable(
-                'today ' . $programme->horaInicio->format('H:i:s'),
-                new \DateTimeZone(self::TIMEZONE)
-            );
-            $stopDt = new \DateTimeImmutable(
-                'today ' . $programme->horaFin->format('H:i:s'),
-                new \DateTimeZone(self::TIMEZONE)
-            );
+            $start = DateTime::now()->setTimeFromTimeString($programme->get('hora_inicio_string'));
+            $end = DateTime::now()->setTimeFromTimeString($programme->get('hora_fin_string'));
 
-            // Programa que cruza medianoche (ej. 23:00 – 01:00)
-            if ($stopDt <= $startDt) {
-                $stopDt = $stopDt->modify('+1 day');
+            if ($end->lessThanOrEquals($start)) {
+                $end = $end->addDays(1);
             }
 
             $programmes[] = [
@@ -531,8 +504,8 @@ class EpgBuilder
                 'name' => $programme->name,
                 'produccion' => $programme->produccion,
                 'conduccion' => $programme->conduccion,
-                'startTime' => 'T' . $programme->horaInicio->format('H:i:s'),
-                'duration' => $this->isoDuration($startDt, $stopDt),
+                'startTime' => $programme->horaInicio->format('H:i:s'),
+                'duration' => $this->isoDuration($start, $end),
                 'days' => array_map(fn($d) => $d->ID, $programme->dias),
             ];
         }
@@ -543,19 +516,23 @@ class EpgBuilder
     /**
      * Genera el CRID único para un programa dado su ID.
      */
-    private function programCrid(int $programmeId): string
+    private function getCrid(int $ID, ?DateTime $date = null): string
     {
-        return self::STATION_CRID . 'schedule/?id=' . $programmeId;
+        if (!is_null($date)) {
+            return self::STATION_CRID . 'schedule/' . $ID . '/' . $date->format('Y-m-d');
+        }
+        return self::STATION_CRID . 'schedule/?id=' . $ID;
     }
 
     /**
      * Genera una duración en formato ISO 8601 (PTxHxxM) a partir de dos instantes.
      */
-    private function isoDuration(\DateTimeImmutable $start, \DateTimeImmutable $stop): string
+    private function isoDuration(DateTime $start, DateTime $stop): string
     {
-        $seconds = $stop->getTimestamp() - $start->getTimestamp();
-        $hours = intdiv($seconds, 3600);
-        $minutes = intdiv($seconds % 3600, 60);
+        $interval = $stop->diff($start);
+
+        $hours = $interval->h;
+        $minutes = $interval->i;
 
         return sprintf('PT%dH%02dM', $hours, $minutes);
     }

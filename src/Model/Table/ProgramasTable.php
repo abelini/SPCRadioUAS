@@ -79,6 +79,23 @@ class ProgramasTable extends Table
 		);
 	}
 
+	public function findAllForSchedule(SelectQuery $query): SelectQuery {
+		return
+			$query->select([
+                'Programas.ID',
+                'Programas.name',
+                'Programas.horaInicio',
+                'Programas.horaFin',
+                'Programas.produccion',
+                'Programas.conduccion',
+            ])
+            ->contain('Dias', function (SelectQuery $q) {
+                return $q->select(['Dias.ID']);
+            })
+            ->orderByAsc('Programas.horaInicio');
+	}
+	
+
 	public function findStats(SelectQuery $query): SelectQuery
 	{
 		return
@@ -94,7 +111,7 @@ class ProgramasTable extends Table
 					$query->expr()->case()->when(['outOfAir' => true])->then(1)
 				),
 			])
-				->disableHydration();
+			->disableHydration();
 	}
 
 	public function validationDefault(Validator $validator): Validator

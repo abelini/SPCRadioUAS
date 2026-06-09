@@ -79,6 +79,16 @@ class Programa extends Entity implements \Stringable
 		return $this->horaFin;
 	}
 
+	protected function _getHoraInicioString(): string
+	{
+		return $this->horaInicio->format('H:i:s');
+	}
+
+	protected function _getHoraFinString(): string
+	{
+		return $this->horaFin->format('H:i:s');
+	}
+
 	protected function _getCategory(): string
 	{
 		if ($this->_fields['music'])
