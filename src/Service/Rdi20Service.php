@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace SPC\Service;
 
-use Cake\Log\Log;
 use Cake\Network\Socket;
 
 class Rdi20Service
@@ -42,32 +41,13 @@ class Rdi20Service
         $this->socket->connect();
         if (!$this->socket->isConnected()) {
             $this->lastError = $this->socket->lastError() ?? 'No se pudo conectar';
-            Log::debug(sprintf(
-                'Rdi20: connect FAILED to %s:%d — %s',
-                self::HOST,
-                self::PORT,
-                $this->lastError,
-            ));
 
             return false;
         }
 
         $this->lastBytes = $this->socket->write($payload);
-        $err = $this->socket->lastError();
-        if ($err) {
-            $this->lastError = $err;
-        }
 
         $this->socket->disconnect();
-
-        Log::debug(sprintf(
-            'Rdi20: send -> %s:%d | payload=%s | bytes=%d | error=%s',
-            self::HOST,
-            self::PORT,
-            json_encode($payload, JSON_UNESCAPED_UNICODE),
-            $this->lastBytes,
-            $this->lastError ?: '(ninguno)',
-        ));
 
         return $this->lastBytes > 0;
     }

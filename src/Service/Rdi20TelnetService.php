@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace SPC\Service;
 
-use Cake\Log\Log;
-
 class Rdi20TelnetService
 {
     public const string HOST = '192.168.96.20';
@@ -35,20 +33,17 @@ class Rdi20TelnetService
 
         if (!$sock) {
             $this->lastError = $errstr;
-            Log::debug(sprintf('Rdi20Telnet: connect FAILED — %s', $errstr));
 
             return false;
         }
 
         stream_set_timeout($sock, self::TIMEOUT);
 
-        $banner = $this->readUntil($sock, ['Username:', 'login:']);
-        Log::debug(sprintf('Rdi20Telnet: banner=%s', json_encode($banner)));
+        $this->readUntil($sock, ['Username:', 'login:']);
 
         fwrite($sock, self::USERNAME . "\r\n");
 
-        $passPrompt = $this->readUntil($sock, ['Password:', 'password:']);
-        Log::debug(sprintf('Rdi20Telnet: passPrompt=%s', json_encode($passPrompt)));
+        $this->readUntil($sock, ['Password:', 'password:']);
 
         fwrite($sock, self::PASSWORD . "\r\n");
 
@@ -56,19 +51,15 @@ class Rdi20TelnetService
 
         if (stripos($result, 'Authentication failed') !== false || stripos($result, 'failed') !== false) {
             $this->lastError = 'Authentication failed';
-            Log::debug('Rdi20Telnet: auth FAILED');
             fclose($sock);
 
             return false;
         }
 
-        Log::debug(sprintf('Rdi20Telnet: login OK, sending payload=%s', json_encode($payload)));
-
         fwrite($sock, $payload);
 
         $response = $this->readUntil($sock, ['RDi>', '>', '#', '$'], 2);
         $this->lastResponse = $response;
-        Log::debug(sprintf('Rdi20Telnet: response=%s', json_encode($response)));
 
         fclose($sock);
 
