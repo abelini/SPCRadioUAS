@@ -72,7 +72,7 @@ PHPStan at **level 8**. Psalm at **error level 2** (both in config).
 - `src/Service/` for business logic (GeminiService, ShoutcastService, EpgBuilder, DeviceDetectorService)
 - `src/Trait/APICacheTrait.php` — constants for remote control cache key and broadcast types
 - `src/Mailer/` — custom mailers (GoogleMailer, RolMailer, UserMailer)
-- **RDS (RDI 20)**: `SendRdsCommand` → `Rdi20TelnetService` (TCP/Telnet, user/pass). Sends `XTXT=...\r\n`, confirms with `+`. Cache `last_sent_rds` dedup. Fallback `Rdi20Service` (UDP) available.
+- **RDS (RDI 20)**: `SendRdsCommand` → `Rdi20TelnetService` (TCP/Telnet, user/pass). Sends `XTXT=...\r\n`, confirms with `+`. Cache `last_sent_rds` dedup.
 
 ## Testing
 
