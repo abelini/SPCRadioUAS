@@ -26,6 +26,11 @@
     </div>
 
     <div class="form-group">
+        <?= $this->Form->label('pty', 'Tipo de programa (PTY)') ?>
+        <?= $this->Form->control('pty', ['label' => false, 'class' => 'form-control', 'empty' => '-- Sin asignar --']) ?>
+    </div>
+
+    <div class="form-group">
         <?= $this->Form->label('produccion', 'Producción') ?>
         <?= $this->Form->control('produccion', ['label' => false, 'class' => 'form-control']) ?>
     </div>
@@ -56,8 +61,8 @@
     </div>
 
     <div class="form-group">
-        <?= $this->Form->label('imagen_file', 'Imagen de fondo') ?>
-        <?= $this->Form->control('imagen_file', ['type' => 'file', 'label' => false, 'class' => 'form-control']) ?>
+        <?= $this->Form->label('image_file', 'Imagen de fondo') ?>
+        <?= $this->Form->control('image_file', ['type' => 'file', 'label' => false, 'class' => 'form-control']) ?>
     </div>
 
     <div class="form-group">

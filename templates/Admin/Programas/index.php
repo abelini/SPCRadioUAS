@@ -9,6 +9,7 @@
                 <th>ID</th>
                 <th>Nombre</th>
                 <th>Categoría</th>
+                <th>PTY</th>
                 <th>Horario</th>
                 <th>Conducción</th>
                 <th>Producción</th>
@@ -21,6 +22,7 @@
                     <td><?= $programa->ID ?></td>
                     <td><?= $this->Html->link($programa->name, ['action' => 'edit', $programa->ID]) ?></td>
                     <td><?= $programa->hasValue('categoria') ? $programa->categoria->name : 'Sin categoría' ?></td>
+                    <td><?= $programa->pty?->name ?? '—' ?></td>
                     <td><?= $programa->horaInicio ?> <i class="fa-solid fa-arrow-right-long"></i> <?= $programa->horaFin ?>
                     </td>
                     <td><?= $programa->conduccion ?></td>

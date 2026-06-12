@@ -26,6 +26,11 @@
     </div>
 
     <div class="form-group">
+        <?= $this->Form->label('pty', 'Tipo de programa (PTY)') ?>
+        <?= $this->Form->control('pty', ['label' => false, 'class' => 'form-control', 'empty' => '-- Sin asignar --']) ?>
+    </div>
+
+    <div class="form-group">
         <?= $this->Form->label('produccion', 'Producción') ?>
         <?= $this->Form->control('produccion', ['label' => false, 'class' => 'form-control']) ?>
     </div>
@@ -56,13 +61,13 @@
     </div>
 
     <div class="form-group">
-        <?= $this->Form->label('imagen_file', 'Imagen de fondo') ?>
-        <?= $this->Form->control('imagen_file', ['type' => 'file', 'label' => false, 'class' => 'form-control']) ?>
-        <?php if ($programa->imagen): ?>
+        <?= $this->Form->label('image_file', 'Imagen de fondo') ?>
+        <?= $this->Form->control('image_file', ['type' => 'file', 'label' => false, 'class' => 'form-control']) ?>
+        <?php if ($programa->image): ?>
             <div style="margin-top:8px">
-                <img src="/img/programas/<?= h($programa->imagen) ?>" alt="Preview" style="max-width:200px;border-radius:6px">
+                <img src="/img/programas/<?= h($programa->image) ?>" alt="Preview" style="max-width:200px;border-radius:6px">
                 <label style="display:block;margin-top:4px">
-                    <?= $this->Form->checkbox('remove_imagen') ?> Eliminar imagen actual
+                    <?= $this->Form->checkbox('remove_image') ?> Eliminar imagen actual
                 </label>
             </div>
         <?php endif; ?>

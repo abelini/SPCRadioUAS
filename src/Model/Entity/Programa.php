@@ -47,7 +47,8 @@ class Programa extends Entity implements \Stringable
 		'dias' => true,
 		'reportable' => true,
 		'outOfAir' => true,
-		'imagen' => true,
+		'image' => true,
+		'pty' => true,
 	];
 
 	protected array $_hidden = [
@@ -98,12 +99,12 @@ class Programa extends Entity implements \Stringable
 		// culture, science, sports, news, entertainment, children, youth, women, 
 	}
 
-	protected function _getImagenUrl(): ?string
+	protected function _getImageUrl(): ?string
 	{
-		if (empty($this->imagen)) {
+		if (empty($this->image)) {
 			return null;
 		}
-		return '/img/programas/' . $this->imagen;
+		return '/img/programas/' . $this->image;
 	}
 
 	protected function _getIcon(): string

@@ -3,10 +3,12 @@ declare(strict_types=1);
 
 namespace SPC\Model\Table;
 
+use Cake\Database\Type\EnumType;
 use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use Cake\Event\EventInterface;
+use SPC\Model\Entity\PTY;
 use ArrayObject;
 
 class ProgramasTable extends Table
@@ -39,6 +41,8 @@ class ProgramasTable extends Table
 			'targetForeignKey' => 'diaID',
 			'joinTable' => 'DiasProgramas',
 		]);
+
+		$this->getSchema()->setColumnType('pty', EnumType::from(PTY::class));
 	}
 
 	/**
