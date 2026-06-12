@@ -8,7 +8,7 @@ use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use Cake\Event\EventInterface;
-use SPC\Model\Entity\PTY;
+use SPC\Model\Enum\PTY;
 use ArrayObject;
 
 class ProgramasTable extends Table

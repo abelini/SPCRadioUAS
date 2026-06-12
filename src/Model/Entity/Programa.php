@@ -8,9 +8,10 @@ use Cake\I18n\DateTime;
 use Cake\ORM\Entity;
 use Cake\Collection\Collection;
 use SPC\Model\Entity\ReportesPrograma;
+use Stringable;
 
 
-class Programa extends Entity implements \Stringable
+class Programa extends Entity implements Stringable
 {
 
 	//public string $XtoWord; // ahora es virtual field via _getXtoWord()
@@ -20,19 +21,6 @@ class Programa extends Entity implements \Stringable
 	protected const string COLABORADOR_ICON = '<i class="fa-solid fa-user"></i>';
 
 	protected const string MUSICAL_ICON = '<i class="fa-solid fa-music"></i>';
-	/*
-		public const array TEMP_OUT_OF_AIR = [
-			2, 	// Sinaloa al dia
-			6, 	// Entre sonidos y silencios
-			11, // Agenda universitaria (Entre universitarios)
-			50, // Entre universitarios
-			26,	// Nocturama
-			36, // La otra cara del disco
-			40, // Tiempo libre
-			44, // Antes de que se enfrie el cafe
-			48, // Hablemos de musica (repeticion)
-			49, // Cacahuates japoneses
-		];*/
 
 	protected array $_accessible = [
 		'name' => true,

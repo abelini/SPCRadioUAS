@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace SPC\Service;
 
+use Cake\Network\Exception\SocketException;
+use Cake\Network\Socket;
+
 class Rdi20TelnetService
 {
     public const string HOST = '192.168.96.20';
@@ -24,62 +27,67 @@ class Rdi20TelnetService
         $this->lastResponse = '';
         $this->lastError = '';
 
-        $sock = @stream_socket_client(
-            sprintf('tcp://%s:%d', self::HOST, self::PORT),
-            $errno,
-            $errstr,
-            self::TIMEOUT,
-        );
+        $socket = new Socket([
+            'host' => self::HOST,
+            'port' => self::PORT,
+            'protocol' => 'tcp',
+            'timeout' => self::TIMEOUT,
+        ]);
 
-        if (!$sock) {
-            $this->lastError = $errstr;
+        try {
+            if (!$socket->connect()) {
+                $this->lastError = $socket->lastError() ?? 'Conexión falló';
+
+                return false;
+            }
+
+            $this->readUntil($socket, ['Username:', 'login:']);
+
+            $socket->write(self::USERNAME . "\r\n");
+
+            $this->readUntil($socket, ['Password:', 'password:']);
+
+            $socket->write(self::PASSWORD . "\r\n");
+
+            $result = $this->readUntil($socket, ['RDi>', '>', '#', '$']);
+
+            if (stripos($result, 'Authentication failed') !== false || stripos($result, 'failed') !== false) {
+                $this->lastError = 'Authentication failed';
+                $socket->disconnect();
+
+                return false;
+            }
+
+            $socket->write($payload);
+
+            $response = $this->readUntil($socket, ['RDi>', '>', '#', '$'], 2);
+            $this->lastResponse = $response;
+
+            $socket->disconnect();
+
+            $success = str_contains($response, '+');
+            if (!$success) {
+                $this->lastError = sprintf('RDI respondió sin "+": %s', json_encode($response));
+            }
+
+            return $success;
+        } catch (SocketException $e) {
+            $this->lastError = $e->getMessage();
+            $socket->disconnect();
 
             return false;
         }
-
-        stream_set_timeout($sock, self::TIMEOUT);
-
-        $this->readUntil($sock, ['Username:', 'login:']);
-
-        fwrite($sock, self::USERNAME . "\r\n");
-
-        $this->readUntil($sock, ['Password:', 'password:']);
-
-        fwrite($sock, self::PASSWORD . "\r\n");
-
-        $result = $this->readUntil($sock, ['RDi>', '>', '#', '$']);
-
-        if (stripos($result, 'Authentication failed') !== false || stripos($result, 'failed') !== false) {
-            $this->lastError = 'Authentication failed';
-            fclose($sock);
-
-            return false;
-        }
-
-        fwrite($sock, $payload);
-
-        $response = $this->readUntil($sock, ['RDi>', '>', '#', '$'], 2);
-        $this->lastResponse = $response;
-
-        fclose($sock);
-
-        $success = str_contains($response, '+');
-        if (!$success) {
-            $this->lastError = sprintf('RDI respondió sin "+": %s', json_encode($response));
-        }
-
-        return $success;
     }
 
-    private function readUntil($sock, array $markers, int $extraTimeout = 0): string
+    private function readUntil(Socket $socket, array $markers, int $extraTimeout = 0): string
     {
         $data = '';
         $start = microtime(true);
         $maxWait = self::TIMEOUT + $extraTimeout;
 
         while ((microtime(true) - $start) < $maxWait) {
-            $chunk = @fread($sock, 4096);
-            if ($chunk === false || $chunk === '') {
+            $chunk = $socket->read(4096);
+            if ($chunk === null || $chunk === '') {
                 if ($data !== '') {
                     usleep(100000);
                 }
