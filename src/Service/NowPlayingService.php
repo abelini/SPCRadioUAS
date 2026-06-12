@@ -28,6 +28,7 @@ class NowPlayingService
                     'programa' => $rc['evento'],
                     'produccion' => $rc['produccion'],
                     'pty' => null,
+                    'music' => false,
                 ];
             }
             Cache::delete(self::CONTROL_REMOTO_CACHE);
@@ -55,6 +56,7 @@ class NowPlayingService
                 'programa' => self::DEFAULT_PROGRAM_NAME,
                 'produccion' => self::DEFAULT_PRODUCTION_NAME,
                 'pty' => null,
+                'music' => false,
             ];
         }
 
@@ -64,6 +66,7 @@ class NowPlayingService
             'programa' => $first->name,
             'produccion' => $first->produccion,
             'pty' => $first->pty?->value,
+            'music' => (bool)($first->music ?? false),
         ];
     }
 }

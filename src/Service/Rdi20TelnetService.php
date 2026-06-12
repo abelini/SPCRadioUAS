@@ -3,12 +3,16 @@ declare(strict_types=1);
 
 namespace SPC\Service;
 
+use Cake\Core\Configure;
 use Cake\Network\Exception\SocketException;
 use Cake\Network\Socket;
 
+
 class Rdi20TelnetService
 {
-    public const string HOST = '192.168.96.20';
+    private const string LOCAL_HOST = '192.168.96.20';
+
+    private const string REMOTE_HOST = '201.120.209.75';
 
     public const int PORT = 23;
 
@@ -22,13 +26,30 @@ class Rdi20TelnetService
 
     private string $lastError = '';
 
+    private string $host;
+
+    public function __construct() {
+        
+        $ip = gethostbyname(gethostname());
+        if (str_starts_with($ip, '192.168.')) {
+            $this->host = self::LOCAL_HOST;
+        } else {
+            $this->host = self::REMOTE_HOST;
+        }
+    }
+
+    public function getHost(): string
+    {
+        return $this->host;
+    }
+
     public function send(string $payload): bool
     {
         $this->lastResponse = '';
         $this->lastError = '';
 
         $socket = new Socket([
-            'host' => self::HOST,
+            'host' => $this->host,
             'port' => self::PORT,
             'protocol' => 'tcp',
             'timeout' => self::TIMEOUT,

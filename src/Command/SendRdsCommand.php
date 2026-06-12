@@ -45,13 +45,15 @@ class SendRdsCommand extends Command
 
         $now = DateTime::now()->format('Y-m-d H:i:s');
 
+        $rds = new Rdi20TelnetService();
+
         $io->info(sprintf('[%s] --- Diagnóstico RDS (Telnet) ---', $now));
-        $io->info(sprintf('[%s]   Destino:    %s:%d (TCP)', $now, Rdi20TelnetService::HOST, Rdi20TelnetService::PORT));
+        $io->info(sprintf('[%s]   Destino:    %s:%d (TCP)', $now, $rds->getHost(), Rdi20TelnetService::PORT));
         $io->info(sprintf('[%s]   RadioText:  %s', $now, json_encode($xtxtPayload, JSON_UNESCAPED_UNICODE)));
         $io->info(sprintf('[%s]   PTY:        %s', $now, json_encode($ptyPayload, JSON_UNESCAPED_UNICODE)));
         $io->info(sprintf('[%s]   Texto:      %s', $now, $text));
 
-        $rds = new Rdi20TelnetService();
+        
         $success = true;
 
         if (!$rds->send($xtxtPayload)) {
