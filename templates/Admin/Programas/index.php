@@ -20,7 +20,7 @@
             <?php foreach ($programas as $programa): ?>
                 <tr>
                     <td><?= $programa->ID ?></td>
-                    <td><?= $this->Html->link($programa->name, ['action' => 'edit', $programa->ID]) ?></td>
+                    <td><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background-color:<?= $programa->outOfAir ? '#e74c3c' : '#2ecc71' ?>;margin-right:6px" title="<?= $programa->outOfAir ? 'Fuera del aire' : 'Al aire' ?>"></span><?= $this->Html->link($programa->name, ['action' => 'edit', $programa->ID]) ?></td>
                     <td><?= $programa->hasValue('categoria') ? $programa->categoria->name : 'Sin categoría' ?></td>
                     <td><?= $programa->pty?->name ?? '—' ?></td>
                     <td><?= $programa->horaInicio ?> <i class="fa-solid fa-arrow-right-long"></i> <?= $programa->horaFin ?>
