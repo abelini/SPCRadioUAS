@@ -17,16 +17,27 @@ class SendRdsCommand extends Command
 
     private const string CACHE_KEY = 'last_sent_rds';
 
+    private const array PTY_FALLBACKS = [10, 12, 13, 16, 17, 19, 20];
+
     public function execute(Arguments $args, ConsoleIo $io): int
     {
         $data = (new NowPlayingService())->get();
         $text = $data['produccion'] . ' - ' . $data['programa'];
         $text = mb_substr($text, 0, self::MAX_RT_LENGTH);
 
-        $xtxtPayload = 'XTXT=' . $text . "\r\n";
-        $ptyPayload = 'XPTY=' . $data['pty'] . "\r\n";
+        $pty = $data['pty'];
 
-        $cacheValue = json_encode(['xtxt' => $text, 'pty' => $data['pty']]);
+        if ($pty === null) {
+            $fallbackKey = 'last_pty_' . md5($text);
+            $pty = Cache::remember($fallbackKey, function () {
+                return self::PTY_FALLBACKS[array_rand(self::PTY_FALLBACKS)];
+            });
+        }
+
+        $xtxtPayload = 'XTXT=' . $text . "\r\n";
+        $ptyPayload = 'XPTY=' . $pty . "\r\n";
+
+        $cacheValue = json_encode(['xtxt' => $text, 'pty' => $pty]);
 
         if (!$this->hasChanged($cacheValue)) {
             return self::CODE_SUCCESS;
