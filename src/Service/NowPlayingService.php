@@ -56,7 +56,7 @@ class NowPlayingService
                 'programa' => self::DEFAULT_PROGRAM_NAME,
                 'produccion' => self::DEFAULT_PRODUCTION_NAME,
                 'pty' => null,
-                'music' => false,
+                'music' => true,
             ];
         }
 
@@ -66,7 +66,7 @@ class NowPlayingService
             'programa' => $first->name,
             'produccion' => $first->produccion,
             'pty' => $first->pty?->value,
-            'music' => (bool)($first->music ?? false),
+            'music' => $first->musical,
         ];
     }
 }

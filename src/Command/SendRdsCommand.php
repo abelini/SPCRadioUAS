@@ -19,11 +19,23 @@ class SendRdsCommand extends Command
 
     private const array PTY_FALLBACKS = [10, 12, 13, 16, 17, 19, 20];
 
+    private function buildText(array $data): string
+    {
+        $search = array('á', 'é', 'í', 'ó', 'ú', 'Á', 'É', 'Í', 'Ó', 'Ú', 'ñ', 'Ñ', 'ü', 'Ü');
+        $replace = array('a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U', 'n', 'N', 'u', 'U');
+        $text = match($data['music']) {
+            false => $data['produccion'] . ' - ' . $data['programa'],
+            true => $data['programa'],
+        };
+
+        return mb_substr(str_replace($search, $replace, $text), 0, self::MAX_RT_LENGTH);
+    }
+
     public function execute(Arguments $args, ConsoleIo $io): int
     {
         $data = (new NowPlayingService())->get();
-        $text = $data['produccion'] . ' - ' . $data['programa'];
-        $text = mb_substr($text, 0, self::MAX_RT_LENGTH);
+
+        $text = $this->buildText($data);
 
         $pty = $data['pty'];
 
