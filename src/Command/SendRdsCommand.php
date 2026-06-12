@@ -13,6 +13,8 @@ use SPC\Service\Rdi20TelnetService;
 
 class SendRdsCommand extends Command
 {
+    private const string XPSS = 'RADIOUAS';
+
     private const int MAX_RT_LENGTH = 64;
 
     private const string CACHE_KEY = 'last_sent_rds';
@@ -46,11 +48,12 @@ class SendRdsCommand extends Command
             });
         }
 
+        $xpssPayload = 'XPSS=' . self::XPSS . "\r\n";
         $xtxtPayload = 'XTXT=' . $text . "\r\n";
         $ptyPayload = 'XPTY=' . $pty . "\r\n";
         $xfmsPayload = 'XFMS=' . ($data['music'] ? '1' : '0') . "\r\n";
 
-        $cacheValue = json_encode(['xtxt' => $text, 'pty' => $pty, 'xfms' => $data['music']]);
+        $cacheValue = json_encode(['xpss' => self::XPSS, 'xtxt' => $text, 'pty' => $pty, 'xfms' => $data['music']]);
 
         if (!$this->hasChanged($cacheValue)) {
             return self::CODE_SUCCESS;
@@ -62,13 +65,21 @@ class SendRdsCommand extends Command
 
         $io->info(sprintf('[%s] --- Diagnóstico RDS (Telnet) ---', $now));
         $io->info(sprintf('[%s]   Destino:    %s:%d (TCP)', $now, $rds->getHost(), Rdi20TelnetService::PORT));
-        $io->info(sprintf('[%s]   RadioText:  %s', $now, json_encode($xtxtPayload, JSON_UNESCAPED_UNICODE)));
+        $io->info(sprintf('[%s]   TXT:  %s', $now, json_encode($xtxtPayload, JSON_UNESCAPED_UNICODE)));
+        $io->info(sprintf('[%s]   PS:         %s', $now, json_encode($xpssPayload, JSON_UNESCAPED_UNICODE)));
         $io->info(sprintf('[%s]   PTY:        %s', $now, json_encode($ptyPayload, JSON_UNESCAPED_UNICODE)));
         $io->info(sprintf('[%s]   FMS:        %s', $now, json_encode($xfmsPayload, JSON_UNESCAPED_UNICODE)));
-        $io->info(sprintf('[%s]   Texto:      %s', $now, $text));
+        $io->info(sprintf('[%s]   RadioText:  %s', $now, $text));
 
         
         $success = true;
+
+        if (!$rds->send($xpssPayload)) {
+            $io->error(sprintf('[%s]   XPSS falló: %s', $now, $rds->getLastError()));
+            $success = false;
+        } else {
+            $io->success(sprintf('[%s]   XPSS enviado (+)', $now));
+        }
 
         if (!$rds->send($xtxtPayload)) {
             $io->error(sprintf('[%s]   XTXT falló: %s', $now, $rds->getLastError()));
