@@ -27,6 +27,7 @@ class NowPlayingService
                 return [
                     'programa' => $rc['evento'],
                     'produccion' => $rc['produccion'],
+                    'pty' => 0,
                 ];
             }
             Cache::delete(self::CONTROL_REMOTO_CACHE);
@@ -53,6 +54,7 @@ class NowPlayingService
             return [
                 'programa' => self::DEFAULT_PROGRAM_NAME,
                 'produccion' => self::DEFAULT_PRODUCTION_NAME,
+                'pty' => 0,
             ];
         }
 
@@ -61,6 +63,7 @@ class NowPlayingService
         return [
             'programa' => $first->name,
             'produccion' => $first->produccion,
+            'pty' => $first->pty?->value ?? 0,
         ];
     }
 }

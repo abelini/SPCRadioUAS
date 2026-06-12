@@ -23,9 +23,12 @@ class SendRdsCommand extends Command
         $text = $data['produccion'] . ' - ' . $data['programa'];
         $text = mb_substr($text, 0, self::MAX_RT_LENGTH);
 
-        $payload = 'XTXT=' . $text . "\r\n";
+        $xtxtPayload = 'XTXT=' . $text . "\r\n";
+        $ptyPayload = 'XPTY=' . $data['pty'] . "\r\n";
 
-        if (!$this->hasChanged($payload)) {
+        $cacheValue = json_encode(['xtxt' => $text, 'pty' => $data['pty']]);
+
+        if (!$this->hasChanged($cacheValue)) {
             return self::CODE_SUCCESS;
         }
 
@@ -33,21 +36,29 @@ class SendRdsCommand extends Command
 
         $io->info(sprintf('[%s] --- Diagnóstico RDS (Telnet) ---', $now));
         $io->info(sprintf('[%s]   Destino:    %s:%d (TCP)', $now, Rdi20TelnetService::HOST, Rdi20TelnetService::PORT));
-        $io->info(sprintf('[%s]   Payload:    %s', $now, json_encode($payload, JSON_UNESCAPED_UNICODE)));
+        $io->info(sprintf('[%s]   RadioText:  %s', $now, json_encode($xtxtPayload, JSON_UNESCAPED_UNICODE)));
+        $io->info(sprintf('[%s]   PTY:        %s', $now, json_encode($ptyPayload, JSON_UNESCAPED_UNICODE)));
         $io->info(sprintf('[%s]   Texto:      %s', $now, $text));
-        $io->info(sprintf('[%s]   Longitud:   %d bytes', $now, strlen($payload)));
 
         $rds = new Rdi20TelnetService();
+        $success = true;
 
-        if ($rds->send($payload)) {
-            $this->cachePayload($payload);
-            $io->success(sprintf('[%s]   Enviado:    Aceptado (+)', $now));
+        if (!$rds->send($xtxtPayload)) {
+            $io->error(sprintf('[%s]   XTXT falló: %s', $now, $rds->getLastError()));
+            $success = false;
         } else {
-            $io->error(sprintf('[%s]   Falló:      %s', $now, $rds->getLastError()));
-            $resp = $rds->getLastResponse();
-            if ($resp) {
-                $io->info(sprintf('[%s]   Respuesta:  %s', $now, json_encode($resp)));
-            }
+            $io->success(sprintf('[%s]   XTXT enviado (+)', $now));
+        }
+
+        if (!$rds->send($ptyPayload)) {
+            $io->error(sprintf('[%s]   XPTY falló: %s', $now, $rds->getLastError()));
+            $success = false;
+        } else {
+            $io->success(sprintf('[%s]   XPTY enviado (+)', $now));
+        }
+
+        if ($success) {
+            $this->cachePayload($cacheValue);
         }
 
         $io->info(sprintf('[%s] ------------------------', $now));
@@ -55,15 +66,15 @@ class SendRdsCommand extends Command
         return self::CODE_SUCCESS;
     }
 
-    private function hasChanged(string $payload): bool
+    private function hasChanged(string $cacheValue): bool
     {
         $last = Cache::read(self::CACHE_KEY);
 
-        return $last !== $payload;
+        return $last !== $cacheValue;
     }
 
-    private function cachePayload(string $payload): void
+    private function cachePayload(string $cacheValue): void
     {
-        Cache::write(self::CACHE_KEY, $payload);
+        Cache::write(self::CACHE_KEY, $cacheValue);
     }
 }
