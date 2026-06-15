@@ -25,10 +25,11 @@ class SendRdsCommand extends Command
     {
         $search = array('á', 'é', 'í', 'ó', 'ú', 'Á', 'É', 'Í', 'Ó', 'Ú', 'ñ', 'Ñ', 'ü', 'Ü');
         $replace = array('a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U', 'n', 'N', 'u', 'U');
-        $text = match($data['music']) {
+        /*$text = match($data['music']) {
             false => $data['produccion'] . ' - ' . $data['programa'],
             true => $data['programa'],
-        };
+        };*/
+        $text = $data['programa'];
 
         return mb_substr(str_replace($search, $replace, $text), 0, self::MAX_RT_LENGTH);
     }
@@ -64,7 +65,7 @@ class SendRdsCommand extends Command
         $rds = new Rdi20TelnetService();
 
         $io->info(sprintf('[%s] --- Diagnóstico RDS (Telnet) ---', $now));
-        $io->info(sprintf('[%s]   Destino:    %s:%d (TCP)', $now, $rds->getHost(), Rdi20TelnetService::PORT));
+        $io->info(sprintf('[%s]   Destino:    %s:%d (TCP)', $now, $rds->getHost(), $rds->getPort()));
         $io->info(sprintf('[%s]   TXT:  %s', $now, json_encode($xtxtPayload, JSON_UNESCAPED_UNICODE)));
         $io->info(sprintf('[%s]   PS:         %s', $now, json_encode($xpssPayload, JSON_UNESCAPED_UNICODE)));
         $io->info(sprintf('[%s]   PTY:        %s', $now, json_encode($ptyPayload, JSON_UNESCAPED_UNICODE)));

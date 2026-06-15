@@ -10,32 +10,41 @@ use Cake\Network\Socket;
 
 class Rdi20TelnetService
 {
-    private const string LOCAL_HOST = '192.168.96.20';
+    private const string LOCAL_RDI_ADDRESS = '192.168.96.20';
 
-    private const string REMOTE_HOST = '201.120.209.75';
+    private const string REMOTE_RDI_ADDRESS = '201.120.209.75';
 
-    public const int PORT = 23;
+    private const string SPC_ADDRESS = '192.250.227.56';
 
-    public const string USERNAME = 'user';
+    private const int PORT = 2300;
 
-    public const string PASSWORD = 'pass';
+    private const string USERNAME = 'user';
+
+    private const string PASSWORD = 'pass';
 
     private const int TIMEOUT = 5;
 
-    private string $lastResponse = '';
+    private string $lastResponse;
 
-    private string $lastError = '';
+    private string $lastError;
 
     private string $host;
 
+    private Socket $socket;
+
     public function __construct() {
-        
         $ip = gethostbyname(gethostname());
         if (str_starts_with($ip, '192.168.')) {
-            $this->host = self::LOCAL_HOST;
+            $this->host = self::LOCAL_RDI_ADDRESS;
         } else {
-            $this->host = self::REMOTE_HOST;
+            $this->host = self::REMOTE_RDI_ADDRESS;
         }
+        $this->socket = new Socket([
+            'host' => $this->host,
+            'port' => self::PORT,
+            'protocol' => 'tcp',
+            'timeout' => self::TIMEOUT,
+        ]);
     }
 
     public function getHost(): string
@@ -43,48 +52,46 @@ class Rdi20TelnetService
         return $this->host;
     }
 
+    public function getPort(): int
+    {
+        return self::PORT;
+    }
+
     public function send(string $payload): bool
     {
         $this->lastResponse = '';
         $this->lastError = '';
 
-        $socket = new Socket([
-            'host' => $this->host,
-            'port' => self::PORT,
-            'protocol' => 'tcp',
-            'timeout' => self::TIMEOUT,
-        ]);
-
         try {
-            if (!$socket->connect()) {
+            if (!$this->socket->connect()) {
                 $this->lastError = $socket->lastError() ?? 'Conexión falló';
 
                 return false;
             }
 
-            $this->readUntil($socket, ['Username:', 'login:']);
+            $this->readUntil(['Username:', 'login:']);
 
-            $socket->write(self::USERNAME . "\r\n");
+            $this->socket->write(self::USERNAME . "\r\n");
 
-            $this->readUntil($socket, ['Password:', 'password:']);
+            $this->readUntil(['Password:', 'password:']);
 
-            $socket->write(self::PASSWORD . "\r\n");
+            $this->socket->write(self::PASSWORD . "\r\n");
 
-            $result = $this->readUntil($socket, ['RDi>', '>', '#', '$']);
+            $result = $this->readUntil(['RDi>', '>', '#', '$']);
 
             if (stripos($result, 'Authentication failed') !== false || stripos($result, 'failed') !== false) {
                 $this->lastError = 'Authentication failed';
-                $socket->disconnect();
+                $this->socket->disconnect();
 
                 return false;
             }
 
-            $socket->write($payload);
+            $this->socket->write($payload);
 
-            $response = $this->readUntil($socket, ['RDi>', '>', '#', '$'], 2);
+            $response = $this->readUntil(['RDi>', '>', '#', '$'], 2);
             $this->lastResponse = $response;
 
-            $socket->disconnect();
+            $this->socket->disconnect();
 
             $success = str_contains($response, '+');
             if (!$success) {
@@ -94,20 +101,20 @@ class Rdi20TelnetService
             return $success;
         } catch (SocketException $e) {
             $this->lastError = $e->getMessage();
-            $socket->disconnect();
+            $this->socket->disconnect();
 
             return false;
         }
     }
 
-    private function readUntil(Socket $socket, array $markers, int $extraTimeout = 0): string
+    private function readUntil(array $markers, int $extraTimeout = 0): string
     {
         $data = '';
         $start = microtime(true);
         $maxWait = self::TIMEOUT + $extraTimeout;
 
         while ((microtime(true) - $start) < $maxWait) {
-            $chunk = $socket->read(4096);
+            $chunk = $this->socket->read(4096);
             if ($chunk === null || $chunk === '') {
                 if ($data !== '') {
                     usleep(100000);
