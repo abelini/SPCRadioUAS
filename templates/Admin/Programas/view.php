@@ -9,6 +9,14 @@
             <td><?= $programa->produccion ?></td>
         </tr>
         <tr>
+            <th>PTY</th>
+            <td><?= $programa->pty?->name ?? '—' ?></td>
+        </tr>
+        <tr>
+            <th>PTN</th>
+            <td><?= h($programa->ptn) ?: '—' ?></td>
+        </tr>
+        <tr>
             <th>Horario</th>
             <td><?= $programa->horaInicio ?> <i class="fa-solid fa-arrow-right-long"></i> <?= $programa->horaFin ?></td>
         </tr>

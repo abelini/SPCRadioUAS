@@ -31,6 +31,11 @@
     </div>
 
     <div class="form-group">
+        <?= $this->Form->label('ptn', 'Etiqueta RDS (PTN, 8 caracteres)') ?>
+        <?= $this->Form->control('ptn', ['label' => false, 'class' => 'form-control', 'maxlength' => 8]) ?>
+    </div>
+
+    <div class="form-group">
         <?= $this->Form->label('produccion', 'Producción') ?>
         <?= $this->Form->control('produccion', ['label' => false, 'class' => 'form-control']) ?>
     </div>
