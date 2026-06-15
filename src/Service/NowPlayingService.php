@@ -8,6 +8,7 @@ use Cake\I18n\DateTime;
 use Cake\I18n\Time;
 use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\TableRegistry;
+use SPC\DTO\StreamData;
 
 class NowPlayingService
 {
@@ -19,17 +20,19 @@ class NowPlayingService
 
     public const string DEFAULT_PRODUCTION_NAME = 'Fonoteca';
 
-    public function get(): array
+    public function get(): StreamData
     {
         $rc = Cache::read(self::CONTROL_REMOTO_CACHE);
         if ($rc) {
             if (time() - $rc['inicio'] <= self::MAX_REMOTE_CONTROL_TIME) {
-                return [
-                    'programa' => $rc['evento'],
-                    'produccion' => $rc['produccion'],
-                    'pty' => null,
-                    'music' => false,
-                ];
+                return new StreamData(
+                    programa: $rc['evento'],
+                    produccion: $rc['produccion'],
+                    pty: 0,
+                    ptn: '',
+                    music: false,
+                    sm: false,
+                );
             }
             Cache::delete(self::CONTROL_REMOTO_CACHE);
         }
@@ -52,21 +55,25 @@ class NowPlayingService
         });
 
         if ($nowPlaying->count() === 0) {
-            return [
-                'programa' => self::DEFAULT_PROGRAM_NAME,
-                'produccion' => self::DEFAULT_PRODUCTION_NAME,
-                'pty' => null,
-                'music' => true,
-            ];
+            return new StreamData(
+                programa: self::DEFAULT_PROGRAM_NAME,
+                produccion: self::DEFAULT_PRODUCTION_NAME,
+                pty: 0,
+                ptn: '',
+                music: true,
+                sm: true,
+            );
         }
 
         $first = $nowPlaying->first();
 
-        return [
-            'programa' => $first->name,
-            'produccion' => $first->produccion,
-            'pty' => $first->pty?->value,
-            'music' => $first->musical,
-        ];
+        return new StreamData(
+            programa: $first->name,
+            produccion: $first->produccion,
+            pty: $first->pty?->value ?? 0,
+            ptn: $first->ptn ?? '',
+            music: $first->musical,
+            sm: $first->musical,
+        );
     }
 }

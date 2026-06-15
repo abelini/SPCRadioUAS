@@ -37,6 +37,7 @@ class Programa extends Entity implements Stringable
 		'outOfAir' => true,
 		'image' => true,
 		'pty' => true,
+		'ptn' => true,
 	];
 
 	protected array $_hidden = [

@@ -370,6 +370,20 @@ return [
             'url' => env('LOG_QUERIES_URL', null),
             'scopes' => ['cake.database.queries'],
         ],
+        'shoutcast' => [
+            'className' => FileLog::class,
+            'path' => LOGS,
+            'file' => 'shoutcast',
+            'scopes' => ['shoutcast'],
+            'levels' => ['info', 'warning', 'error'],
+        ],
+        'rds' => [
+            'className' => FileLog::class,
+            'path' => LOGS,
+            'file' => 'rds',
+            'scopes' => ['rds'],
+            'levels' => ['info', 'warning', 'error'],
+        ],
     ],
 
     /*
