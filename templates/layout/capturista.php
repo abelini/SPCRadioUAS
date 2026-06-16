@@ -40,6 +40,7 @@
                 <?php //= $this->Html->link('<i class="fa-solid fa-align-left"></i> Categorías de programas', ['controller' => 'CategoriasProgramas', 'action' => 'index'], ['escape' => false]) ?>
                 <?php //= $this->Html->link('<i class="fa-solid fa-tv"></i> Control de Streaming', ['controller' => 'stream'], ['escape' => false]) ?>
                 <?php //= $this->Html->link('<i class="fa-solid fa-chart-simple"></i> Uso de streaming', ['controller' => 'StreamHits', 'action' => 'index'], ['escape' => false]) ?>
+                <?= $this->Html->link('<i class="fa-solid fa-closed-captioning"></i> Monitor RDS', ['controller' => 'Rds'], ['escape' => false]) ?>
 
                 <a href="#" class="theme-toggle-btn" onclick="toggleTheme()">
                     <i class="fa-solid fa-moon"></i> <span>Modo oscuro</span>

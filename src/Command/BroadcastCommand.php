@@ -31,8 +31,10 @@ class BroadcastCommand extends Command
             return self::CODE_ERROR;
         }
 
-        (new ShoutcastService())->update($data);
-        (new Rdi20TelnetService())->update($data);
+        $ts = date('Y-m-d H:i:s');
+
+        $io->out(sprintf('[%s][SHOUTCAST] %s', $ts, (new ShoutcastService())->update($data)));
+        $io->out(sprintf('[%s][RDSSYSTEM] %s', $ts, (new Rdi20TelnetService())->update($data)));
 
         return self::CODE_SUCCESS;
     }

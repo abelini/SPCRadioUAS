@@ -171,7 +171,7 @@ class Rdi20TelnetService
         return '';
     }
 
-    public function update(StreamData $data): void
+    public function update(StreamData $data): string
     {
         $override = Cache::read('rds_override');
         if ($override !== null) {
@@ -184,9 +184,8 @@ class Rdi20TelnetService
                 $this->pty = (int) ($override['pty'] ?? 0);
                 $this->music = !empty($override['music']);
                 $this->ptn = $override['ptn'] ?? '';
-                $this->send();
 
-                return;
+                return sprintf('Override activo: %s', $this->send());
             }
         }
 
@@ -198,10 +197,10 @@ class Rdi20TelnetService
         $this->music = $data->sm;
         $this->ptn = $data->ptn;
 
-        $this->send();
+        return $this->send();
     }
 
-    public function send(): void
+    public function send(): string
     {
         $ts = date('Y-m-d H:i:s');
 
@@ -211,7 +210,7 @@ class Rdi20TelnetService
         if ($lastSent === $cacheValue) {
             Log::write('info', sprintf('[%s] Sin cambios, omitiendo', $ts), ['scope' => 'rds']);
 
-            return;
+            return 'Sin cambios, omitiendo';
         }
 
         $payloads = [
@@ -233,14 +232,14 @@ class Rdi20TelnetService
         if (!$this->client->connect()) {
             Log::write('error', sprintf('[%s]   Conexión falló: %s', $ts, $this->client->getLastError()), ['scope' => 'rds']);
 
-            return;
+            return sprintf('Conexión falló: %s', $this->client->getLastError());
         }
 
         if (!$this->client->login($config['username'], $config['password'])) {
             Log::write('error', sprintf('[%s]   Login falló: %s', $ts, $this->client->getLastError()), ['scope' => 'rds']);
             $this->client->disconnect();
 
-            return;
+            return sprintf('Login falló: %s', $this->client->getLastError());
         }
 
         $success = true;
@@ -263,8 +262,10 @@ class Rdi20TelnetService
 
         if ($success) {
             Cache::write(self::CACHE_KEY, $cacheValue);
+
+            return 'Enviado correctamente';
         }
 
-        Log::write('info', sprintf('[%s] ------------------------', $ts), ['scope' => 'rds']);
+        return 'Error al enviar algunos comandos';
     }
 }

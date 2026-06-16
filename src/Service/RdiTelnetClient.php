@@ -57,7 +57,7 @@ class RdiTelnetClient
         $this->lastError = '';
 
         try {
-            if (!$this->socket->connect()) {
+            if ($this->socket->connect() !== true) {
                 $this->lastError = $this->socket->lastError() ?? 'Conexión falló';
 
                 return false;
