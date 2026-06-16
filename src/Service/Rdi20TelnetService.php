@@ -39,7 +39,18 @@ class Rdi20TelnetService
 
     private Socket $socket;
 
-    public function __construct() {
+    private string $ps = self::XPSS;
+
+    private string $rt = '';
+
+    private int $pty = 0;
+
+    private bool $music = false;
+
+    private string $ptn = '';
+
+    public function __construct()
+    {
         $ip = gethostbyname(gethostname());
         if (str_starts_with($ip, '192.168.')) {
             $this->host = self::LOCAL_RDI_ADDRESS;
@@ -54,6 +65,41 @@ class Rdi20TelnetService
         ]);
     }
 
+    public function setPS(string $value): self
+    {
+        $this->ps = $value;
+
+        return $this;
+    }
+
+    public function setRT(string $value): self
+    {
+        $this->rt = $value;
+
+        return $this;
+    }
+
+    public function setPTY(int $value): self
+    {
+        $this->pty = $value;
+
+        return $this;
+    }
+
+    public function setMusic(bool $value): self
+    {
+        $this->music = $value;
+
+        return $this;
+    }
+
+    public function setPTN(string $value): self
+    {
+        $this->ptn = $value;
+
+        return $this;
+    }
+
     public function getHost(): string
     {
         return $this->host;
@@ -64,30 +110,42 @@ class Rdi20TelnetService
         return self::PORT;
     }
 
-    private function buildText(StreamData $data): string
+    public function getLastResponse(): string
+    {
+        return $this->lastResponse;
+    }
+
+    public function getLastError(): string
+    {
+        return $this->lastError ?: 'Sin error';
+    }
+
+    private function buildRadioText(string $programa): string
     {
         $search = ['á', 'é', 'í', 'ó', 'ú', 'Á', 'É', 'Í', 'Ó', 'Ú', 'ñ', 'Ñ', 'ü', 'Ü'];
         $replace = ['a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U', 'n', 'N', 'u', 'U'];
 
-        return mb_strtoupper(mb_substr(str_replace($search, $replace, $data->programa), 0, self::MAX_RT_LENGTH));
+        return mb_strtoupper(mb_substr(str_replace($search, $replace, $programa), 0, self::MAX_RT_LENGTH));
     }
 
     public function update(StreamData $data): void
     {
-        $ts = date('Y-m-d H:i:s');
-        $text = $this->buildText($data);
-
-        $pty = $data->pty === 0
-            ? Cache::remember('last_pty_' . md5($text), fn() => self::PTY_FALLBACKS[array_rand(self::PTY_FALLBACKS)])
+        $this->rt = $this->buildRadioText($data->programa);
+        $this->ps = self::XPSS;
+        $this->pty = $data->pty === 0
+            ? Cache::remember('last_pty_' . md5($data->programa), fn() => self::PTY_FALLBACKS[array_rand(self::PTY_FALLBACKS)])
             : $data->pty;
+        $this->music = $data->sm;
+        $this->ptn = $data->ptn;
 
-        $xpssPayload = 'XPSS=' . self::XPSS . "\r\n";
-        $xtxtPayload = 'XTXT=' . $text . "\r\n";
-        $ptyPayload = 'XPTY=' . $pty . "\r\n";
-        $xfmsPayload = 'XFMS=' . ($data->sm ? '1' : '0') . "\r\n";
-        $ptnPayload = 'XPTN="' . $data->ptn . "\"\r\n";
+        $this->send();
+    }
 
-        $cacheValue = json_encode(['xpss' => self::XPSS, 'xtxt' => $text, 'pty' => $pty, 'xfms' => $data->sm, 'ptn' => $data->ptn]);
+    public function send(): void
+    {
+        $ts = date('Y-m-d H:i:s');
+
+        $cacheValue = json_encode(['xpss' => $this->ps, 'xtxt' => $this->rt, 'pty' => $this->pty, 'xfms' => $this->music, 'ptn' => $this->ptn]);
 
         $lastSent = Cache::read(self::CACHE_KEY);
         if ($lastSent === $cacheValue) {
@@ -96,26 +154,24 @@ class Rdi20TelnetService
             return;
         }
 
+        $payloads = [
+            'PS'  => 'XPSS=' . $this->ps . "\r\n",
+            'TXT' => 'XTXT=' . $this->rt . "\r\n",
+            'PTY' => 'XPTY=' . $this->pty . "\r\n",
+            'FMS' => 'XFMS=' . ($this->music ? '1' : '0') . "\r\n",
+            'PTN' => 'XPTN="' . $this->ptn . "\"\r\n",
+        ];
+
         Log::write('info', sprintf('[%s] --- RDS ---', $ts), ['scope' => 'rds']);
-        Log::write('info', sprintf('[%s]   TXT: %s', $ts, json_encode($xtxtPayload, JSON_UNESCAPED_UNICODE)), ['scope' => 'rds']);
-        Log::write('info', sprintf('[%s]   PS:  %s', $ts, json_encode($xpssPayload, JSON_UNESCAPED_UNICODE)), ['scope' => 'rds']);
-        Log::write('info', sprintf('[%s]   PTY: %s', $ts, json_encode($ptyPayload, JSON_UNESCAPED_UNICODE)), ['scope' => 'rds']);
-        Log::write('info', sprintf('[%s]   FMS: %s', $ts, json_encode($xfmsPayload, JSON_UNESCAPED_UNICODE)), ['scope' => 'rds']);
-        Log::write('info', sprintf('[%s]   PTN: %s', $ts, json_encode($ptnPayload, JSON_UNESCAPED_UNICODE)), ['scope' => 'rds']);
-        Log::write('info', sprintf('[%s]   RT:  %s', $ts, $text), ['scope' => 'rds']);
+        foreach ($payloads as $name => $payload) {
+            Log::write('info', sprintf('[%s]   %s: %s', $ts, $name, json_encode($payload, JSON_UNESCAPED_UNICODE)), ['scope' => 'rds']);
+        }
+        Log::write('info', sprintf('[%s]   RT:  %s', $ts, $this->rt), ['scope' => 'rds']);
 
         $success = true;
 
-        foreach ([$xpssPayload, $xtxtPayload, $ptyPayload, $xfmsPayload, $ptnPayload] as $i => $payload) {
-            $name = match ($i) {
-                0 => 'XPSS',
-                1 => 'XTXT',
-                2 => 'XPTY',
-                3 => 'XFMS',
-                4 => 'XPTN',
-            };
-
-            if (!$this->send($payload)) {
+        foreach ($payloads as $name => $payload) {
+            if (!$this->sendCommand($payload)) {
                 Log::write('error', sprintf('[%s]   %s falló: %s', $ts, $name, $this->getLastError()), ['scope' => 'rds']);
                 $success = false;
             } else {
@@ -130,7 +186,7 @@ class Rdi20TelnetService
         Log::write('info', sprintf('[%s] ------------------------', $ts), ['scope' => 'rds']);
     }
 
-    public function send(string $payload): bool
+    private function sendCommand(string $payload): bool
     {
         $this->lastResponse = '';
         $this->lastError = '';
@@ -204,15 +260,5 @@ class Rdi20TelnetService
         }
 
         return $data;
-    }
-
-    public function getLastResponse(): string
-    {
-        return $this->lastResponse;
-    }
-
-    public function getLastError(): string
-    {
-        return $this->lastError ?: 'Sin error';
     }
 }
