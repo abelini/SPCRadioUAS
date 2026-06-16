@@ -6,7 +6,6 @@ namespace SPC\Service;
 use Cake\Cache\Cache;
 use Cake\Core\Configure;
 use Cake\Log\Log;
-use Cake\Network\Socket;
 use SPC\DTO\StreamData;
 
 class Rdi20TelnetService
@@ -33,16 +32,7 @@ class Rdi20TelnetService
 
     public function __construct()
     {
-        $config = Configure::read('SensitiveData.Rdi20');
-        $ip = gethostbyname(gethostname());
-        $host = str_starts_with($ip, '192.168.') ? $config['local_host'] : $config['remote_host'];
-
-        $this->client = new RdiTelnetClient(new Socket([
-            'host' => $host,
-            'port' => $config['port'],
-            'protocol' => 'tcp',
-            'timeout' => 5,
-        ]));
+        $this->client = RdiTelnetClient::getInstance();
     }
 
     public function setPS(string $value): self

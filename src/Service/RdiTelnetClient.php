@@ -3,12 +3,15 @@ declare(strict_types=1);
 
 namespace SPC\Service;
 
+use Cake\Core\Configure;
 use Cake\Network\Exception\SocketException;
 use Cake\Network\Socket;
 
 class RdiTelnetClient
 {
     private const int TIMEOUT = 5;
+
+    private static ?self $instance = null;
 
     private Socket $socket;
 
@@ -20,9 +23,32 @@ class RdiTelnetClient
 
     private bool $loggedIn = false;
 
-    public function __construct(Socket $socket)
+    private function __construct(Socket $socket)
     {
         $this->socket = $socket;
+    }
+
+    public static function getInstance(): self
+    {
+        if (self::$instance === null) {
+            $config = Configure::read('SensitiveData.Rdi20');
+            $ip = gethostbyname(gethostname());
+            $host = str_starts_with($ip, '192.168.') ? $config['local_host'] : $config['remote_host'];
+
+            self::$instance = new self(new Socket([
+                'host' => $host,
+                'port' => $config['port'],
+                'protocol' => 'tcp',
+                'timeout' => self::TIMEOUT,
+            ]));
+        }
+
+        return self::$instance;
+    }
+
+    public static function resetInstance(): void
+    {
+        self::$instance = null;
     }
 
     public function connect(): bool
