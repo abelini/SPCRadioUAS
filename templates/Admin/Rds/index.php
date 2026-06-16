@@ -5,64 +5,64 @@
  * @var array|null $override
  */
 $this->assign('title', 'Monitor RDS');
-$fmt = fn(?string $v) => htmlspecialchars($v ?? '', ENT_QUOTES, 'UTF-8');
+$fmt = fn(?string $v) => htmlspecialchars(str_replace('"', '', $v ?? ''), ENT_QUOTES, 'UTF-8');
 ?>
 <style>
 .rds-panel {
-  max-width: 580px;
+  max-width: 960px;
   margin: 0 auto 2rem;
 }
 .rds-display {
   background: #111;
-  border: 3px solid #444;
-  border-radius: 14px;
-  padding: 20px 24px;
-  box-shadow: 0 0 20px rgba(0,255,0,.08), inset 0 0 30px rgba(0,0,0,.6);
+  border: 5px solid #444;
+  border-radius: 24px;
+  padding: 36px 42px;
+  box-shadow: 0 0 36px rgba(0,255,0,.08), inset 0 0 50px rgba(0,0,0,.6);
   font-family: 'Courier New', 'JetBrains Mono', monospace;
   color: #0f0;
-  text-shadow: 0 0 6px rgba(0,255,0,.4);
+  text-shadow: 0 0 10px rgba(0,255,0,.4);
   position: relative;
 }
 .rds-frequency {
   text-align: center;
-  font-size: 13px;
-  letter-spacing: 3px;
+  font-size: 22px;
+  letter-spacing: 5px;
   color: #f80;
-  text-shadow: 0 0 8px rgba(255,136,0,.5);
-  margin-bottom: 10px;
+  text-shadow: 0 0 14px rgba(255,136,0,.5);
+  margin-bottom: 18px;
   text-transform: uppercase;
   font-weight: 700;
 }
 .rds-screen {
   background: #0a0a0a;
-  border: 1px solid #333;
-  border-radius: 6px;
-  padding: 14px 16px;
-  min-height: 140px;
+  border: 2px solid #333;
+  border-radius: 10px;
+  padding: 24px 28px;
+  min-height: 240px;
 }
-.rds-line { font-size: 15px; line-height: 1.7; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.rds-line.lg { font-size: 20px; }
-.rds-line.dim { opacity: .6; font-size: 13px; }
+.rds-line { font-size: 26px; line-height: 1.7; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rds-line.lg { font-size: 34px; }
+.rds-line.dim { opacity: .6; font-size: 22px; }
 .rds-line.green { color: #0f0; }
 .rds-line.amber { color: #fa0; }
 .rds-line.cyan  { color: #0ff; }
 .rds-line.gray  { color: #888; }
 .rds-indicator {
   display: inline-block;
-  width: 10px; height: 10px;
+  width: 18px; height: 18px;
   border-radius: 50%;
-  margin-right: 6px;
+  margin-right: 10px;
 }
-.rds-indicator.on  { background: #0f0; box-shadow: 0 0 8px #0f0; }
-.rds-indicator.off { background: #f00; box-shadow: 0 0 8px #f00; }
+.rds-indicator.on  { background: #0f0; box-shadow: 0 0 14px #0f0; }
+.rds-indicator.off { background: #f00; box-shadow: 0 0 14px #f00; }
 .rds-footer {
-  margin-top: 10px;
-  font-size: 11px;
+  margin-top: 18px;
+  font-size: 18px;
   color: #666;
   text-align: center;
 }
 .form-override {
-  max-width: 580px;
+  max-width: 960px;
   margin: 0 auto;
 }
 .form-override fieldset {
@@ -142,7 +142,7 @@ $fmt = fn(?string $v) => htmlspecialchars($v ?? '', ENT_QUOTES, 'UTF-8');
 </div>
 
 <?php if ($override !== null): ?>
-<div class="override-banner" style="max-width:580px;margin:0 auto 1rem">
+<div class="override-banner" style="max-width:960px;margin:0 auto 1rem">
   ⚠️ Override activo hasta las <?= date('H:i', $override['expires_at'] ?? time()) ?>
   — <a href="?cancel=1" style="font-weight:600">Cancelar override</a>
 </div>
