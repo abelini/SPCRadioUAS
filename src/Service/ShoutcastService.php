@@ -34,7 +34,7 @@ class ShoutcastService
         ]);
     }
 
-    public function updateMetadata(StreamData $data): void
+    public function update(StreamData $data): void
     {
         $text = $data->produccion . ' - ' . $data->programa;
         $ts = date('Y-m-d H:i:s');

@@ -5,8 +5,6 @@ namespace SPC\Service;
 
 use Cake\Cache\Cache;
 use Cake\Log\Log;
-use Cake\Network\Exception\SocketException;
-use Cake\Network\Socket;
 use SPC\DTO\StreamData;
 
 class Rdi20TelnetService
@@ -19,25 +17,7 @@ class Rdi20TelnetService
 
     private const array PTY_FALLBACKS = [10, 12, 13, 16, 17, 19, 20];
 
-    private const string LOCAL_RDI_ADDRESS = '192.168.96.20';
-
-    private const string REMOTE_RDI_ADDRESS = '201.120.209.75';
-
-    private const int PORT = 2300;
-
-    private const string USERNAME = 'user';
-
-    private const string PASSWORD = 'pass';
-
-    private const int TIMEOUT = 5;
-
-    private string $lastResponse;
-
-    private string $lastError;
-
-    private string $host;
-
-    private Socket $socket;
+    private RdiTelnetClient $client;
 
     private string $ps = self::XPSS;
 
@@ -49,20 +29,9 @@ class Rdi20TelnetService
 
     private string $ptn = '';
 
-    public function __construct()
+    public function __construct(RdiTelnetClient $client)
     {
-        $ip = gethostbyname(gethostname());
-        if (str_starts_with($ip, '192.168.')) {
-            $this->host = self::LOCAL_RDI_ADDRESS;
-        } else {
-            $this->host = self::REMOTE_RDI_ADDRESS;
-        }
-        $this->socket = new Socket([
-            'host' => $this->host,
-            'port' => self::PORT,
-            'protocol' => 'tcp',
-            'timeout' => self::TIMEOUT,
-        ]);
+        $this->client = $client;
     }
 
     public function setPS(string $value): self
@@ -100,24 +69,39 @@ class Rdi20TelnetService
         return $this;
     }
 
-    public function getHost(): string
+    public function getPS(): string
     {
-        return $this->host;
+        return 'XPSS=' . $this->ps . "\r\n";
     }
 
-    public function getPort(): int
+    public function getRT(): string
     {
-        return self::PORT;
+        return 'XTXT=' . $this->rt . "\r\n";
+    }
+
+    public function getPTY(): string
+    {
+        return 'XPTY=' . $this->pty . "\r\n";
+    }
+
+    public function getXFMS(): string
+    {
+        return 'XFMS=' . ($this->music ? '1' : '0') . "\r\n";
+    }
+
+    public function getPTN(): string
+    {
+        return 'XPTN="' . $this->ptn . "\"\r\n";
     }
 
     public function getLastResponse(): string
     {
-        return $this->lastResponse;
+        return $this->client->getLastResponse();
     }
 
     public function getLastError(): string
     {
-        return $this->lastError ?: 'Sin error';
+        return $this->client->getLastError();
     }
 
     private function buildRadioText(string $programa): string
@@ -155,11 +139,11 @@ class Rdi20TelnetService
         }
 
         $payloads = [
-            'PS'  => 'XPSS=' . $this->ps . "\r\n",
-            'TXT' => 'XTXT=' . $this->rt . "\r\n",
-            'PTY' => 'XPTY=' . $this->pty . "\r\n",
-            'FMS' => 'XFMS=' . ($this->music ? '1' : '0') . "\r\n",
-            'PTN' => 'XPTN="' . $this->ptn . "\"\r\n",
+            'PS'  => $this->getPS(),
+            'TXT' => $this->getRT(),
+            'PTY' => $this->getPTY(),
+            'FMS' => $this->getXFMS(),
+            'PTN' => $this->getPTN(),
         ];
 
         Log::write('info', sprintf('[%s] --- RDS ---', $ts), ['scope' => 'rds']);
@@ -168,97 +152,43 @@ class Rdi20TelnetService
         }
         Log::write('info', sprintf('[%s]   RT:  %s', $ts, $this->rt), ['scope' => 'rds']);
 
+        $config = \Cake\Core\Configure::read('SensitiveData.Rdi20');
+
+        if (!$this->client->connect()) {
+            Log::write('error', sprintf('[%s]   Conexión falló: %s', $ts, $this->client->getLastError()), ['scope' => 'rds']);
+
+            return;
+        }
+
+        if (!$this->client->login($config['username'], $config['password'])) {
+            Log::write('error', sprintf('[%s]   Login falló: %s', $ts, $this->client->getLastError()), ['scope' => 'rds']);
+            $this->client->disconnect();
+
+            return;
+        }
+
         $success = true;
 
         foreach ($payloads as $name => $payload) {
-            if (!$this->sendCommand($payload)) {
-                Log::write('error', sprintf('[%s]   %s falló: %s', $ts, $name, $this->getLastError()), ['scope' => 'rds']);
+            $response = $this->client->sendCommand($payload);
+
+            if ($response === '' && $this->client->getLastError() !== 'Sin error') {
+                Log::write('error', sprintf('[%s]   %s falló: %s', $ts, $name, $this->client->getLastError()), ['scope' => 'rds']);
+                $success = false;
+            } elseif (!str_contains($response, '+')) {
+                Log::write('error', sprintf('[%s]   %s respondió sin "+": %s', $ts, $name, json_encode($response)), ['scope' => 'rds']);
                 $success = false;
             } else {
                 Log::write('info', sprintf('[%s]   %s enviado (+)', $ts, $name), ['scope' => 'rds']);
             }
         }
 
+        $this->client->disconnect();
+
         if ($success) {
             Cache::write(self::CACHE_KEY, $cacheValue);
         }
 
         Log::write('info', sprintf('[%s] ------------------------', $ts), ['scope' => 'rds']);
-    }
-
-    private function sendCommand(string $payload): bool
-    {
-        $this->lastResponse = '';
-        $this->lastError = '';
-
-        try {
-            if (!$this->socket->connect()) {
-                $this->lastError = $this->socket->lastError() ?? 'Conexión falló';
-
-                return false;
-            }
-
-            $this->readUntil(['Username:', 'login:']);
-
-            $this->socket->write(self::USERNAME . "\r\n");
-
-            $this->readUntil(['Password:', 'password:']);
-
-            $this->socket->write(self::PASSWORD . "\r\n");
-
-            $result = $this->readUntil(['RDi>', '>', '#', '$']);
-
-            if (stripos($result, 'Authentication failed') !== false || stripos($result, 'failed') !== false) {
-                $this->lastError = 'Authentication failed';
-                $this->socket->disconnect();
-
-                return false;
-            }
-
-            $this->socket->write($payload);
-
-            $response = $this->readUntil(['RDi>', '>', '#', '$'], 2);
-            $this->lastResponse = $response;
-
-            $this->socket->disconnect();
-
-            $success = str_contains($response, '+');
-            if (!$success) {
-                $this->lastError = sprintf('RDI respondió sin "+": %s', json_encode($response));
-            }
-
-            return $success;
-        } catch (SocketException $e) {
-            $this->lastError = $e->getMessage();
-            $this->socket->disconnect();
-
-            return false;
-        }
-    }
-
-    private function readUntil(array $markers, int $extraTimeout = 0): string
-    {
-        $data = '';
-        $start = microtime(true);
-        $maxWait = self::TIMEOUT + $extraTimeout;
-
-        while ((microtime(true) - $start) < $maxWait) {
-            $chunk = $this->socket->read(4096);
-            if ($chunk === null || $chunk === '') {
-                if ($data !== '') {
-                    usleep(100000);
-                }
-                break;
-            }
-            $data .= $chunk;
-
-            foreach ($markers as $marker) {
-                if (str_contains($data, $marker)) {
-                    return $data;
-                }
-            }
-        }
-
-        return $data;
     }
 }
