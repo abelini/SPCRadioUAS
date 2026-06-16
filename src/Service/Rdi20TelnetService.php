@@ -128,17 +128,24 @@ class Rdi20TelnetService
 
         $status = [
             'connected' => true,
-            'version' => $this->queryResponse("XVER?\r\n"),
-            'ps' => $this->queryResponse("XPSS?\r\n"),
-            'rt' => $this->queryResponse("XTXT?\r\n"),
-            'pty' => $this->queryResponse("XPTY?\r\n"),
-            'xfms' => $this->queryResponse("XFMS?\r\n"),
-            'ptn' => $this->queryResponse("XPTN?\r\n"),
+            'version' => $this->sanitize($this->queryResponse("XVER?\r\n")),
+            'ps' => $this->sanitize($this->queryResponse("XPSS?\r\n")),
+            'rt' => $this->sanitize($this->queryResponse("XTXT?\r\n")),
+            'pty' => $this->sanitize($this->queryResponse("XPTY?\r\n")),
+            'xfms' => $this->sanitize($this->queryResponse("XFMS?\r\n")),
+            'ptn' => $this->sanitize($this->queryResponse("XPTN?\r\n")),
+            'pic' => $this->sanitize($this->queryResponse("XPIC?\r\n")),
+            'idf' => $this->sanitize($this->queryResponse("XIDF?\r\n")),
         ];
 
         $this->client->disconnect();
 
         return $status;
+    }
+
+    protected function sanitize(string $value): string
+    {
+        return trim(str_replace('"', '', $value));
     }
 
     private function queryResponse(string $query): string
@@ -168,14 +175,19 @@ class Rdi20TelnetService
     {
         $override = Cache::read('rds_override');
         if ($override !== null) {
-            $this->ps = $override['ps'] !== '' ? $override['ps'] : self::XPSS;
-            $this->rt = $override['rt'] ?? '';
-            $this->pty = (int) ($override['pty'] ?? 0);
-            $this->music = !empty($override['music']);
-            $this->ptn = $override['ptn'] ?? '';
-            $this->send();
+            if ($override['expires_at'] < time()) {
+                Cache::delete('rds_override');
+                $override = null;
+            } else {
+                $this->ps = $override['ps'] !== '' ? $override['ps'] : self::XPSS;
+                $this->rt = $override['rt'] ?? '';
+                $this->pty = (int) ($override['pty'] ?? 0);
+                $this->music = !empty($override['music']);
+                $this->ptn = $override['ptn'] ?? '';
+                $this->send();
 
-            return;
+                return;
+            }
         }
 
         $this->rt = $this->buildRadioText($data->programa);
