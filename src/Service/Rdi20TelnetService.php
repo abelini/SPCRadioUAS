@@ -4,7 +4,9 @@ declare(strict_types=1);
 namespace SPC\Service;
 
 use Cake\Cache\Cache;
+use Cake\Core\Configure;
 use Cake\Log\Log;
+use Cake\Network\Socket;
 use SPC\DTO\StreamData;
 
 class Rdi20TelnetService
@@ -29,9 +31,18 @@ class Rdi20TelnetService
 
     private string $ptn = '';
 
-    public function __construct(RdiTelnetClient $client)
+    public function __construct()
     {
-        $this->client = $client;
+        $config = Configure::read('SensitiveData.Rdi20');
+        $ip = gethostbyname(gethostname());
+        $host = str_starts_with($ip, '192.168.') ? $config['local_host'] : $config['remote_host'];
+
+        $this->client = new RdiTelnetClient(new Socket([
+            'host' => $host,
+            'port' => $config['port'],
+            'protocol' => 'tcp',
+            'timeout' => 5,
+        ]));
     }
 
     public function setPS(string $value): self
@@ -112,6 +123,57 @@ class Rdi20TelnetService
         return mb_strtoupper(mb_substr(str_replace($search, $replace, $programa), 0, self::MAX_RT_LENGTH));
     }
 
+    public function fetchStatus(): array
+    {
+        $config = Configure::read('SensitiveData.Rdi20');
+
+        if (!$this->client->connect()) {
+            return ['connected' => false, 'error' => $this->client->getLastError()];
+        }
+
+        if (!$this->client->login($config['username'], $config['password'])) {
+            $this->client->disconnect();
+            return ['connected' => false, 'error' => $this->client->getLastError()];
+        }
+
+        $status = [
+            'connected' => true,
+            'version' => $this->queryResponse("XVER?\r\n"),
+            'ps' => $this->queryResponse("XPSS?\r\n"),
+            'rt' => $this->queryResponse("XTXT?\r\n"),
+            'pty' => $this->queryResponse("XPTY?\r\n"),
+            'xfms' => $this->queryResponse("XFMS?\r\n"),
+            'ptn' => $this->queryResponse("XPTN?\r\n"),
+        ];
+
+        $this->client->disconnect();
+
+        return $status;
+    }
+
+    private function queryResponse(string $query): string
+    {
+        $cmdName = rtrim(rtrim($query, "\r\n"), '?');
+        $response = $this->client->sendCommand($query);
+        $lines = explode("\r\n", $response);
+
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if (str_starts_with($line, $cmdName . '=')) {
+                return substr($line, strlen($cmdName) + 1);
+            }
+        }
+
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if ($line !== '' && $line !== 'RDi>' && $line !== '>' && !str_starts_with($line, $cmdName)) {
+                return $line;
+            }
+        }
+
+        return '';
+    }
+
     public function update(StreamData $data): void
     {
         $override = Cache::read('rds_override');
@@ -164,7 +226,7 @@ class Rdi20TelnetService
         }
         Log::write('info', sprintf('[%s]   RT:  %s', $ts, $this->rt), ['scope' => 'rds']);
 
-        $config = \Cake\Core\Configure::read('SensitiveData.Rdi20');
+        $config = Configure::read('SensitiveData.Rdi20');
 
         if (!$this->client->connect()) {
             Log::write('error', sprintf('[%s]   Conexión falló: %s', $ts, $this->client->getLastError()), ['scope' => 'rds']);
