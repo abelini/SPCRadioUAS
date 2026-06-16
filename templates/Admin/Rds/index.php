@@ -6,6 +6,13 @@
  */
 use SPC\Model\Enum\PTY;
 
+$ptyLabel = fn(PTY $pty): string => preg_replace('/(?<=[a-z])(?=[A-Z])/', ' ', $pty->name);
+
+$ptyOptions = [];
+foreach (PTY::cases() as $case) {
+    $ptyOptions[$case->value] = $ptyLabel($case);
+}
+
 $this->assign('title', 'Monitor RDS');
 
 ?>
@@ -104,7 +111,7 @@ $this->assign('title', 'Monitor RDS');
         <div class="rds-line rt green rds-marquee"><span><?= $status['rt'] ?: '—' ?></span></div>
         <div class="rds-line ps amber"><?= $status['ps'] ?: '—' ?></div>
         <div class="rds-line sm">
-          PTY: <?= PTY::tryFrom($status['pty'])?->name ?>&nbsp;&nbsp;|&nbsp;&nbsp;<?= ($status['xfms'] ?? '0') === '1' ? 'MÚSICA' : 'HABLA' ?>
+          PTY: <?= ($pty = PTY::tryFrom((int) ($status['pty'] ?? 0))) ? $ptyLabel($pty) : '—' ?>&nbsp;&nbsp;|&nbsp;&nbsp;<?= ($status['xfms'] ?? '0') === '1' ? 'MÚSICA' : 'HABLA' ?>
         </div>
         <div class="rds-line sm">PTN: <?= $status['ptn'] ?: '—' ?></div>
         <div class="rds-line gr20" style="display:flex;justify-content:space-between">
@@ -153,7 +160,7 @@ $this->assign('title', 'Monitor RDS');
 
     <div class="form-group">
       <?= $this->Form->label('pty', 'PTY (Program Type)') ?>
-      <?= $this->Form->select('pty', array_column(PTY::cases(), 'name'), ['class' => 'form-control', 'default' => 2]) ?>
+      <?= $this->Form->select('pty', $ptyOptions, ['class' => 'form-control', 'default' => 2]) ?>
     </div>
 
     <div class="form-group">
