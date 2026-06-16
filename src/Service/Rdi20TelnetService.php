@@ -114,6 +114,18 @@ class Rdi20TelnetService
 
     public function update(StreamData $data): void
     {
+        $override = Cache::read('rds_override');
+        if ($override !== null) {
+            $this->ps = $override['ps'] !== '' ? $override['ps'] : self::XPSS;
+            $this->rt = $override['rt'] ?? '';
+            $this->pty = (int) ($override['pty'] ?? 0);
+            $this->music = !empty($override['music']);
+            $this->ptn = $override['ptn'] ?? '';
+            $this->send();
+
+            return;
+        }
+
         $this->rt = $this->buildRadioText($data->programa);
         $this->ps = self::XPSS;
         $this->pty = $data->pty === 0
