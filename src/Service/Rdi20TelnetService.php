@@ -208,8 +208,6 @@ class Rdi20TelnetService
 
         $lastSent = Cache::read(self::CACHE_KEY);
         if ($lastSent === $cacheValue) {
-            Log::write('info', sprintf('[%s] Sin cambios, omitiendo', $ts), ['scope' => 'rds']);
-
             return 'Sin cambios, omitiendo';
         }
 
@@ -220,12 +218,6 @@ class Rdi20TelnetService
             'FMS' => $this->getXFMS(),
             'PTN' => $this->getPTN(),
         ];
-
-        Log::write('info', sprintf('[%s] --- RDS ---', $ts), ['scope' => 'rds']);
-        foreach ($payloads as $name => $payload) {
-            Log::write('info', sprintf('[%s]   %s: %s', $ts, $name, json_encode($payload, JSON_UNESCAPED_UNICODE)), ['scope' => 'rds']);
-        }
-        Log::write('info', sprintf('[%s]   RT:  %s', $ts, $this->rt), ['scope' => 'rds']);
 
         $config = Configure::read('SensitiveData.Rdi20');
 
@@ -253,8 +245,6 @@ class Rdi20TelnetService
             } elseif (!str_contains($response, '+')) {
                 Log::write('error', sprintf('[%s]   %s respondió sin "+": %s', $ts, $name, json_encode($response)), ['scope' => 'rds']);
                 $success = false;
-            } else {
-                Log::write('info', sprintf('[%s]   %s enviado (+)', $ts, $name), ['scope' => 'rds']);
             }
         }
 

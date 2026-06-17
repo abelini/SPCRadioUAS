@@ -41,15 +41,12 @@ class ShoutcastService
 
         $lastSent = Cache::read(self::CACHE_KEY);
         if ($lastSent === $text) {
-            Log::write('info', sprintf('[%s] Sin cambios, omitiendo', $ts), ['scope' => 'shoutcast']);
-
-            return sprintf('Sin cambios, omitiendo');
+            return 'Sin cambios, omitiendo';
         }
 
         try {
             $this->sendRequest($text);
             Cache::write(self::CACHE_KEY, $text);
-            Log::write('info', sprintf('[%s] Actualizado: %s', $ts, $text), ['scope' => 'shoutcast']);
 
             return sprintf('Actualizado: %s', $text);
         } catch (RuntimeException $e) {
