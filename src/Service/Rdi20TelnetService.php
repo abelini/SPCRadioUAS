@@ -18,8 +18,6 @@ class Rdi20TelnetService
 
     private const array PTY_FALLBACKS = [10, 12, 13, 16, 17, 19, 20];
 
-    private RdiTelnetClient $client;
-
     private string $ps = self::XPSS;
 
     private string $rt = '';
@@ -29,6 +27,8 @@ class Rdi20TelnetService
     private bool $music = false;
 
     private string $ptn = '';
+
+    private RdiTelnetClient $client;
 
     public function __construct()
     {
