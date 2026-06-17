@@ -29,9 +29,9 @@ enum PTY: int
 	case Personality = 21;
 	case Public = 22;
 	case College = 23;
-	case Unassigned24 = 24;
-	case Unassigned25 = 25;
-	case Unassigned26 = 26;
+	case SpanishTalk = 24;
+	case SpanishMusic = 25;
+	case HipHop = 26;
 	case Unassigned27 = 27;
 	case Unassigned28 = 28;
 	case Weather = 29;
