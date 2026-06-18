@@ -7,8 +7,6 @@ use Cake\Core\Configure;
 
 class SslService
 {
-    private const string ACME_SH_URL = 'https://get.acme.sh';
-
     public function getDomain(): ?string
     {
         return Configure::read('SslRenew.domain');
@@ -98,27 +96,6 @@ class SslService
         $acmeSh = $this->getAcmeHome() . '/acme.sh';
 
         return file_exists($acmeSh) && is_executable($acmeSh);
-    }
-
-    public function installAcme(): bool
-    {
-        $acmeHome = $this->getAcmeHome();
-        $email = $this->getEmail();
-
-        if (!is_dir($acmeHome)) {
-            mkdir($acmeHome, 0755, true);
-        }
-
-        $cmd = sprintf(
-            'curl -sL %s | sh -s -- --install-online --home %s --accountemail %s 2>&1',
-            escapeshellarg(self::ACME_SH_URL),
-            escapeshellarg($acmeHome),
-            escapeshellarg($email)
-        );
-
-        exec($cmd, $output, $exitCode);
-
-        return $exitCode === 0;
     }
 
     public function getCertInfo(string $domain): array
@@ -301,20 +278,11 @@ class SslService
 
         $log = [];
 
-        // Ensure acme.sh is installed
         if (!$this->isAcmeInstalled()) {
-            $log[] = 'Instalando acme.sh...';
-            if (!$this->installAcme()) {
-                return ['success' => false, 'log' => $log, 'error' => 'Error al instalar acme.sh'];
-            }
-            $log[] = 'acme.sh instalado.';
-        } else {
-            $log[] = 'acme.sh ya instalado.';
-            $this->execCmd([$acmeSh, '--upgrade', '--auto-upgrade', '0'], $output, $code);
-            if ($code === 0) {
-                $log[] = 'acme.sh actualizado.';
-            }
+            return ['success' => false, 'log' => [], 'error' => 'acme.sh no está instalado. Instálalo manualmente vía SSH con: curl -sL https://get.acme.sh | sh'];
         }
+
+        $log[] = 'acme.sh ya instalado.';
 
         // Set CA (Let's Encrypt or ZeroSSL)
         $ca = Configure::read('SslRenew.ca') ?? 'letsencrypt';

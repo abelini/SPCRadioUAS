@@ -32,9 +32,12 @@ $this->assign('title', 'Certificado SSL');
         </div>
 
     <?php elseif ($canRunAcme && !$ssl->isAcmeInstalled() && $certInfo === null): ?>
-        <div class="alert alert-info">
-            <i class="fa-solid fa-circle-info"></i>
-            acme.sh no está instalado. Se instalará automáticamente al renovar.
+        <div class="alert alert-warning">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <strong>acme.sh no está instalado.</strong>
+            Conéctate por SSH al servidor y ejecuta:<br>
+            <code>curl -sL https://get.acme.sh | sh</code><br>
+            Después de instalar, <a href="<?= $this->Url->build(['action' => 'index']) ?>">recarga esta página</a>.
         </div>
 
         <div class="stats-section">
@@ -47,14 +50,6 @@ $this->assign('title', 'Certificado SSL');
                 <tr><th>Destino PFX</th><td><?= h($ssl->getPfxDestination() ?? '(no configurado)') ?></td></tr>
                 <tr><th>Contraseña PFX</th><td><?= $ssl->getPfxPassword() !== '' ? '******' : '<span class="badge-dot badge-dot-danger"></span> vacía' ?></td></tr>
             </table>
-        </div>
-
-        <div class="actions-bar">
-            <?= $this->Form->postButton(
-                '<i class="fa-solid fa-rotate"></i> Instalar acme.sh y renovar',
-                ['action' => 'renew'],
-                ['class' => 'btn btn-primary', 'escape' => false]
-            ) ?>
         </div>
 
     <?php elseif ($certInfo && $certInfo['exists']): ?>
@@ -152,7 +147,7 @@ $this->assign('title', 'Certificado SSL');
                 ['action' => 'renew'],
                 [
                     'class' => 'btn btn-primary',
-                    'escape' => false,
+                    'escapeTitle' => false,
                     'confirm' => '¿Renovar certificado para ' . h($domain) . '? Se generará un nuevo .pfx.',
                 ]
             ) ?>
@@ -198,7 +193,7 @@ $this->assign('title', 'Certificado SSL');
             <?= $this->Form->postButton(
                 '<i class="fa-solid fa-rotate"></i> Obtener certificado',
                 ['action' => 'renew'],
-                ['class' => 'btn btn-primary', 'escape' => false]
+                ['class' => 'btn btn-primary', 'escapeTitle' => false]
             ) ?>
         </div>
         <?php endif; ?>

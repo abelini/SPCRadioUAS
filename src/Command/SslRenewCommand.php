@@ -10,8 +10,6 @@ use Cake\Core\Configure;
 
 class SslRenewCommand extends Command
 {
-    private const string ACME_SH_URL = 'https://get.acme.sh';
-
     protected function buildOptionParser(\Cake\Console\ConsoleOptionParser $parser): \Cake\Console\ConsoleOptionParser
     {
         $parser->setDescription(
@@ -62,19 +60,14 @@ class SslRenewCommand extends Command
 
         $acmeSh = $acmeHome . '/acme.sh';
 
-        // 1. Install acme.sh if missing
+        // 1. Check acme.sh is installed
         if (!$this->isInstalled($acmeSh)) {
-            $io->out('Instalando acme.sh...');
-            if (!$this->installAcmeSh($acmeHome, $email, $io)) {
-                $io->error('Error al instalar acme.sh');
+            $io->error('acme.sh no está instalado. Ejecuta: curl -sL https://get.acme.sh | sh');
 
-                return static::CODE_ERROR;
-            }
-            $io->success('acme.sh instalado correctamente');
-        } else {
-            $io->out('acme.sh ya está instalado');
-            $this->runCommand([$acmeSh, '--upgrade', '--auto-upgrade', '0'], $io);
+            return static::CODE_ERROR;
         }
+
+        $io->out('acme.sh ya está instalado');
 
         // 2. Set CA
         $this->runCommand([$acmeSh, '--set-default-ca', '--server', $ca], $io);
@@ -171,24 +164,6 @@ class SslRenewCommand extends Command
     private function isInstalled(string $acmeSh): bool
     {
         return file_exists($acmeSh) && is_executable($acmeSh);
-    }
-
-    private function installAcmeSh(string $acmeHome, string $email, ConsoleIo $io): bool
-    {
-        if (!is_dir($acmeHome)) {
-            mkdir($acmeHome, 0755, true);
-        }
-
-        $installCmd = sprintf(
-            'curl -sL %s | sh -s -- --install-online --home %s --accountemail %s',
-            escapeshellarg(self::ACME_SH_URL),
-            escapeshellarg($acmeHome),
-            escapeshellarg($email)
-        );
-
-        exec($installCmd . ' 2>&1', $output, $exitCode);
-
-        return $exitCode === 0;
     }
 
     private function runCommand(array $args, ConsoleIo $io, ?int &$exitCode = null): array
