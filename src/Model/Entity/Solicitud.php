@@ -67,7 +67,7 @@ class Solicitud extends Entity
 	public function alreadyAccepted(): string
 	{
 		if ($this->tipoSolicitudID == TipoSolicitud::SPOT_RECORDING || $this->tipoSolicitudID == TipoSolicitud::CEREMONY_MASTER) {
-			return $this->aceptado ? '<span class="w3-badge w3-green"></span>' : '<span class="w3-badge w3-red"></span>';
+			return $this->aceptado ? '<span class="badge-dot badge-dot-success"></span>' : '<span class="badge-dot badge-dot-danger"></span>';
 		}
 		return '';
 	}

@@ -20,12 +20,12 @@ class TipoBitacora extends Entity {
 			$turnos[$id] = new TurnoVigilancia($turno);
 		}
 		
-		$html = '<ul class="w3-ul">';
+		$html = '<ul class="list-bordered">';
 		foreach($turnos as $turno) {
 			
 			$html .= 	'<li>'. $turno->name . '</li>';
 			$html .= 	'<li>';
-			$html .= 		'<ul class="w3-ul">';
+			$html .= 		'<ul class="list-bordered">';
 			$html .= 			'<li>'. $turno->starts . '</li>';
 			$html .= 			'<li>'. $turno->ends . '</li>';
 			$html .= 		'</ul>';

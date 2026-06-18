@@ -43,14 +43,15 @@
 
                 <?= $this->Html->link('<i class="fa-solid fa-right-from-bracket"></i> Salir', ['controller' => 'usuarios', 'action' => 'logout'], ['class' => 'nav-logout', 'escape' => false]) ?>
 
-                <a href="#" class="w3-button w3-display-bottomright" onclick="w3_close()"><i
-                        class="fa-solid fa-angles-left"></i></a>
+                <button class="sidebar-close-btn" onclick="toggleSidebar()">
+                    <i class="fa-solid fa-angles-left"></i> Cerrar
+                </button>
             </div>
         </nav>
 
         <main class="admin-main">
             <header class="admin-header">
-                <button class="mobile-menu-btn" onclick="w3_open()">
+                <button class="mobile-menu-btn" onclick="toggleSidebar()">
                     <i class="fa-solid fa-bars"></i>
                 </button>
             </header>
@@ -95,6 +96,7 @@
         }
         updateToggleText();
     </script>
+    <?= $this->Html->script('admin') ?>
 </body>
 
 </html>

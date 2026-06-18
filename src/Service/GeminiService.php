@@ -37,7 +37,7 @@ class GeminiService
             while ($retryCount < $maxRetries) {
                 try {
                     $result = $this->engine->generativeModel(model: $model)->generateContent($prompt);
-                    return $result->text() . '<br><br><br><p class="w3-text-light-gray">Generado con el modelo: ' . $model . '</p>';
+                    return $result->text() . '<br><br><br><p class="generated-footnote">Generado con el modelo: ' . $model . '</p>';
 
                 } catch (\Exception $e) {
                     $errorMessage = $e->getMessage();

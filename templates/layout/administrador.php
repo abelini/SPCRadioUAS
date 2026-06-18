@@ -49,6 +49,10 @@
 
                 <?= $this->Html->link('<i class="fa-solid fa-right-from-bracket"></i> Salir', ['controller' => 'usuarios', 'action' => 'logout'], ['class' => 'nav-logout', 'escape' => false]) ?>
 
+                <button class="sidebar-close-btn" onclick="toggleSidebar()">
+                    <i class="fa-solid fa-angles-left"></i> Cerrar
+                </button>
+
                 <div class="admin-sidebar-footer">
                     <p>SPC v<?= $AppVersion ?></p>
                 </div>
@@ -57,6 +61,9 @@
 
         <main class="admin-main">
             <header class="admin-header">
+                <button class="mobile-menu-btn" onclick="toggleSidebar()" aria-label="Menú">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
                 <p class="admin-header-user">
                     <i class="fa-solid fa-circle-user"></i>
                     <?= $this->Html->link($user->name, ['controller' => 'Usuarios', 'action' => 'profile']) ?>
@@ -103,6 +110,7 @@
         }
         updateToggleText();
     </script>
+    <?= $this->Html->script('admin') ?>
 </body>
 
 </html>

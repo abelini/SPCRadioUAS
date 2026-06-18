@@ -20,13 +20,13 @@ class Incidencia extends Entity {
 	
 	public function getPrintStatus() : string {
 		if(count($this->updates) > 0) {
-			$status = match($this->closed) {
-				false => '<span class="w3-tag w3-round w3-orange">En revisión</span>',
-				true => '<span class="w3-tag w3-round w3-green">Solucionado</span>',
+		$status = match($this->closed) {
+				false => '<span class="status-badge status-progress">En revisión</span>',
+				true => '<span class="status-badge status-completed">Solucionado</span>',
 				default => '',
 			};
 		} else {
-			$status = '<span class="w3-tag w3-round w3-red">Pendiente</span>';
+			$status = '<span class="status-badge status-pending">Pendiente</span>';
 		}
 		
 		return $status;

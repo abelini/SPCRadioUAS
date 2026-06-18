@@ -57,10 +57,10 @@ class ReportesPrograma extends Entity
 	];
 
 	protected const array STATUS_ICONS = [
-		self::V => '<i class="fa-solid fa-microphone-lines w3-text-green"></i>',
-		self::G => '<i class="fa-solid fa-circle w3-text-red"></i>',
-		self::S => '<i class="fa-solid fa-microphone-lines-slash"></i>',
-		self::X => '<i class="fa-solid fa-circle-xmark w3-highway-text-red"></i>',
+		self::V => '<i class="fa-solid fa-microphone-lines icon-live"></i>',
+		self::G => '<i class="fa-solid fa-circle icon-recorded"></i>',
+		self::S => '<i class="fa-solid fa-microphone-lines-slash icon-missed"></i>',
+		self::X => '<i class="fa-solid fa-circle-xmark icon-missed"></i>',
 	];
 
 	/**

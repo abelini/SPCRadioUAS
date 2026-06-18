@@ -96,7 +96,7 @@
   --radius-full: 48px;
   --radius-full-2: 60px;
   --radius-pill: 60px;
-  --radius-cards: 24px;
+  --radius-cards: 8px;
   --radius-input: 8px;
   --radius-buttons: 6px;
   --radius-default: 6px;
@@ -267,6 +267,24 @@ p {
 
 .admin-sidebar-close {
   display: none;
+}
+
+.sidebar-close-btn {
+  display: none;
+  width: 100%;
+  padding: var(--spacing-12);
+  text-align: center;
+  font-size: 18px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  border-top: 1px solid var(--color-subtle-gray);
+  color: var(--color-faded-silver);
+  transition: all 0.2s ease;
+}
+.sidebar-close-btn:hover {
+  background-color: var(--color-ash-gray);
+  color: var(--color-ghost-white);
 }
 
 .admin-main {
@@ -1072,6 +1090,10 @@ textarea.form-control {
     font-size: 24px;
   }
 
+  .sidebar-close-btn {
+    display: block;
+  }
+
   .stats-grid {
     grid-template-columns: 1fr;
   }
@@ -1258,4 +1280,80 @@ select[size]:has(option:checked) {
   font-size: var(--text-caption);
   text-align: center;
   padding: var(--card-padding);
+}
+
+/* Badge Dot */
+.badge-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  vertical-align: middle;
+}
+.badge-dot-success {
+  background-color: var(--color-spring-green);
+}
+.badge-dot-danger {
+  background-color: #dc2626;
+}
+
+/* Bordered List */
+.list-bordered {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.list-bordered li {
+  padding: var(--spacing-8) var(--spacing-12);
+  border-bottom: 1px solid var(--color-subtle-gray);
+}
+.list-bordered li:last-child {
+  border-bottom: none;
+}
+
+/* Icon Status */
+.icon-live {
+  color: var(--color-spring-green);
+}
+.icon-recorded {
+  color: #dc2626;
+}
+.icon-missed {
+  color: #dc2626;
+}
+
+/* Paginator Button */
+.paginator-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding: var(--spacing-4) var(--spacing-12);
+  border: 1px solid var(--color-subtle-gray);
+  border-radius: var(--radius-md);
+  color: var(--color-faded-silver);
+  font-size: var(--text-body-sm);
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+.paginator-btn:hover {
+  background-color: var(--color-ash-gray);
+  color: var(--color-ghost-white);
+  border-color: var(--color-polar-blue);
+}
+.paginator-btn.active {
+  background-color: var(--color-interface-blue);
+  color: var(--color-ghost-white);
+  border-color: var(--color-interface-blue);
+}
+.paginator-btn.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Generated Footnote */
+.generated-footnote {
+  color: var(--color-ui-gray);
+  font-size: var(--text-caption);
 }
