@@ -18,6 +18,8 @@
   --color-blue-violet-orb: #8250df;
   --color-vapor-trail-blue: #218bda;
   --color-deep-gradient-start: #f7f9fa;
+  --color-danger-red: #cf222e;
+  --color-warning-amber: #d29922;
 
   /* Gradients */
   --gradient-violet-glow: radial-gradient(circle at 0px 100%, rgb(164, 117, 249) 10%, rgb(130, 80, 223) 20%, rgba(102, 57, 186, 0) 60%);
@@ -1338,6 +1340,27 @@ select[size]:has(option:checked) {
 }
 .badge-dot-danger {
   background-color: #cf222e;
+}
+
+/* Status Dot (glowing indicator for SSL / live status) */
+.status-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  vertical-align: middle;
+}
+.status-dot-success {
+  background: var(--color-spring-green);
+  box-shadow: 0 0 6px var(--color-spring-green);
+}
+.status-dot-warning {
+  background: var(--color-warning-amber);
+  box-shadow: 0 0 6px var(--color-warning-amber);
+}
+.status-dot-danger {
+  background: var(--color-danger-red);
+  box-shadow: 0 0 6px var(--color-danger-red);
 }
 
 /* Bordered List */

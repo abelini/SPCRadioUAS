@@ -10,48 +10,11 @@
  */
 $this->assign('title', 'Certificado SSL');
 ?>
-<style>
-.status-circle {
-    display: inline-block;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    margin-right: 6px;
-    vertical-align: middle;
-}
-.status-circle.green { background: var(--color-spring-green, #1a7f37); box-shadow: 0 0 6px var(--color-spring-green, #1a7f37); }
-.status-circle.yellow { background: #d29922; box-shadow: 0 0 6px #d29922; }
-.status-circle.red { background: #cf222e; box-shadow: 0 0 6px #cf222e; }
-.status-circle.gray { background: var(--color-muted-gray, #656d76); }
-.info-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 8px 0;
-    border-bottom: 1px solid var(--color-border-subtle, #d0d7de);
-    font-size: 14px;
-}
-.info-row:last-child { border-bottom: none; }
-.info-row .label { color: var(--color-muted-gray, #656d76); font-weight: 500; }
-.info-row .value { color: var(--color-dark-charcoal, #1f2328); text-align: right; word-break: break-all; }
-.log-output {
-    background: #0d1117;
-    color: #8b949e;
-    font-family: 'JetBrains Mono', 'Courier New', monospace;
-    font-size: 12px;
-    line-height: 1.6;
-    padding: 16px;
-    border-radius: 6px;
-    max-height: 300px;
-    overflow-y: auto;
-    white-space: pre-wrap;
-    word-break: break-all;
-}
-</style>
-
 <div class="page-header">
     <h5><i class="fa-solid fa-shield-halved"></i> Certificado SSL</h5>
 </div>
 <div class="content-card">
+
     <?php if (!$canRunAcme): ?>
         <div class="alert alert-info">
             <i class="fa-solid fa-circle-info"></i>
@@ -74,155 +37,116 @@ $this->assign('title', 'Certificado SSL');
             acme.sh no está instalado. Se instalará automáticamente al renovar.
         </div>
 
-        <div class="stats-section" style="margin-top:0">
+        <div class="stats-section">
             <div class="page-subheader">
                 <h5>Configuración</h5>
             </div>
-            <div style="padding:16px 0">
-                <div class="info-row">
-                    <span class="label">Dominio</span>
-                    <span class="value"><?= h($domain) ?></span>
-                </div>
-                <div class="info-row">
-                    <span class="label">Email</span>
-                    <span class="value"><?= h($ssl->getEmail()) ?></span>
-                </div>
-                <div class="info-row">
-                    <span class="label">Destino PFX</span>
-                    <span class="value"><?= h($ssl->getPfxDestination() ?? '(no configurado)') ?></span>
-                </div>
-                <div class="info-row">
-                    <span class="label">Contraseña PFX</span>
-                    <span class="value"><?= $ssl->getPfxPassword() !== '' ? '******' : '<span style="color:#cf222e">(vacia)</span>' ?></span>
-                </div>
-            </div>
+            <table class="view-table">
+                <tr><th>Dominio</th><td><?= h($domain) ?></td></tr>
+                <tr><th>Email</th><td><?= h($ssl->getEmail()) ?></td></tr>
+                <tr><th>Destino PFX</th><td><?= h($ssl->getPfxDestination() ?? '(no configurado)') ?></td></tr>
+                <tr><th>Contraseña PFX</th><td><?= $ssl->getPfxPassword() !== '' ? '******' : '<span class="badge-dot badge-dot-danger"></span> vacía' ?></td></tr>
+            </table>
         </div>
 
-        <?php if ($canRunAcme): ?>
-        <div style="margin-top:16px; text-align:center">
+        <div class="actions-bar">
             <?= $this->Form->postButton(
                 '<i class="fa-solid fa-rotate"></i> Instalar acme.sh y renovar',
                 ['action' => 'renew'],
                 ['class' => 'btn btn-primary', 'escape' => false]
             ) ?>
         </div>
-        <?php endif; ?>
 
     <?php elseif ($certInfo && $certInfo['exists']): ?>
         <?php
         $daysLeft = $certInfo['daysLeft'];
         if ($daysLeft > 30) {
-            $statusClass = 'green';
+            $dotClass = 'status-dot-success';
             $statusText = 'Vigente';
+            $badgeClass = 'status-completed';
         } elseif ($daysLeft > 7) {
-            $statusClass = 'yellow';
+            $dotClass = 'status-dot-warning';
             $statusText = 'Por vencer';
+            $badgeClass = 'status-progress';
         } elseif ($daysLeft > 0) {
-            $statusClass = 'red';
+            $dotClass = 'status-dot-danger';
             $statusText = 'Vence pronto';
+            $badgeClass = 'status-pending';
         } else {
-            $statusClass = 'red';
+            $dotClass = 'status-dot-danger';
             $statusText = 'Vencido';
+            $badgeClass = 'status-pending';
         }
         ?>
 
-        <div style="display:flex; align-items:center; gap:24px; flex-wrap:wrap">
-            <div style="display:flex; align-items:center; gap:12px">
-                <span class="status-circle <?= $statusClass ?>"></span>
-                <span style="font-size:16px; font-weight:600; color:var(--color-dark-charcoal)"><?= $statusText ?></span>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <span class="status-dot <?= $dotClass ?>"></span>
+                <strong><?= $statusText ?></strong>
             </div>
-
-            <?php if ($daysLeft !== null): ?>
-                <span class="status-badge <?= $daysLeft > 30 ? 'status-completed' : ($daysLeft > 7 ? 'status-progress' : 'status-pending') ?>">
-                    <i class="fa-regular fa-calendar"></i> <?= $daysLeft ?> días
-                </span>
-            <?php endif; ?>
+            <div class="col-md-6">
+                <?php if ($daysLeft !== null): ?>
+                    <span class="status-badge <?= $badgeClass ?>">
+                        <i class="fa-regular fa-calendar"></i> <?= $daysLeft ?> días
+                    </span>
+                <?php endif; ?>
+            </div>
         </div>
 
         <?php if ($certInfo['source'] === 'pfx'): ?>
-        <div class="alert alert-info" style="margin-top:16px">
+        <div class="alert alert-info mt-3">
             <i class="fa-solid fa-circle-info"></i>
             Mostrando información del archivo PFX en <code><?= h($certInfo['pfxFile']) ?></code>.
-            No hay certificado gestionado por acme.sh todavía. Presiona "Renovar" para obtener uno de Let's Encrypt.
+            No hay certificado gestionado por acme.sh todavía.
         </div>
         <?php endif; ?>
 
-        <div class="stats-section" style="margin-top:16px">
+        <div class="stats-section">
             <div class="page-subheader">
                 <h5>Información del certificado</h5>
             </div>
-            <div style="padding:16px 0">
-                <div class="info-row">
-                    <span class="label">Dominio</span>
-                    <span class="value"><?= h($domain) ?></span>
-                </div>
-                <div class="info-row">
-                    <span class="label">Subject</span>
-                    <span class="value"><?= h($certInfo['subject'] ?? '—') ?></span>
-                </div>
-                <div class="info-row">
-                    <span class="label">Issuer</span>
-                    <span class="value"><?= h($certInfo['issuer'] ?? '—') ?></span>
-                </div>
-                <div class="info-row">
-                    <span class="label">Expira</span>
-                    <span class="value"><?= h($certInfo['expiry'] ?? '—') ?></span>
-                </div>
+            <table class="view-table">
+                <tr><th>Dominio</th><td><?= h($domain) ?></td></tr>
+                <tr><th>Subject</th><td><?= h($certInfo['subject'] ?? '—') ?></td></tr>
+                <tr><th>Issuer</th><td><?= h($certInfo['issuer'] ?? '—') ?></td></tr>
+                <tr><th>Expira</th><td><?= h($certInfo['expiry'] ?? '—') ?></td></tr>
                 <?php if (!empty($certInfo['sans'])): ?>
-                <div class="info-row">
-                    <span class="label">SANs</span>
-                    <span class="value" style="font-size:12px"><?= h(implode(', ', $certInfo['sans'])) ?></span>
-                </div>
+                <tr><th>SANs</th><td><?= h(implode(', ', $certInfo['sans'])) ?></td></tr>
                 <?php endif; ?>
-                <div class="info-row">
-                    <span class="label">Última renovación</span>
-                    <span class="value"><?= $certInfo['lastRenew'] ? date('Y-m-d H:i:s', $certInfo['lastRenew']) : '—' ?></span>
-                </div>
-            </div>
+                <tr><th>Última renovación</th><td><?= $certInfo['lastRenew'] ? date('Y-m-d H:i:s', $certInfo['lastRenew']) : '—' ?></td></tr>
+            </table>
         </div>
 
         <div class="stats-section">
             <div class="page-subheader">
                 <h5>Archivos</h5>
             </div>
-            <div style="padding:16px 0">
-                <div class="info-row">
-                    <span class="label">Certificado</span>
-                    <span class="value" style="font-size:12px"><?= h($certInfo['certFile']) ?></span>
-                </div>
-                <div class="info-row">
-                    <span class="label">Llave privada</span>
-                    <span class="value" style="font-size:12px"><?= h($certInfo['keyFile']) ?></span>
-                </div>
-                <div class="info-row">
-                    <span class="label">PFX</span>
-                    <span class="value" style="font-size:12px">
-                        <?= h($certInfo['pfxFile']) ?>
-                        <?php if ($certInfo['pfxExists']): ?>
-                            <span class="status-badge status-completed" style="margin-left:8px">Generado</span>
-                        <?php else: ?>
-                            <span class="status-badge status-pending" style="margin-left:8px">Pendiente</span>
-                        <?php endif; ?>
-                    </span>
-                </div>
+            <table class="view-table">
+                <tr><th>Certificado</th><td><?= h($certInfo['certFile']) ?></td></tr>
+                <tr><th>Llave privada</th><td><?= h($certInfo['keyFile']) ?></td></tr>
+                <tr><th>PFX</th><td>
+                    <?= h($certInfo['pfxFile']) ?>
+                    <?php if ($certInfo['pfxExists']): ?>
+                        <span class="status-badge status-completed">Generado</span>
+                    <?php else: ?>
+                        <span class="status-badge status-pending">Pendiente</span>
+                    <?php endif; ?>
+                </td></tr>
                 <?php if ($certInfo['pfxExists'] && $certInfo['pfxAge']): ?>
-                <div class="info-row">
-                    <span class="label">PFX generado</span>
-                    <span class="value"><?= date('Y-m-d H:i:s', $certInfo['pfxAge']) ?></span>
-                </div>
+                <tr><th>PFX generado</th><td><?= date('Y-m-d H:i:s', $certInfo['pfxAge']) ?></td></tr>
                 <?php endif; ?>
-            </div>
+            </table>
         </div>
 
         <?php if ($ssl->getPfxPassword() === ''): ?>
-        <div class="alert alert-warning" style="margin-top:16px">
+        <div class="alert alert-warning mt-3">
             <i class="fa-solid fa-triangle-exclamation"></i>
-            La contraseña del PFX está vacía. Configura <code>SslRenew.pfxPassword</code> en <code>app_local.php</code> si el servicio destino la requiere.
+            La contraseña del PFX está vacía. Configura <code>SslRenew.pfxPassword</code> en <code>config/app_local.php</code> si el servicio destino la requiere.
         </div>
         <?php endif; ?>
 
         <?php if ($canRunAcme): ?>
-        <div style="margin-top:24px; display:flex; gap:12px; flex-wrap:wrap">
+        <div class="actions-bar">
             <?= $this->Form->postButton(
                 '<i class="fa-solid fa-rotate"></i> Renovar ahora',
                 ['action' => 'renew'],
@@ -241,55 +165,36 @@ $this->assign('title', 'Certificado SSL');
             <?= h($certInfo['error']) ?>
         </div>
 
-        <div class="stats-section" style="margin-top:0">
+        <div class="stats-section">
             <div class="page-subheader">
                 <h5>Configuración</h5>
             </div>
-            <div style="padding:16px 0">
-                <div class="info-row">
-                    <span class="label">Destino PFX</span>
-                    <span class="value"><?= h($certInfo['pfxFile'] ?? $ssl->getPfxDestination() ?? '(no configurado)') ?></span>
-                </div>
-                <div class="info-row">
-                    <span class="label">Contraseña PFX</span>
-                    <span class="value"><?= $ssl->getPfxPassword() !== '' ? '******' : '<span style="color:#cf222e">(vacia)</span>' ?></span>
-                </div>
-            </div>
+            <table class="view-table">
+                <tr><th>Destino PFX</th><td><?= h($certInfo['pfxFile'] ?? $ssl->getPfxDestination() ?? '(no configurado)') ?></td></tr>
+                <tr><th>Contraseña PFX</th><td><?= $ssl->getPfxPassword() !== '' ? '******' : '<span class="badge-dot badge-dot-danger"></span> vacía' ?></td></tr>
+            </table>
         </div>
 
     <?php else: ?>
         <div class="alert alert-info">
             <i class="fa-solid fa-circle-info"></i>
             No se encontró un certificado existente para <strong><?= h($domain) ?></strong>.
-            Presiona "Renovar" para obtener el primero.
         </div>
 
-        <div class="stats-section" style="margin-top:0">
+        <div class="stats-section">
             <div class="page-subheader">
                 <h5>Configuración</h5>
             </div>
-            <div style="padding:16px 0">
-                <div class="info-row">
-                    <span class="label">Dominio</span>
-                    <span class="value"><?= h($domain) ?></span>
-                </div>
-                <div class="info-row">
-                    <span class="label">Email</span>
-                    <span class="value"><?= h($ssl->getEmail()) ?></span>
-                </div>
-                <div class="info-row">
-                    <span class="label">Destino PFX</span>
-                    <span class="value"><?= h($ssl->getPfxDestination() ?? '(no configurado)') ?></span>
-                </div>
-                <div class="info-row">
-                    <span class="label">Contraseña PFX</span>
-                    <span class="value"><?= $ssl->getPfxPassword() !== '' ? '******' : '<span style="color:#cf222e">(vacia)</span>' ?></span>
-                </div>
-            </div>
+            <table class="view-table">
+                <tr><th>Dominio</th><td><?= h($domain) ?></td></tr>
+                <tr><th>Email</th><td><?= h($ssl->getEmail()) ?></td></tr>
+                <tr><th>Destino PFX</th><td><?= h($ssl->getPfxDestination() ?? '(no configurado)') ?></td></tr>
+                <tr><th>Contraseña PFX</th><td><?= $ssl->getPfxPassword() !== '' ? '******' : '<span class="badge-dot badge-dot-danger"></span> vacía' ?></td></tr>
+            </table>
         </div>
 
         <?php if ($canRunAcme): ?>
-        <div style="margin-top:16px; text-align:center">
+        <div class="actions-bar">
             <?= $this->Form->postButton(
                 '<i class="fa-solid fa-rotate"></i> Obtener certificado',
                 ['action' => 'renew'],
