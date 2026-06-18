@@ -19,7 +19,7 @@ class ScheduleController extends ApiController
 	public function now(): Response
 	{
 		$nowPlaying = (new NowPlayingService())->get();
-		$plainText = $nowPlaying['produccion'] . ' - ' . $nowPlaying['programa'];
+		$plainText = $nowPlaying->produccion . ' - ' . $nowPlaying->programa;
 
 		if ($this->request->getQuery('format') === 'json') {
 			return $this->render()
