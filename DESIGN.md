@@ -1,11 +1,15 @@
 # GitHub — Style Reference
-> Midnight command center, subtly glowing
+> Clean midday workspace, with a midnight dark mode variant
 
-**Theme:** dark
+**Primary theme:** `midday` (light). **Dark mode variant:** `midnight`.
 
-GitHub's design system evokes a dark, digital canvas – a midnight command center feel. Key elements are subtle translucency, glowing accents of blue, green, and violet, and a spacious, comfortable layout. Typography is precise and organized, contrasting bright text against deep backgrounds. Components are lightweight with rounded corners, often appearing as frosted overlays or bordered elements on a dark, unbounded canvas.
+The system uses a light-on-white midday aesthetic as its default. The palette is inspired by GitHub's clean, functional UI: white and light-gray surfaces with subtle blue-purple gradients, Polar Blue accents, and a spacious, comfortable layout. Typography is precise and organized, contrasting dark text against light backgrounds. Components are lightweight with rounded corners, subtle borders, and minimal shadows.
+
+A dark mode variant (`midnight`) is available, switching the canvas to deep-space black with Ghost White text and glowing accents—ideal for low-light environments. All CSS custom properties in this document represent the midnight variant; the midday variant uses equivalent light-mode tokens (see `github-midday.css`).
 
 ## Tokens — Colors
+
+> The table below lists the **midnight** (dark mode) color tokens. The midday theme uses equivalent light-mode values defined in `webroot/css/github-midday.css`.
 
 | Name | Value | Token | Role |
 |------|-------|-------|------|
@@ -105,7 +109,7 @@ GitHub's design system evokes a dark, digital canvas – a midnight command cent
 | Element | Value |
 |---------|-------|
 | pill | 60px |
-| cards | 24px |
+| cards | 8px |
 | input | 8px |
 | buttons | 6px |
 | default | 6px |
@@ -121,81 +125,108 @@ GitHub's design system evokes a dark, digital canvas – a midnight command cent
 ### Ghost Header Button
 **Role:** Navigation, secondary actions
 
-Text in Ghost White (#ffffff) on a transparent background, 8px padding. No border. Used for top navigation items.
+Transparent background, 8px padding. No border.
+- **Midday:** Ink (#1f2328) text, hover background rgba(208, 215, 222, 0.5).
+- **Midnight:** Ghost White (#ffffff) text, hover background rgba(255, 255, 255, 0.1).
 
 ### Pill Ghost Button
 **Role:** Secondary, subtle actions, category filters
 
-Text in Ghost White (#ffffff) on a transparent background with 8px vertical, 16px horizontal padding and a 60px border radius, creating a pill shape. Used for navigation and category tabs.
+Transparent background, 8px vertical / 16px horizontal padding, 60px border radius (pill shape).
+- **Midday:** Ink (#1f2328) text.
+- **Midnight:** Ghost White (#ffffff) text.
 
 ### Primary Action Button
 **Role:** Main call to action
 
-Spring Green (#08872b) background, Ghost White (#ffffff) text, 6px border radius, with 6px vertical and 28px horizontal padding. Signals the most important action on a page.
+6px border radius, 6px vertical / 28px horizontal padding.
+- **Midday:** Spring Green #1a7f37 background, #ffffff text. Hover: #158c37.
+- **Midnight:** Spring Green #08872b background, #ffffff text. Hover: #0a9e33.
 
 ### Outlined Accent Button
-**Role:** Secondary interactive actions, often related to product features
+**Role:** Secondary interactive actions
 
-Polar Blue (#8dd6ff) text on a transparent background with a 1px Ghost White (#ffffff) border, 8px border radius, and 6px vertical, 28px horizontal padding. Provides a clear interactive target without being as dominant as the primary button.
+Transparent background, 1px solid border, 8px border radius, 6px vertical / 28px horizontal padding.
+- **Midday:** Polar Blue (#0969da) text, border `--color-border-light` (#d0d7de).
+- **Midnight:** Polar Blue (#8dd6ff) text, border Ghost White (#ffffff).
 
-### Code Block Card
-**Role:** Displaying code snippets or technical content
+### Content Card
+**Role:** Elevated content blocks
 
-Semi-transparent surface (rgba(255, 255, 255, 0.06)), 24px border radius only on top corners (24px 24px 0px 0px), no internal padding, no box shadow. Edges are sharp at the bottom, suggesting continuity.
-
-### Floating Content Card
-**Role:** Elevated content blocks or interactive elements
-
-Highly translucent background (rgba(255, 255, 255, 0.2)), 24px border radius, 8px internal padding on all sides, no box shadow. Appears as a frosted overlay.
+8px border radius (`--radius-cards`), 8px internal padding (`--card-padding`), 1px solid border.
+- **Midday:** White background (`--color-canvas`), border `--color-border-subtle` (#d8dee4).
+- **Midnight:** Translucent background (`rgba(255,255,255,0.2)`), border `--color-subtle-gray` (#21262d).
 
 ### Input Field
 **Role:** User text input
 
-Transparent background with 18px top, 12px right, 0px bottom, 18px left padding. No explicit border specified, relying on contrasting text input/label (placeholder) against the dark background. 8px border radius.
-
-### Pill Input
-**Role:** Search or short text inputs
-
-Transparent background, Ghost White (#ffffff) text, with an 8px border radius. Likely uses implicit top/bottom paddings of 8px and side as 16px to create the pill shape, similar to pill buttons.
+12px padding, 1px solid border, 8px border radius (`--radius-input`). Focus state: Polar Blue border.
+- **Midday:** White background (`--surface-canvas`), Ink (#1f2328) text, border `--color-border-light` (#d0d7de).
+- **Midnight:** Code Canvas background (`--surface-code-canvas`), Ghost White (#ffffff) text, border `--color-subtle-gray` (#21262d).
 
 ## Do's and Don'ts
 
-### Do
-- Prioritize Deep Space (#0d1117) as the canvas background for most page sections.
-- Use Ghost White (#ffffff) for all primary body and heading text for maximum contrast on dark backgrounds.
-- Apply Spring Green (#08872b) exclusively for primary call-to-action button backgrounds.
-- Utilize Polar Blue (#8dd6ff) for all links, outlined buttons, and interactive icons.
-- Apply a 6px border radius for most interactive elements like buttons and inputs, but use 60px for pill-shaped elements.
-- Ensure cards use a larger 24px border radius, often with only top corners rounded for a more architectural feel.
-- Maintain comfortable element spacing using multiples of 4px, especially 16px for elementGap.
+### Do (midday — default)
+- Use `#ffffff` (`--color-midday-sky`) as the primary page background.
+- Use `#f6f8fa` (`--color-paper`) for secondary sections, sidebars, and subtle surface differentiation.
+- Use `#1f2328` (`--color-ink`) for headings and body text for maximum contrast on light backgrounds.
+- Apply `#1a7f37` (`--color-spring-green`) for primary call-to-action button backgrounds.
+- Utilize `#0969da` (`--color-polar-blue`) for all links, outlined buttons, and interactive icons.
+- Apply a 6px border radius for most interactive elements; use 8px for cards.
+- Maintain comfortable spacing using multiples of 4px.
 
-### Don't
-- Avoid using bright, saturated colors for backgrounds; stick to the dark neutral palette.
-- Do not use generic gray borders (such as #f0f6fc) on interactive elements; Polar Blue (#8dd6ff) is reserved for interaction outlining.
-- Never introduce hard, sharp corners on cards or primary buttons; maintain a consistent rounded aesthetic.
-- Do not use overly large or decorative drop shadows; the system favors subtle glows and translucency over heavy elevation.
-- Avoid dense packing of information; allow ample `elementGap` and `sectionGap` for a comfortable user experience.
-- Do not vary font families outside of Mona Sans variants and monospace fallbacks; maintain typographic consistency.
-- Avoid using Mona Sans Mono or ui-monospace for non-code content; these are specifically for technical text.
+### Do (midnight — dark mode)
+- Use `#0d1117` (`--color-deep-space`) as the page background.
+- Use `#ffffff` (`--color-ghost-white`) for headings and body text.
+- Apply `#08872b` (`--color-spring-green`) for primary button backgrounds.
+- Utilize `#8dd6ff` (`--color-polar-blue`) for links and interactive elements.
+
+### Don't (both themes)
+- Do not use generic gray borders on interactive elements; Polar Blue is reserved for interaction outlining.
+- Never introduce hard, sharp corners on cards or buttons; maintain the rounded aesthetic.
+- Avoid heavy drop shadows; prefer subtle glows and translucency.
+- Avoid dense packing of information; maintain `elementGap` and `sectionGap`.
+- Do not vary font families outside of Mona Sans variants and monospace fallbacks.
 
 ## Surfaces
+
+### Midday (default)
+
+| Level | Name | Value | Purpose |
+|-------|------|-------|---------|
+| 0 | Midday Sky | `#ffffff` | Primary page background |
+| 1 | Paper | `#f6f8fa` | Secondary sections, sidebars |
+| 2 | Canvas | `#ffffff` | Elevated surfaces, cards, content areas |
+
+### Midnight (dark mode)
 
 | Level | Name | Value | Purpose |
 |-------|------|-------|---------|
 | 0 | Deep Space | `#0d1117` | Base page background |
-| 1 | Code Canvas | `#151a22` | Secondary page sections, code editor areas |
-| 2 | Midnight Ink | `#000000` | Elevated panels, code blocks, deepest darks |
-| 3 | Floating Card Translucent | `#ffffff` | Cards and overlays with high transparency (rgba(255, 255, 255, 0.2)) |
+| 1 | Code Canvas | `#151a22` | Secondary sections, code areas |
+| 2 | Midnight Ink | `#000000` | Elevated panels, deepest darks |
+| 3 | Floating Card Translucent | `#ffffff` | Cards with high transparency (rgba(255, 255, 255, 0.2)) |
 
 ## Imagery
 
-The visual language for imagery is characterized by glowing, abstract 3D elements and vibrant, often purple or blue-hued, digital illustrations. These are frequently featured as floating objects or emanating light sources against dark backgrounds, adding a sense of futuristic technology and depth. Product screenshots are clean and integrated, showing code or UI elements with subtle, contrasting highlights. Icons are typically outlined or filled in Ghost White or subtle grays, occasionally accented with Polar Blue. The imagery serves both decorative atmosphere and to explain complex concepts, with a density that allows for significant textual information on screen.
+The visual language is clean and functional. Icons are outlined in Ink or muted grays, occasionally accented with Polar Blue. In midnight mode, icons are Ghost White or subtle grays with Polar Blue accents. Abstract glowing elements and digital illustrations are used sparingly in midnight mode to add depth against dark backgrounds. The imagery serves both decorative atmosphere and to explain complex concepts, with a density that allows for significant textual information on screen.
 
 ## Layout
 
-The page primarily employs a max-width contained layout, though the hero section spans full-bleed with a deep, dark gradient background. Content sections follow a vertical rhythm, often featuring alternating left/right text-and-visual arrangements or centered stacks. Card grids, typically 3-column, are used for features. The density is spacious, providing ample breathing room between information blocks. Navigation is managed via a sticky top bar, featuring Ghost Header Buttons and a pill-shaped search input.
+The page employs a sidebar + main content layout for admin panels. The sidebar is fixed at 260px on desktop; on mobile it slides in from the left via a hamburger toggle. Content sections follow a vertical rhythm with comfortable spacing. Navigation is managed via the sidebar with icon-labeled links and a theme toggle at the bottom. The layout is spacious, providing ample breathing room between information blocks.
 
 ## Agent Prompt Guide
+
+### Midday (default)
+
+Quick Color Reference:
+text: #1f2328
+background: #ffffff
+border: #d0d7de
+accent: #0969da
+primary action: #1a7f37 (filled action)
+
+### Midnight (dark mode)
 
 Quick Color Reference:
 text: #ffffff
@@ -205,20 +236,22 @@ accent: #8dd6ff
 primary action: #08872b (filled action)
 
 Example Component Prompts:
-1. Create a Primary Action Button: #08872b background, #ffffff text, 9999px radius, compact pill padding. Use this filled treatment for the main CTA.
-2. Create a feature card: Floating Content Card (rgba(255, 255, 255, 0.2) background, 24px radius, 8px padding). Title 'Accelerate your workflow' in Mona Sans, size 24px, weight 600, color Ghost White (#ffffff). Body text 'From your first line of code...' in Mona Sans, size 16px, weight 400, color Faded Silver (#f0f6fc).
-3. Create a navigation link: 'Solutions' in Mona Sans, size 16px, weight 400, color Ghost White (#ffffff). Hover state text Polar Blue (#8dd6ff). Ensure 16px right margin from the next element.
+1. Create a Primary Action Button (midday): #1a7f37 background, #ffffff text, 6px radius, compact pill padding.
+2. Create a Primary Action Button (midnight): #08872b background, #ffffff text, 6px radius, compact pill padding.
+3. Create a navigation link: 16px Mona Sans, weight 400. Midday: color #1f2328, hover Polar Blue (#0969da). Midnight: color #ffffff, hover Polar Blue (#8dd6ff).
 
 ## Similar Brands
 
-- **Vercel** — Similar dark theme with vivid accent colors for interactive elements and abstract, glowing background visuals.
-- **Linear** — Employs a precise, compact typography with subtle background gradients and a focus on dark mode UI with minimal, functional color hints.
-- **Notion** — While not dark-first, it shares the principle of a clean, functional UI with distinct text levels and a reliance on whitespace/spacing for hierarchy.
-- **Stripe** — Uses a sophisticated color palette with intentional accent colors against a largely neutral background, and clean, modern typography.
+- **GitHub** — The primary reference. Midday mirrors GitHub's light UI; midnight mirrors GitHub's dark mode.
+- **Vercel** — Similar dark theme with vivid accent colors and abstract background visuals.
+- **Notion** — Clean, functional UI with distinct text levels and whitespace-driven hierarchy.
+- **Stripe** — Sophisticated palette with intentional accent colors against a neutral background and clean typography.
 
 ## Quick Start
 
 ### CSS Custom Properties
+
+Below are the **midnight** (dark mode) custom properties. For **midday** (default) equivalents, see `webroot/css/github-midday.css`.
 
 ```css
 :root {
@@ -320,7 +353,7 @@ Example Component Prompts:
 
   /* Named Radii */
   --radius-pill: 60px;
-  --radius-cards: 24px;
+  --radius-cards: 8px;
   --radius-input: 8px;
   --radius-buttons: 6px;
   --radius-default: 6px;
@@ -334,6 +367,8 @@ Example Component Prompts:
 ```
 
 ### Tailwind v4
+
+Below are the **midnight** (dark mode) tokens. For **midday** (default) equivalents, see `webroot/css/github-midday.css`.
 
 ```css
 @theme {
