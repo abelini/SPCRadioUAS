@@ -104,7 +104,7 @@ class EpgBuilder
 
         $multimedia = $dom->createElement('multimedia');
         $multimedia->setAttribute('url', (new View())->Url->build('/img/logo_600x600.png', ['fullBase' => true]));
-        $multimedia->setAttribute('type', 'logo_color_square');
+        $multimedia->setAttribute('type', 'logo_colour_square');
         $multimedia->setAttribute('width', '600');
         $multimedia->setAttribute('height', '600');
         $mediaDescription->appendChild($multimedia);
