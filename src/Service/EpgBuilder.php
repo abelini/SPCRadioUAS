@@ -120,6 +120,11 @@ class EpgBuilder
         $linkWeb->setAttribute('mimeValue', 'text/html');
         $service->appendChild($linkWeb);
 
+        $tuneInLink = $dom->createElement('link');
+        $tuneInLink->setAttribute('uri', 'https://tunein.com/radio/Radio-UAS-961-s44204/ ');
+        $tuneInLink->setAttribute('mimeValue', 'text/html');
+        $service->appendChild($tuneInLink);
+
         $bearer = $dom->createElement('bearer');
         $bearer->setAttribute('id', self::BEARER_URI);
         $bearer->setAttribute('cost', '0');
