@@ -121,7 +121,7 @@ class EpgBuilder
         $service->appendChild($linkWeb);
 
         $tuneInLink = $dom->createElement('link');
-        $tuneInLink->setAttribute('uri', 'https://tunein.com/radio/Radio-UAS-961-s44204/ ');
+        $tuneInLink->setAttribute('uri', 'https://tunein.com/radio/Radio-UAS-961-s44204/');
         $tuneInLink->setAttribute('mimeValue', 'text/html');
         $service->appendChild($tuneInLink);
 
