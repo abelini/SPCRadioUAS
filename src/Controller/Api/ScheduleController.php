@@ -130,7 +130,7 @@ class ScheduleController extends ApiController
 			->withStringBody($xml);
 	}
 
-	public function xml(): Response
+	public function xmlEpg10(): Response
 	{
 		$xml = new EpgBuilder()->buildEpg10();
 
