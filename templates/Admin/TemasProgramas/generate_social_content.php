@@ -3,7 +3,7 @@
 </div>
 
 <div class="content-card">
-    <div id="markdownTexto" style="color: var(--color-faded-silver);"></div>
+    <div id="markdownTexto" class="markdown-content"></div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
