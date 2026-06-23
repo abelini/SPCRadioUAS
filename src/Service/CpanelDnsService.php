@@ -11,23 +11,28 @@ class CpanelDnsService
 {
     private const int REQUEST_TIMEOUT = 30;
 
+    private string $username;
+
+    private string $apiToken;
+
     private string $zone;
 
     private Client $http;
 
     public function __construct()
     {
-        $prefix = 'SSLGeneration.cpanel';
-
-        $this->zone = Configure::read($prefix . '.zone') ?? 'radiouas.org';
+        $this->username = Configure::read('SSLGeneration.cpanel.username');
+        $this->apiToken = Configure::read('SSLGeneration.cpanel.apiToken');
+        $this->zone = Configure::read('SSLGeneration.cpanel.zone');
 
         $this->http = new Client([
             'scheme' => 'https',
             'host' => 'radiouas.org',
             'port' => 2083,
+            'basePath' => '/execute',
             'timeout' => self::REQUEST_TIMEOUT,
             'headers' => [
-                 'Authorization' => 'cpanel ' . Configure::read($prefix . '.username') . ':' . Configure::read($prefix . '.apiToken'),
+                'Authorization' => 'cpanel ' . $this->username . ':' . $this->apiToken,
             ]
         ]);
     }
