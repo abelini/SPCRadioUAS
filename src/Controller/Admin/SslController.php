@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace SPC\Controller\Admin;
 
+use Cake\Core\Configure;
 use Cake\Http\Response;
 use SPC\Controller\AppController;
 use SPC\Service\SslService;
@@ -19,8 +20,9 @@ class SslController extends AppController
 
         $canRunAcme = SslService::canRunAcme();
         $isWindows = SslService::isWindows();
+        $dnsProvider = Configure::read('SSLGeneration.dnsProvider') ?? 'webroot';
 
-        $this->set(compact('domain', 'certInfo', 'configured', 'ssl', 'canRunAcme', 'isWindows'));
+        $this->set(compact('domain', 'certInfo', 'configured', 'ssl', 'canRunAcme', 'isWindows', 'dnsProvider'));
 
         return $this->render();
     }

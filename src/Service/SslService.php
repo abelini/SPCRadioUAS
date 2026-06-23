@@ -86,11 +86,6 @@ class SslService
         return Configure::read('SSLGeneration.webroot') ?? (defined('ROOT') ? ROOT . DS . 'webroot' : '/var/www/html/webroot');
     }
 
-    public function isStandalone(): bool
-    {
-        return (bool) Configure::read('SSLGeneration.standalone');
-    }
-
     public function isAcmeInstalled(): bool
     {
         $acmeSh = $this->getAcmeHome() . '/acme.sh';
@@ -272,7 +267,6 @@ class SslService
         $acmeSh = $acmeHome . '/acme.sh';
         $email ??= $this->getEmail();
         $webroot = $this->getWebroot();
-        $standalone = $this->isStandalone();
         $pfxPass = $this->getPfxPassword();
         $pfxDest = $this->getPfxDestination();
 
@@ -289,36 +283,39 @@ class SslService
         $this->execCmd([$acmeSh, '--set-default-ca', '--server', $ca], $o, $c);
         $log[] = 'CA configurada: ' . $ca;
 
-        // Check if Cloudflare credentials are configured for DNS-01
-        $cfToken = Configure::read('SSLGeneration.cloudflareAPIToken');
-        $cfZoneId = Configure::read('SSLGeneration.cloudflareZoneID');
-        $useDns = !empty($cfToken) && !empty($cfZoneId);
+        // Determine DNS provider
+        $dnsProvider = Configure::read('SSLGeneration.dnsProvider') ?? 'webroot';
 
         // Issue/renew
         $log[] = "Renovando certificado para: {$domain}...";
+        $log[] = 'Método DNS: ' . $dnsProvider;
 
-        if ($standalone) {
-            $cmd = [$acmeSh, '--issue', '-d', $domain, '--standalone', '--force'];
-        } elseif ($useDns) {
-            $log[] = 'Usando validación DNS-01 con Cloudflare';
-            $cmd = [$acmeSh, '--issue', '-d', $domain, '--dns', 'dns_cf', '--force'];
-        } else {
-            $cmd = [$acmeSh, '--issue', '-d', $domain, '--webroot', $webroot, '--force'];
+        $hookScript = null;
+
+        try {
+            if ($dnsProvider === 'cpanel') {
+                $hookScript = $this->createCpanelHookScript();
+                putenv('ACMESH_DNS_MANUAL_CMD=' . escapeshellarg($hookScript) . ' add');
+                putenv('ACMESH_DNS_MANUAL_CLEANUP=' . escapeshellarg($hookScript) . ' remove');
+
+                $cmd = [$acmeSh, '--issue', '-d', $domain, '--dns', 'dns_manual_hook', '--force', '--dnssleep', '120'];
+            } else {
+                $cmd = [$acmeSh, '--issue', '-d', $domain, '--webroot', $webroot, '--force'];
+            }
+
+            $this->execCmd($cmd, $output, $exitCode);
+            $log = array_merge($log, $output);
+
+            if ($exitCode !== 0) {
+                return ['success' => false, 'log' => $log, 'error' => 'Error al renovar certificado.'];
+            }
+
+            $log[] = 'Certificado renovado correctamente.';
+        } finally {
+            if ($hookScript !== null && file_exists($hookScript)) {
+                unlink($hookScript);
+            }
         }
-
-        if ($useDns) {
-            putenv("CF_Token={$cfToken}");
-            putenv("CF_Zone_ID={$cfZoneId}");
-        }
-
-        $this->execCmd($cmd, $output, $exitCode);
-        $log = array_merge($log, $output);
-
-        if ($exitCode !== 0) {
-            return ['success' => false, 'log' => $log, 'error' => 'Error al renovar certificado.'];
-        }
-
-        $log[] = 'Certificado renovado correctamente.';
 
         // Generate PFX
         $certDir = $acmeHome . '/' . $domain;
@@ -368,6 +365,24 @@ class SslService
         }
 
         return ['success' => true, 'log' => $log, 'error' => null];
+    }
+
+    private function createCpanelHookScript(): string
+    {
+        $cakeBin = ROOT . DS . 'bin' . DS . 'cake.php';
+        $phpBin = PHP_BINARY;
+        $tmpFile = tempnam(sys_get_temp_dir(), 'acme_cpanel_');
+
+        $content = sprintf(
+            "#!/bin/bash\n%s %s cpanel_dns \"\$@\"\n",
+            escapeshellarg($phpBin),
+            escapeshellarg($cakeBin)
+        );
+
+        file_put_contents($tmpFile, $content);
+        chmod($tmpFile, 0755);
+
+        return $tmpFile;
     }
 
     private function execCmd(array $args, ?array &$output = null, ?int &$exitCode = null): array

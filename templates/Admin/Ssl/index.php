@@ -6,6 +6,7 @@
  * @var bool $configured
  * @var bool $canRunAcme
  * @var bool $isWindows
+ * @var string $dnsProvider
  * @var \SPC\Service\SslService $ssl
  */
 $this->assign('title', 'Certificado SSL');
@@ -49,6 +50,7 @@ $this->assign('title', 'Certificado SSL');
                 <tr><th>Email</th><td><?= h($ssl->getEmail()) ?></td></tr>
                 <tr><th>Destino PFX</th><td><?= h($ssl->getPfxDestination() ?? '(no configurado)') ?></td></tr>
                 <tr><th>Contraseña PFX</th><td><?= $ssl->getPfxPassword() !== '' ? '******' : '<span class="badge-dot badge-dot-danger"></span> vacía' ?></td></tr>
+                <tr><th>Método DNS</th><td><?= h($dnsProvider) ?></td></tr>
             </table>
         </div>
 
@@ -167,6 +169,7 @@ $this->assign('title', 'Certificado SSL');
             <table class="view-table">
                 <tr><th>Destino PFX</th><td><?= h($certInfo['pfxFile'] ?? $ssl->getPfxDestination() ?? '(no configurado)') ?></td></tr>
                 <tr><th>Contraseña PFX</th><td><?= $ssl->getPfxPassword() !== '' ? '******' : '<span class="badge-dot badge-dot-danger"></span> vacía' ?></td></tr>
+                <tr><th>Método DNS</th><td><?= h($dnsProvider) ?></td></tr>
             </table>
         </div>
 
@@ -185,6 +188,7 @@ $this->assign('title', 'Certificado SSL');
                 <tr><th>Email</th><td><?= h($ssl->getEmail()) ?></td></tr>
                 <tr><th>Destino PFX</th><td><?= h($ssl->getPfxDestination() ?? '(no configurado)') ?></td></tr>
                 <tr><th>Contraseña PFX</th><td><?= $ssl->getPfxPassword() !== '' ? '******' : '<span class="badge-dot badge-dot-danger"></span> vacía' ?></td></tr>
+                <tr><th>Método DNS</th><td><?= h($dnsProvider) ?></td></tr>
             </table>
         </div>
 

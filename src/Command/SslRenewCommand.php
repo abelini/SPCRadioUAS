@@ -55,7 +55,7 @@ class SslRenewCommand extends Command
 
         $acmeHome = Configure::read('SSLGeneration.acmeHome') ?? getenv('HOME') . '/.acme.sh';
         $webroot = Configure::read('SSLGeneration.webroot') ?? ROOT . DS . 'webroot';
-        $standalone = Configure::read('SSLGeneration.standalone') ?? false;
+        $dnsProvider = Configure::read('SSLGeneration.dnsProvider') ?? 'webroot';
         $ca = Configure::read('SSLGeneration.ca') ?? 'letsencrypt';
 
         $acmeSh = $acmeHome . '/acme.sh';
@@ -74,18 +74,31 @@ class SslRenewCommand extends Command
 
         // 3. Issue / renew certificate
         $io->out("Procesando certificado para: {$domain}");
+        $io->out('Método DNS: ' . $dnsProvider);
 
-        if ($standalone) {
-            $cmd = [$acmeSh, '--issue', '-d', $domain, '--standalone', '--force'];
-        } else {
-            $cmd = [$acmeSh, '--issue', '-d', $domain, '--webroot', $webroot, '--force'];
-        }
+        $hookScript = null;
 
-        $result = $this->runCommand($cmd, $io, $exitCode);
-        if ($exitCode !== 0) {
-            $io->error('Error al obtener/renovar el certificado');
+        try {
+            if ($dnsProvider === 'cpanel') {
+                $hookScript = $this->createCpanelHookScript();
+                putenv('ACMESH_DNS_MANUAL_CMD=' . escapeshellarg($hookScript) . ' add');
+                putenv('ACMESH_DNS_MANUAL_CLEANUP=' . escapeshellarg($hookScript) . ' remove');
 
-            return static::CODE_ERROR;
+                $cmd = [$acmeSh, '--issue', '-d', $domain, '--dns', 'dns_manual_hook', '--force', '--dnssleep', '120'];
+            } else {
+                $cmd = [$acmeSh, '--issue', '-d', $domain, '--webroot', $webroot, '--force'];
+            }
+
+            $this->runCommand($cmd, $io, $exitCode);
+            if ($exitCode !== 0) {
+                $io->error('Error al obtener/renovar el certificado');
+
+                return static::CODE_ERROR;
+            }
+        } finally {
+            if ($hookScript !== null && file_exists($hookScript)) {
+                unlink($hookScript);
+            }
         }
 
         // 4. Verify cert files exist
@@ -164,6 +177,24 @@ class SslRenewCommand extends Command
     private function isInstalled(string $acmeSh): bool
     {
         return file_exists($acmeSh) && is_executable($acmeSh);
+    }
+
+    private function createCpanelHookScript(): string
+    {
+        $cakeBin = ROOT . DS . 'bin' . DS . 'cake.php';
+        $phpBin = PHP_BINARY;
+        $tmpFile = tempnam(sys_get_temp_dir(), 'acme_cpanel_');
+
+        $content = sprintf(
+            "#!/bin/bash\n%s %s cpanel_dns \"\$@\"\n",
+            escapeshellarg($phpBin),
+            escapeshellarg($cakeBin)
+        );
+
+        file_put_contents($tmpFile, $content);
+        chmod($tmpFile, 0755);
+
+        return $tmpFile;
     }
 
     private function runCommand(array $args, ConsoleIo $io, ?int &$exitCode = null): array

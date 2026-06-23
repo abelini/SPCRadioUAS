@@ -29,6 +29,7 @@ bin/cake migrations migrate
 bin/cake reset_stream   # reboot MediaCP stream (cron-friendly)
 bin/cake broadcast update  # push NowPlaying metadata → Shoutcast + RDS
 bin/cake ssl_renew <domain> [email] [pfx-destination]  # renew SSL cert via acme.sh (LE/ZeroSSL) + generate .pfx
+bin/cake cpanel_dns <add|remove> <domain> <challenge>  # manage TXT records via cPanel API (SSL hook)
 ```
 
 CS exceptions: `phpcs.xml` exempts `src/Controller/*` from native return type hints (`SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingNativeTypeHint`).
@@ -59,8 +60,11 @@ PHPStan at **level 8**. Psalm at **error level 2** (both in config).
 - **Production**: MySQL (`Cake\Database\Driver\Mysql`).
 - **Local dev** (`config/app_local.php`): SQLite.
 - **Tests**: Migrations build the test DB automatically (`tests/bootstrap.php` runs `(new Migrator())->run()`). Falls back to SQLite with `DATABASE_TEST_URL` env var.
-- **Sensitive config** stored in `config/app_local.php` under `SensitiveData` key (Gemini, Facebook, MediaCP, Gmail OAuth2, Emby, YouTube) and `SslRenew` key (SSL cert renewal). Not in `.env`.
-- **`SslRenew.pfxDestination`**: Absolute path. Use `ROOT . DS . 'webroot' . DS . 'cert' . DS . 'cert.pfx'` for a path relative to the project webroot.
+- **Sensitive config** stored in `config/app_local.php` under `SensitiveData` key (Gemini, Facebook, MediaCP, Gmail OAuth2, Emby, YouTube) and `SSLGeneration` key (SSL cert renewal). Not in `.env`.
+- **`SSLGeneration.dnsProvider`**: `'cpanel'` (default) or `'webroot'`. When `'cpanel'`, uses `CpanelDnsService` + `CpanelDnsCommand` to auto-add/remove TXT records via cPanel UAPI during acme.sh DNS-01 challenge.
+- **`SSLGeneration.cpanel`**: Required when `dnsProvider = 'cpanel'`. Keys: `baseUrl` (e.g. `https://radiouas.org:2083`), `username`, `apiToken` (cPanel API token with DNS perms), `zone` (e.g. `radiouas.org`).
+- **Hook mechanism**: `SslService::renew()` / `SslRenewCommand` create a temp bash script that calls `bin/cake cpanel_dns`, set `ACMESH_DNS_MANUAL_CMD` / `ACMESH_DNS_MANUAL_CLEANUP`, then invoke `acme.sh --dns dns_manual_hook`. The hook script is cleaned up after renewal.
+- **`SSLGeneration.pfxDestination`**: Absolute path. Use `ROOT . DS . 'webroot' . DS . 'cert' . DS . 'cert.pfx'` for a path relative to the project webroot.
 
 ## Conventions
 
@@ -76,6 +80,7 @@ PHPStan at **level 8**. Psalm at **error level 2** (both in config).
 - `src/Trait/APICacheTrait.php` — constants for remote control cache key and broadcast types
 - `src/Mailer/` — custom mailers (GoogleMailer, RolMailer, UserMailer)
 - **RDS (RDI 20) + Shoutcast**: `BroadcastCommand` (`bin/cake broadcast update`) → `NowPlayingService::get()` → `ShoutcastService::update($data)` + `Rdi20TelnetService::update($data)`. RDS uses TCP/Telnet, sends `XTXT=...\r\n`, confirms with `+`. Cache `last_sent_rds` dedup.
+- **SSL auto-renew via cPanel DNS**: `CpanelDnsService` (`src/Service/CpanelDnsService.php`) manages TXT records via cPanel UAPI at `baseUrl/execute/DNS/*`. Used automatically by `SslService::renew()` and `SslRenewCommand` when `dnsProvider = 'cpanel'`. The workflow: acme.sh calls temp hook → `bin/cake cpanel_dns add|remove <domain> <challenge>` → `CpanelDnsService` talks to cPanel API.
 
 ## Testing
 
