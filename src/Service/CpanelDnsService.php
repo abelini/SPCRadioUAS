@@ -5,52 +5,41 @@ namespace SPC\Service;
 
 use Cake\Core\Configure;
 use Cake\Http\Client;
-use Cake\Http\Client\Response;
-use Cake\Log\Log;
 use RuntimeException;
 
 class CpanelDnsService
 {
     private const int REQUEST_TIMEOUT = 30;
 
-    private string $baseUrl;
-    private string $username;
-    private string $apiToken;
     private string $zone;
+
     private Client $http;
 
     public function __construct()
     {
         $prefix = 'SSLGeneration.cpanel';
 
-        $this->baseUrl = rtrim(
-            Configure::read($prefix . '.baseUrl')
-            ?? throw new RuntimeException('cPanel baseUrl no configurado en SSLGeneration.cpanel.baseUrl'),
-            '/'
-        );
-        $this->username = Configure::read($prefix . '.username')
-            ?? throw new RuntimeException('cPanel username no configurado en SSLGeneration.cpanel.username');
-        $this->apiToken = Configure::read($prefix . '.apiToken')
-            ?? throw new RuntimeException('cPanel apiToken no configurado en SSLGeneration.cpanel.apiToken');
-        $this->zone = Configure::read($prefix . '.zone')
-            ?? throw new RuntimeException('cPanel zone no configurado en SSLGeneration.cpanel.zone');
+        $this->zone = Configure::read($prefix . '.zone') ?? 'radiouas.org';
 
-        $this->http = new Client(['timeout' => self::REQUEST_TIMEOUT]);
-    }
-
-    public function getBaseUrl(): string
-    {
-        return $this->baseUrl;
-    }
-
-    public function getUsername(): string
-    {
-        return $this->username;
+        $this->http = new Client([
+            'scheme' => 'https',
+            'host' => 'radiouas.org',
+            'port' => 2083,
+            'timeout' => self::REQUEST_TIMEOUT,
+            'headers' => [
+                 'Authorization' => 'cpanel ' . Configure::read($prefix . '.username') . ':' . Configure::read($prefix . '.apiToken'),
+            ]
+        ]);
     }
 
     public function getZone(): string
     {
         return $this->zone;
+    }
+
+    public function getBaseUrl(): string
+    {
+        return 'https://radiouas.org:2083';
     }
 
     private function recordName(string $domain): string
@@ -86,11 +75,15 @@ class CpanelDnsService
             'data' => [$value],
         ]];
 
-        $response = $this->rawRequest('get', '/execute/DNS/mass_edit_zone', [
+        $response = $this->http->get('/DNS/mass_edit_zone', [
             'serial' => $serial,
             'zone' => $this->zone,
             'add' => json_encode($record),
         ]);
+
+        if ($response->getStatusCode() >= 400) {
+            throw new RuntimeException('cPanel API respondió con HTTP ' . $response->getStatusCode());
+        }
 
         $payload = json_decode($response->getStringBody(), true);
 
@@ -128,11 +121,15 @@ class CpanelDnsService
                 continue;
             }
 
-            $response = $this->rawRequest('get', '/execute/DNS/mass_edit_zone', [
+            $response = $this->http->get('/DNS/mass_edit_zone', [
                 'serial' => $serial,
                 'zone' => $this->zone,
                 'remove' => json_encode([$lineIndex]),
             ]);
+
+            if ($response->getStatusCode() >= 400) {
+                throw new RuntimeException('cPanel API respondió con HTTP ' . $response->getStatusCode());
+            }
 
             $payload = json_decode($response->getStringBody(), true);
 
@@ -179,7 +176,12 @@ class CpanelDnsService
 
     private function fetchZoneData(): array
     {
-        $response = $this->rawRequest('get', '/execute/DNS/parse_zone', ['zone' => $this->zone]);
+        $response = $this->http->get('/DNS/parse_zone', ['zone' => $this->zone]);
+
+        if ($response->getStatusCode() >= 400) {
+            throw new RuntimeException('cPanel API respondió con HTTP ' . $response->getStatusCode());
+        }
+
         $payload = json_decode($response->getStringBody(), true);
 
         if (($payload['status'] ?? 0) !== 1) {
@@ -217,30 +219,4 @@ class CpanelDnsService
         return base64_decode($clean, true) ?: '';
     }
 
-    private function rawRequest(string $method, string $endpoint, array $params = []): Response
-    {
-        $url = $this->baseUrl . $endpoint;
-        $headers = [
-            'Authorization' => 'cpanel ' . $this->username . ':' . $this->apiToken,
-        ];
-
-        try {
-            if ($method === 'get') {
-                $response = $this->http->get($url, $params, ['headers' => $headers, 'timeout' => self::REQUEST_TIMEOUT]);
-            } else {
-                $response = $this->http->post($url, $params, ['headers' => $headers, 'timeout' => self::REQUEST_TIMEOUT]);
-            }
-        } catch (\Exception $e) {
-            Log::write('error', sprintf('cPanel DNS API error: %s', $e->getMessage()), ['scope' => 'ssl']);
-            throw new RuntimeException('Error de conexión con cPanel: ' . $e->getMessage());
-        }
-
-        if ($response->getStatusCode() >= 400) {
-            $body = $response->getStringBody();
-            Log::write('error', sprintf('cPanel DNS API HTTP %d: %s', $response->getStatusCode(), $body), ['scope' => 'ssl']);
-            throw new RuntimeException(sprintf('cPanel API respondió con HTTP %d', $response->getStatusCode()));
-        }
-
-        return $response;
-    }
 }
