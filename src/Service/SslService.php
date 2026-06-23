@@ -366,10 +366,6 @@ class SslService
         $dnsApiDir = $acmeHome . '/dnsapi';
         $scriptPath = $dnsApiDir . '/dns_cpanel.sh';
 
-        if (file_exists($scriptPath)) {
-            return;
-        }
-
         if (!is_dir($dnsApiDir)) {
             mkdir($dnsApiDir, 0755, true);
         }
