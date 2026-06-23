@@ -5,6 +5,7 @@ namespace SPC\Service;
 
 use Cake\Core\Configure;
 use Cake\Http\Client;
+use Cake\Http\Client\Response;
 use Cake\Log\Log;
 use RuntimeException;
 
@@ -193,7 +194,7 @@ class CpanelDnsService
         return implode(' ', array_map(fn($v) => trim((string) $v, '"'), $data));
     }
 
-    private function rawRequest(string $method, string $endpoint, array $params = []): \Cake\Http\Client\Response
+    private function rawRequest(string $method, string $endpoint, array $params = []): Response
     {
         $url = $this->baseUrl . $endpoint;
         $headers = [
