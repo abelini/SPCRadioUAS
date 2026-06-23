@@ -77,7 +77,7 @@ class CpanelDnsService
             'dname' => $name,
             'ttl' => 120,
             'record_type' => 'TXT',
-            'data' => [$value],
+            'data' => ['"' . $value . '"'],
         ];
 
         $response = $this->http->get('/DNS/mass_edit_zone', [
@@ -129,7 +129,7 @@ class CpanelDnsService
             $response = $this->http->get('/DNS/mass_edit_zone', [
                 'serial' => $serial,
                 'zone' => $this->zone,
-                'remove' => json_encode([$lineIndex]),
+                'remove' => $lineIndex,
             ]);
 
             if ($response->getStatusCode() >= 400) {
