@@ -374,7 +374,7 @@ class SslService
         $phpBin = PHP_BINARY;
 
         $content = sprintf(
-            "#!/bin/bash\n\ndns_cpanel_add() {\n    %s %s cpanel_dns add \"\$1\" \"\$2\"\n}\n\ndns_cpanel_rm() {\n    %s %s cpanel_dns remove \"\$1\" \"\$2\"\n}\n",
+            "#!/bin/bash\n\ndns_cpanel_add() {\n    %s %s cpanel_dns add \"\$1\" -- \"\$2\"\n}\n\ndns_cpanel_rm() {\n    %s %s cpanel_dns remove \"\$1\" -- \"\$2\"\n}\n",
             escapeshellarg($phpBin),
             escapeshellarg($cakeBin),
             escapeshellarg($phpBin),
