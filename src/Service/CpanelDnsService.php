@@ -149,7 +149,7 @@ class CpanelDnsService
                 ? trim(base64_decode(str_replace(["\r", "\n"], '', $record['data_b64'][0])), '"')
                 : '';
 
-            if (!str_contains($recordName, $name)) {
+            if (!str_contains($recordName, $domain)) {
                 continue;
             }
             if ($recordData !== $value) {
