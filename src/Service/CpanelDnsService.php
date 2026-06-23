@@ -55,6 +55,10 @@ class CpanelDnsService
 
     private function recordName(string $domain): string
     {
+        if (str_starts_with($domain, '_acme-challenge.')) {
+            return $domain;
+        }
+
         if ($domain === $this->zone) {
             return '_acme-challenge.' . $this->zone;
         }
