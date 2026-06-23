@@ -292,7 +292,7 @@ class SslService
 
         if ($dnsProvider === 'cpanel') {
             $this->ensureDnsApiScript($acmeHome);
-            $cmd = [$acmeSh, '--home', $acmeHome, '--issue', '-d', $domain, '--dns', 'dns_cpanel', '--force', '--dnssleep', '120'];
+            $cmd = [$acmeSh, '--home', $acmeHome, '--issue', '-d', $domain, '--dns', 'dns_cpanel', '--force', '--dnssleep', '5'];
         } else {
             $cmd = [$acmeSh, '--issue', '-d', $domain, '--webroot', $webroot, '--force'];
         }
