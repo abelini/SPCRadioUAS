@@ -3,11 +3,7 @@ namespace SPC\Service;
 
 use DeviceDetector\DeviceDetector;
 
-/**
- * DeviceDetectorService
- *
- * @property \App\Model\Table\StreamHitsTable $StreamHits
- */
+
 class DeviceDetectorService
 {
     /**
