@@ -1,13 +1,13 @@
 <IfModule mod_rewrite.c>
-        RewriteEngine On
-        RewriteCond %{REQUEST_FILENAME} !-d
-        RewriteCond %{REQUEST_FILENAME} !-f
-      #  RewriteRule ^(.*)$ index.php [QSA,L]
-    </IfModule>
+  RewriteEngine On
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_FILENAME} !-f
+  #  RewriteRule ^(.*)$ index.php [QSA,L]
+</IfModule>
 
 <IfModule mod_rewrite.c>
     RewriteEngine on
-    RewriteRule    ^(\.well-known/.*)$ webroot/$1 [L]
+    RewriteRule    ^(\.well-known/.*)$ webroot/$1 [END]
     RewriteRule    ^$    webroot/    [L]
     RewriteRule    (.*) webroot/$1    [L]
 </IfModule>
