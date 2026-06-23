@@ -50,21 +50,21 @@ class CpanelDnsService
     private function recordName(string $domain): string
     {
         if (str_starts_with($domain, '_acme-challenge.')) {
-            return $domain;
+            return rtrim($domain, '.') . '.';
         }
 
         if ($domain === $this->zone) {
-            return '_acme-challenge.' . $this->zone;
+            return '_acme-challenge.' . $this->zone . '.';
         }
 
         $suffix = '.' . $this->zone;
         if (str_ends_with($domain, $suffix)) {
             $sub = substr($domain, 0, -strlen($suffix));
 
-            return '_acme-challenge.' . $sub . '.' . $this->zone;
+            return '_acme-challenge.' . $sub . '.' . $this->zone . '.';
         }
 
-        return '_acme-challenge.' . $domain;
+        return '_acme-challenge.' . $domain . '.';
     }
 
     public function addTxtRecord(string $domain, string $value): void
@@ -72,6 +72,41 @@ class CpanelDnsService
         $name = $this->recordName($domain);
         $zoneData = $this->fetchZoneData();
         $serial = $zoneData['serial'];
+
+        // Purge existing acme-challenge records for this domain
+        foreach ($zoneData['records'] as $record) {
+            if (($record['record_type'] ?? '') !== 'TXT') {
+                continue;
+            }
+            $recordName = $record['dname_raw'] ?? '';
+            if (!str_contains($recordName, $domain)) {
+                continue;
+            }
+            $lineIndex = $record['line_index'] ?? null;
+            if ($lineIndex === null) {
+                continue;
+            }
+
+            $response = $this->http->get('/DNS/mass_edit_zone', [
+                'serial' => $serial,
+                'zone' => $this->zone,
+                'remove' => $lineIndex,
+            ]);
+
+            if ($response->getStatusCode() >= 400) {
+                throw new RuntimeException('cPanel API respondió con HTTP ' . $response->getStatusCode());
+            }
+
+            $payload = json_decode($response->getStringBody(), true);
+
+            if (($payload['status'] ?? 0) !== 1) {
+                $errors = implode('; ', (array) ($payload['errors'] ?? ['error desconocido']));
+                throw new RuntimeException('cPanel mass_edit_zone (remove stale) falló: ' . $errors);
+            }
+
+            $zoneData = $this->fetchZoneData();
+            $serial = $zoneData['serial'];
+        }
 
         $record = [
             'dname' => $name,
