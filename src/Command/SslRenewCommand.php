@@ -14,7 +14,7 @@ class SslRenewCommand extends Command
     {
         $parser->setDescription(
             'Renueva un certificado SSL vía acme.sh (Let\'s Encrypt / ZeroSSL) y genera .pfx. '
-            . 'Los valores por defecto se leen de Configure::read(\'SslRenew.*\') en app_local.php.'
+            . 'Los valores por defecto se leen de Configure::read(\'SSLGeneration.*\') en app_local.php.'
         );
 
         $parser->addArgument('domain', [
@@ -37,26 +37,26 @@ class SslRenewCommand extends Command
     {
         $domain = $args->getArgumentAt(0);
         if ($domain === null) {
-            $domain = Configure::read('SslRenew.domain');
+            $domain = Configure::read('SSLGeneration.domain');
         }
         if ($domain === null) {
-            $io->error('Debes especificar el dominio como primer argumento o configurar SslRenew.domain en app_local.php');
+            $io->error('Debes especificar el dominio como primer argumento o configurar SSLGeneration.domain en app_local.php');
 
             return static::CODE_ERROR;
         }
 
-        $email = $args->getArgumentAt(1) ?? Configure::read('SslRenew.email');
+        $email = $args->getArgumentAt(1) ?? Configure::read('SSLGeneration.email');
         if ($email === null) {
             $email = 'admin@' . $domain;
             $io->warning('No se especificó email. Usando: ' . $email);
         }
 
-        $pfxDest = $args->getArgumentAt(2) ?? Configure::read('SslRenew.pfxDestination');
+        $pfxDest = $args->getArgumentAt(2) ?? Configure::read('SSLGeneration.pfxDestination');
 
-        $acmeHome = Configure::read('SslRenew.acmeHome') ?? getenv('HOME') . '/.acme.sh';
-        $webroot = Configure::read('SslRenew.webroot') ?? ROOT . DS . 'webroot';
-        $standalone = Configure::read('SslRenew.standalone') ?? false;
-        $ca = Configure::read('SslRenew.ca') ?? 'letsencrypt';
+        $acmeHome = Configure::read('SSLGeneration.acmeHome') ?? getenv('HOME') . '/.acme.sh';
+        $webroot = Configure::read('SSLGeneration.webroot') ?? ROOT . DS . 'webroot';
+        $standalone = Configure::read('SSLGeneration.standalone') ?? false;
+        $ca = Configure::read('SSLGeneration.ca') ?? 'letsencrypt';
 
         $acmeSh = $acmeHome . '/acme.sh';
 
@@ -102,7 +102,7 @@ class SslRenewCommand extends Command
 
         // 5. Generate PFX
         $pfxFile = $certDir . '/' . $domain . '.pfx';
-        $pfxPass = Configure::read('SslRenew.pfxPassword') ?? '';
+        $pfxPass = Configure::read('SSLGeneration.pfxPassword') ?? '';
         $io->out('Generando PFX...');
 
         if ($pfxPass !== '') {

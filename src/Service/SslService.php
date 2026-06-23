@@ -9,22 +9,22 @@ class SslService
 {
     public function getDomain(): ?string
     {
-        return Configure::read('SslRenew.domain');
+        return Configure::read('SSLGeneration.domain');
     }
 
     public function getEmail(): string
     {
-        return Configure::read('SslRenew.email') ?? 'admin@' . ($this->getDomain() ?? 'example.com');
+        return Configure::read('SSLGeneration.email') ?? 'admin@' . ($this->getDomain() ?? 'example.com');
     }
 
     public function getPfxPassword(): string
     {
-        return Configure::read('SslRenew.pfxPassword') ?? '';
+        return Configure::read('SSLGeneration.pfxPassword') ?? '';
     }
 
     public function getPfxDestination(): ?string
     {
-        return Configure::read('SslRenew.pfxDestination');
+        return Configure::read('SSLGeneration.pfxDestination');
     }
 
     public static function isWindows(): bool
@@ -78,17 +78,17 @@ class SslService
 
     public function getAcmeHome(): string
     {
-        return Configure::read('SslRenew.acmeHome') ?? (getenv('HOME') ?: '/root') . '/.acme.sh';
+        return Configure::read('SSLGeneration.acmeHome') ?? (getenv('HOME') ?: '/root') . '/.acme.sh';
     }
 
     public function getWebroot(): string
     {
-        return Configure::read('SslRenew.webroot') ?? (defined('ROOT') ? ROOT . DS . 'webroot' : '/var/www/html/webroot');
+        return Configure::read('SSLGeneration.webroot') ?? (defined('ROOT') ? ROOT . DS . 'webroot' : '/var/www/html/webroot');
     }
 
     public function isStandalone(): bool
     {
-        return (bool) Configure::read('SslRenew.standalone');
+        return (bool) Configure::read('SSLGeneration.standalone');
     }
 
     public function isAcmeInstalled(): bool
@@ -285,13 +285,13 @@ class SslService
         $log[] = 'acme.sh ya instalado.';
 
         // Set CA (Let's Encrypt or ZeroSSL)
-        $ca = Configure::read('SslRenew.ca') ?? 'letsencrypt';
+        $ca = Configure::read('SSLGeneration.ca') ?? 'letsencrypt';
         $this->execCmd([$acmeSh, '--set-default-ca', '--server', $ca], $o, $c);
         $log[] = 'CA configurada: ' . $ca;
 
         // Check if Cloudflare credentials are configured for DNS-01
-        $cfToken = Configure::read('SslRenew.cloudflareAPIToken');
-        $cfZoneId = Configure::read('SslRenew.cloudflareZoneID');
+        $cfToken = Configure::read('SSLGeneration.cloudflareAPIToken');
+        $cfZoneId = Configure::read('SSLGeneration.cloudflareZoneID');
         $useDns = !empty($cfToken) && !empty($cfZoneId);
 
         // Issue/renew
