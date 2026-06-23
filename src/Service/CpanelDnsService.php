@@ -71,62 +71,69 @@ class CpanelDnsService
     public function addTxtRecord(string $domain, string $value): void
     {
         $name = $this->getRecordName($domain);
+        $zoneData = $this->parseZoneWithSerial();
+        $serial = $zoneData['serial'];
 
-        $response = $this->rawRequest('post', '/execute/DNS/add_zone_record', [
-            'domain' => $this->zone,
-            'name' => $name,
-            'type' => 'TXT',
-            'address' => $value,
+        $record = [[
+            'dname' => $name,
             'ttl' => 120,
+            'record_type' => 'TXT',
+            'data' => [$value],
+        ]];
+
+        $response = $this->rawRequest('get', '/execute/DNS/mass_edit_zone', [
+            'serial' => $serial,
+            'zone' => $this->zone,
+            'add' => json_encode($record),
         ]);
 
         $payload = json_decode($response->getStringBody(), true);
+        $result = $payload['result'] ?? [];
 
-        if (!is_array($payload)) {
-            throw new RuntimeException('cPanel add_zone_record: respuesta inválida (no JSON)');
-        }
-
-        if (($payload['status'] ?? 0) !== 1) {
-            $errors = implode('; ', (array) ($payload['errors'] ?? $payload['error'] ?? ['error desconocido']));
-            throw new RuntimeException('cPanel add_zone_record falló: ' . $errors);
+        if (($result['status'] ?? 0) !== 1) {
+            $errors = implode('; ', (array) ($result['errors'] ?? ['error desconocido']));
+            throw new RuntimeException('cPanel mass_edit_zone (add) falló: ' . $errors);
         }
     }
 
     public function removeTxtRecord(string $domain, string $value): void
     {
         $name = $this->getRecordName($domain);
-        $records = $this->listRecords();
+        $zoneData = $this->parseZoneWithSerial();
+        $serial = $zoneData['serial'];
 
-        foreach ($records as $record) {
-            $recordName = $record['dname'] ?? $record['name'] ?? '';
-            $recordValue = $record['txtdata'] ?? $record['address'] ?? '';
+        foreach ($zoneData['records'] as $record) {
+            if (($record['type'] ?? '') !== 'TXT') {
+                continue;
+            }
+
+            $recordName = $record['dname'] ?? '';
+            $recordData = $this->extractDataString($record['data'] ?? []);
 
             if (!str_contains($recordName, $name)) {
                 continue;
             }
-            if (!str_contains($recordValue, $value)) {
+            if (!str_contains($recordData, $value)) {
                 continue;
             }
 
-            $lineIndex = $record['line_index'] ?? $record['Line'] ?? null;
+            $lineIndex = $record['line_index'] ?? null;
             if ($lineIndex === null) {
                 continue;
             }
 
-            $response = $this->rawRequest('post', '/execute/DNS/remove_zone_record', [
-                'domain' => $this->zone,
-                'line_index' => $lineIndex,
+            $response = $this->rawRequest('get', '/execute/DNS/mass_edit_zone', [
+                'serial' => $serial,
+                'zone' => $this->zone,
+                'remove' => json_encode([$lineIndex]),
             ]);
 
             $payload = json_decode($response->getStringBody(), true);
+            $result = $payload['result'] ?? [];
 
-            if (!is_array($payload)) {
-                throw new RuntimeException('cPanel remove_zone_record: respuesta inválida (no JSON)');
-            }
-
-            if (($payload['status'] ?? 0) !== 1) {
-                $errors = implode('; ', (array) ($payload['errors'] ?? $payload['error'] ?? ['error desconocido']));
-                throw new RuntimeException('cPanel remove_zone_record falló: ' . $errors);
+            if (($result['status'] ?? 0) !== 1) {
+                $errors = implode('; ', (array) ($result['errors'] ?? ['error desconocido']));
+                throw new RuntimeException('cPanel mass_edit_zone (remove) falló: ' . $errors);
             }
 
             return;
@@ -141,14 +148,49 @@ class CpanelDnsService
 
     public function listRecords(): array
     {
-        $response = $this->rawRequest('get', '/execute/DNS/parse_zone', ['domain' => $this->zone]);
-        $payload = json_decode($response->getStringBody(), true);
+        $zoneData = $this->parseZoneWithSerial();
 
-        if (!is_array($payload) || ($payload['status'] ?? 0) !== 1) {
-            return [];
+        return $zoneData['records'];
+    }
+
+    private function parseZoneWithSerial(): array
+    {
+        $response = $this->rawRequest('get', '/execute/DNS/parse_zone', ['zone' => $this->zone]);
+        $payload = json_decode($response->getStringBody(), true);
+        $result = $payload['result'] ?? [];
+
+        if (($result['status'] ?? 0) !== 1) {
+            $errors = implode('; ', (array) ($result['errors'] ?? ['error desconocido']));
+            throw new RuntimeException('cPanel parse_zone falló: ' . $errors);
         }
 
-        return $payload['data'] ?? [];
+        $records = $result['data'] ?? [];
+        $serial = 0;
+
+        foreach ($records as $record) {
+            if (($record['type'] ?? '') === 'SOA') {
+                $soaData = $record['data'] ?? [];
+                if (is_array($soaData) && isset($soaData[2])) {
+                    $serial = (int) $soaData[2];
+                }
+                break;
+            }
+        }
+
+        if ($serial === 0) {
+            throw new RuntimeException('No se pudo determinar el serial SOA de la zona ' . $this->zone);
+        }
+
+        return ['records' => $records, 'serial' => $serial];
+    }
+
+    private function extractDataString(array $data): string
+    {
+        if (empty($data)) {
+            return '';
+        }
+
+        return implode(' ', array_map(fn($v) => trim((string) $v, '"'), $data));
     }
 
     private function rawRequest(string $method, string $endpoint, array $params = []): \Cake\Http\Client\Response
