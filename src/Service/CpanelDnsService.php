@@ -77,7 +77,7 @@ class CpanelDnsService
             'dname' => $name,
             'ttl' => 120,
             'record_type' => 'TXT',
-            'data' => ['"' . $value . '"'],
+            'data' => [$value],
         ];
 
         $response = $this->http->get('/DNS/mass_edit_zone', [
