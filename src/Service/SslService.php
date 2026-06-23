@@ -295,10 +295,10 @@ class SslService
         try {
             if ($dnsProvider === 'cpanel') {
                 $hookScript = $this->createCpanelHookScript();
-                putenv('ACMESH_DNS_MANUAL_CMD=' . escapeshellarg($hookScript) . ' add');
-                putenv('ACMESH_DNS_MANUAL_CLEANUP=' . escapeshellarg($hookScript) . ' remove');
+                putenv('ACMESH_DNS_MANUAL_CMD=' . $hookScript . ' add');
+                putenv('ACMESH_DNS_MANUAL_CLEANUP=' . $hookScript . ' remove');
 
-                $cmd = [$acmeSh, '--issue', '-d', $domain, '--dns', 'dns_manual_hook', '--force', '--dnssleep', '120'];
+                $cmd = [$acmeSh, '--issue', '-d', $domain, '--dns', 'dns_manual', '--force', '--dnssleep', '120'];
             } else {
                 $cmd = [$acmeSh, '--issue', '-d', $domain, '--webroot', $webroot, '--force'];
             }
@@ -307,7 +307,10 @@ class SslService
             $log = array_merge($log, $output);
 
             if ($exitCode !== 0) {
-                return ['success' => false, 'log' => $log, 'error' => 'Error al renovar certificado.'];
+                $lastLines = array_slice(array_filter($output, fn($l) => !preg_match('/^\[(Mon|Tue|Wed|Thu|Fri|Sat|Sun) /', $l)), -10);
+                $reason = 'Error al renovar certificado: ' . ($lastLines ? implode(' | ', $lastLines) : 'exit code ' . $exitCode);
+
+                return ['success' => false, 'log' => $log, 'error' => $reason];
             }
 
             $log[] = 'Certificado renovado correctamente.';
@@ -346,7 +349,9 @@ class SslService
         $log = array_merge($log, $pfxOutput);
 
         if ($pfxExitCode !== 0) {
-            return ['success' => false, 'log' => $log, 'error' => 'Error al generar PFX.'];
+            $pfxReason = 'Error al generar PFX: ' . implode(' | ', array_slice($pfxOutput, -5));
+
+            return ['success' => false, 'log' => $log, 'error' => $pfxReason];
         }
 
         $log[] = 'PFX generado: ' . $pfxFile;

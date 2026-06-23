@@ -35,7 +35,7 @@ class SslController extends AppController
         $domain = $ssl->getDomain();
 
         if ($domain === null) {
-            $this->Flash->error('No hay dominio configurado en SslRenew.domain');
+            $this->Flash->error('No hay dominio configurado en SSLGeneration.domain');
 
             return $this->redirect(['action' => 'index']);
         }
@@ -46,6 +46,7 @@ class SslController extends AppController
             $this->Flash->success('Certificado renovado y PFX generado correctamente.');
         } else {
             $this->Flash->error('Error: ' . ($result['error'] ?? 'Error desconocido'));
+            $this->getRequest()->getSession()->write('SslRenewLog', $result['log'] ?? []);
         }
 
         return $this->redirect(['action' => 'index']);

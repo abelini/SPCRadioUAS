@@ -68,7 +68,7 @@ class CpanelDnsService
         return '_acme-challenge.' . $domain;
     }
 
-    public function addTxtRecord(string $domain, string $value): bool
+    public function addTxtRecord(string $domain, string $value): void
     {
         $name = $this->getRecordName($domain);
 
@@ -83,15 +83,16 @@ class CpanelDnsService
         $payload = json_decode($response->getStringBody(), true);
 
         if (!is_array($payload)) {
-            Log::write('error', 'cPanel add_zone_record: respuesta inválida', ['scope' => 'ssl']);
-
-            return false;
+            throw new RuntimeException('cPanel add_zone_record: respuesta inválida (no JSON)');
         }
 
-        return ($payload['status'] ?? 0) === 1;
+        if (($payload['status'] ?? 0) !== 1) {
+            $errors = implode('; ', (array) ($payload['errors'] ?? $payload['error'] ?? ['error desconocido']));
+            throw new RuntimeException('cPanel add_zone_record falló: ' . $errors);
+        }
     }
 
-    public function removeTxtRecord(string $domain, string $value): bool
+    public function removeTxtRecord(string $domain, string $value): void
     {
         $name = $this->getRecordName($domain);
         $records = $this->listRecords();
@@ -120,21 +121,22 @@ class CpanelDnsService
             $payload = json_decode($response->getStringBody(), true);
 
             if (!is_array($payload)) {
-                Log::write('error', 'cPanel remove_zone_record: respuesta inválida', ['scope' => 'ssl']);
-
-                return false;
+                throw new RuntimeException('cPanel remove_zone_record: respuesta inválida (no JSON)');
             }
 
-            return ($payload['status'] ?? 0) === 1;
+            if (($payload['status'] ?? 0) !== 1) {
+                $errors = implode('; ', (array) ($payload['errors'] ?? $payload['error'] ?? ['error desconocido']));
+                throw new RuntimeException('cPanel remove_zone_record falló: ' . $errors);
+            }
+
+            return;
         }
 
-        Log::write('warning', sprintf(
-            'cPanel remove: no se encontró record TXT con name=%s value=%s',
+        throw new RuntimeException(sprintf(
+            'No se encontró record TXT para eliminar (name=%s, value=%s)',
             $name,
             $value
-        ), ['scope' => 'ssl']);
-
-        return false;
+        ));
     }
 
     public function listRecords(): array

@@ -38,20 +38,14 @@ class CpanelDnsCommand extends Command
             $service = new CpanelDnsService();
 
             if ($action === 'add') {
-                $ok = $service->addTxtRecord($domain, $value);
+                $service->addTxtRecord($domain, $value);
             } else {
-                $ok = $service->removeTxtRecord($domain, $value);
+                $service->removeTxtRecord($domain, $value);
             }
 
-            if ($ok) {
-                $io->out('OK');
+            $io->out('OK');
 
-                return static::CODE_SUCCESS;
-            }
-
-            $io->error('Error al ' . ($action === 'add' ? 'agregar' : 'remover') . ' record TXT');
-
-            return static::CODE_ERROR;
+            return static::CODE_SUCCESS;
         } catch (\Exception $e) {
             $io->error($e->getMessage());
 

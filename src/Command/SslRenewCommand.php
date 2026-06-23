@@ -81,10 +81,10 @@ class SslRenewCommand extends Command
         try {
             if ($dnsProvider === 'cpanel') {
                 $hookScript = $this->createCpanelHookScript();
-                putenv('ACMESH_DNS_MANUAL_CMD=' . escapeshellarg($hookScript) . ' add');
-                putenv('ACMESH_DNS_MANUAL_CLEANUP=' . escapeshellarg($hookScript) . ' remove');
+                putenv('ACMESH_DNS_MANUAL_CMD=' . $hookScript . ' add');
+                putenv('ACMESH_DNS_MANUAL_CLEANUP=' . $hookScript . ' remove');
 
-                $cmd = [$acmeSh, '--issue', '-d', $domain, '--dns', 'dns_manual_hook', '--force', '--dnssleep', '120'];
+                $cmd = [$acmeSh, '--issue', '-d', $domain, '--dns', 'dns_manual', '--force', '--dnssleep', '120'];
             } else {
                 $cmd = [$acmeSh, '--issue', '-d', $domain, '--webroot', $webroot, '--force'];
             }
