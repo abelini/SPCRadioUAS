@@ -73,12 +73,12 @@ class CpanelDnsService
         $zoneData = $this->fetchZoneData();
         $serial = $zoneData['serial'];
 
-        $record = [[
+        $record = [
             'dname' => $name,
             'ttl' => 120,
             'record_type' => 'TXT',
             'data' => [$value],
-        ]];
+        ];
 
         $response = $this->http->get('/DNS/mass_edit_zone', [
             'serial' => $serial,
