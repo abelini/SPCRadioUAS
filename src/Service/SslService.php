@@ -290,35 +290,24 @@ class SslService
         $log[] = "Renovando certificado para: {$domain}...";
         $log[] = 'Método DNS: ' . $dnsProvider;
 
-        $hookScript = null;
-
-        try {
-            if ($dnsProvider === 'cpanel') {
-                $hookScript = $this->createCpanelHookScript();
-                putenv('ACMESH_DNS_MANUAL_CMD=' . $hookScript . ' add');
-                putenv('ACMESH_DNS_MANUAL_CLEANUP=' . $hookScript . ' remove');
-
-                $cmd = [$acmeSh, '--home', $acmeHome, '--issue', '-d', $domain, '--dns', 'dns_manual', '--force', '--dnssleep', '120'];
-            } else {
-                $cmd = [$acmeSh, '--issue', '-d', $domain, '--webroot', $webroot, '--force'];
-            }
-
-            $this->execCmd($cmd, $output, $exitCode);
-            $log = array_merge($log, $output);
-
-            if ($exitCode !== 0) {
-                $lastLines = array_slice(array_filter($output, fn($l) => !preg_match('/^\[(Mon|Tue|Wed|Thu|Fri|Sat|Sun) /', $l)), -10);
-                $reason = 'Error al renovar certificado: ' . ($lastLines ? implode(' | ', $lastLines) : 'exit code ' . $exitCode);
-
-                return ['success' => false, 'log' => $log, 'error' => $reason];
-            }
-
-            $log[] = 'Certificado renovado correctamente.';
-        } finally {
-            if ($hookScript !== null && file_exists($hookScript)) {
-                unlink($hookScript);
-            }
+        if ($dnsProvider === 'cpanel') {
+            $this->ensureDnsApiScript($acmeHome);
+            $cmd = [$acmeSh, '--home', $acmeHome, '--issue', '-d', $domain, '--dns', 'dns_cpanel', '--force', '--dnssleep', '120'];
+        } else {
+            $cmd = [$acmeSh, '--issue', '-d', $domain, '--webroot', $webroot, '--force'];
         }
+
+        $this->execCmd($cmd, $output, $exitCode);
+        $log = array_merge($log, $output);
+
+        if ($exitCode !== 0) {
+            $lastLines = array_slice(array_filter($output, fn($l) => !preg_match('/^\[(Mon|Tue|Wed|Thu|Fri|Sat|Sun) /', $l)), -10);
+            $reason = 'Error al renovar certificado: ' . ($lastLines ? implode(' | ', $lastLines) : 'exit code ' . $exitCode);
+
+            return ['success' => false, 'log' => $log, 'error' => $reason];
+        }
+
+        $log[] = 'Certificado renovado correctamente.';
 
         // Generate PFX
         $certDir = $acmeHome . '/' . $domain;
@@ -372,22 +361,32 @@ class SslService
         return ['success' => true, 'log' => $log, 'error' => null];
     }
 
-    private function createCpanelHookScript(): string
+    private function ensureDnsApiScript(string $acmeHome): void
     {
+        $dnsApiDir = $acmeHome . '/dnsapi';
+        $scriptPath = $dnsApiDir . '/dns_cpanel.sh';
+
+        if (file_exists($scriptPath)) {
+            return;
+        }
+
+        if (!is_dir($dnsApiDir)) {
+            mkdir($dnsApiDir, 0755, true);
+        }
+
         $cakeBin = ROOT . DS . 'bin' . DS . 'cake.php';
         $phpBin = PHP_BINARY;
-        $tmpFile = tempnam(sys_get_temp_dir(), 'acme_cpanel_');
 
         $content = sprintf(
-            "#!/bin/bash\n%s %s cpanel_dns \"\$@\"\n",
+            "#!/bin/bash\n\ndns_cpanel_add() {\n    %s %s cpanel_dns add \"\$1\" \"\$2\"\n}\n\ndns_cpanel_rm() {\n    %s %s cpanel_dns remove \"\$1\" \"\$2\"\n}\n",
+            escapeshellarg($phpBin),
+            escapeshellarg($cakeBin),
             escapeshellarg($phpBin),
             escapeshellarg($cakeBin)
         );
 
-        file_put_contents($tmpFile, $content);
-        chmod($tmpFile, 0755);
-
-        return $tmpFile;
+        file_put_contents($scriptPath, $content);
+        chmod($scriptPath, 0755);
     }
 
     private function execCmd(array $args, ?array &$output = null, ?int &$exitCode = null): array

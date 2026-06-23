@@ -53,17 +53,17 @@ class CpanelDnsService
         return $this->zone;
     }
 
-    public function getRecordName(string $domain): string
+    private function recordName(string $domain): string
     {
         if ($domain === $this->zone) {
-            return '_acme-challenge';
+            return '_acme-challenge.' . $this->zone;
         }
 
         $suffix = '.' . $this->zone;
         if (str_ends_with($domain, $suffix)) {
             $sub = substr($domain, 0, -strlen($suffix));
 
-            return '_acme-challenge.' . $sub;
+            return '_acme-challenge.' . $sub . '.' . $this->zone;
         }
 
         return '_acme-challenge.' . $domain;
@@ -71,8 +71,8 @@ class CpanelDnsService
 
     public function addTxtRecord(string $domain, string $value): void
     {
-        $name = $this->getRecordName($domain);
-        $zoneData = $this->parseZoneWithSerial();
+        $name = $this->recordName($domain);
+        $zoneData = $this->fetchZoneData();
         $serial = $zoneData['serial'];
 
         $record = [[
@@ -89,32 +89,33 @@ class CpanelDnsService
         ]);
 
         $payload = json_decode($response->getStringBody(), true);
-        $result = $payload['result'] ?? [];
 
-        if (($result['status'] ?? 0) !== 1) {
-            $errors = implode('; ', (array) ($result['errors'] ?? ['error desconocido']));
+        if (($payload['status'] ?? 0) !== 1) {
+            $errors = implode('; ', (array) ($payload['errors'] ?? ['error desconocido']));
             throw new RuntimeException('cPanel mass_edit_zone (add) falló: ' . $errors);
         }
     }
 
     public function removeTxtRecord(string $domain, string $value): void
     {
-        $name = $this->getRecordName($domain);
-        $zoneData = $this->parseZoneWithSerial();
+        $name = $this->recordName($domain);
+        $zoneData = $this->fetchZoneData();
         $serial = $zoneData['serial'];
 
         foreach ($zoneData['records'] as $record) {
-            if (($record['type'] ?? '') !== 'TXT') {
+            if (($record['record_type'] ?? '') !== 'TXT') {
                 continue;
             }
 
-            $recordName = $record['dname'] ?? '';
-            $recordData = $this->extractDataString($record['data'] ?? []);
+            $recordName = $record['dname_raw'] ?? '';
+            $recordData = !empty($record['data_b64'])
+                ? trim(base64_decode(str_replace(["\r", "\n"], '', $record['data_b64'][0])), '"')
+                : '';
 
             if (!str_contains($recordName, $name)) {
                 continue;
             }
-            if (!str_contains($recordData, $value)) {
+            if ($recordData !== $value) {
                 continue;
             }
 
@@ -130,10 +131,9 @@ class CpanelDnsService
             ]);
 
             $payload = json_decode($response->getStringBody(), true);
-            $result = $payload['result'] ?? [];
 
-            if (($result['status'] ?? 0) !== 1) {
-                $errors = implode('; ', (array) ($result['errors'] ?? ['error desconocido']));
+            if (($payload['status'] ?? 0) !== 1) {
+                $errors = implode('; ', (array) ($payload['errors'] ?? ['error desconocido']));
                 throw new RuntimeException('cPanel mass_edit_zone (remove) falló: ' . $errors);
             }
 
@@ -149,30 +149,51 @@ class CpanelDnsService
 
     public function listRecords(): array
     {
-        $zoneData = $this->parseZoneWithSerial();
+        $zoneData = $this->fetchZoneData();
+        $decoded = [];
 
-        return $zoneData['records'];
+        foreach ($zoneData['records'] as $record) {
+            $entry = [
+                'type' => $record['record_type'] ?? '',
+                'name' => $record['dname_raw'] ?? '',
+                'ttl' => $record['ttl'] ?? 0,
+                'line_index' => $record['line_index'] ?? null,
+                'data' => [],
+            ];
+
+            if (!empty($record['data_b64'])) {
+                foreach ($record['data_b64'] as $b64) {
+                    $entry['data'][] = $this->decodeBase64Field($b64);
+                }
+            }
+
+            $decoded[] = $entry;
+        }
+
+        return $decoded;
     }
 
-    private function parseZoneWithSerial(): array
+    private function fetchZoneData(): array
     {
         $response = $this->rawRequest('get', '/execute/DNS/parse_zone', ['zone' => $this->zone]);
         $payload = json_decode($response->getStringBody(), true);
-        $result = $payload['result'] ?? [];
 
-        if (($result['status'] ?? 0) !== 1) {
-            $errors = implode('; ', (array) ($result['errors'] ?? ['error desconocido']));
+        if (($payload['status'] ?? 0) !== 1) {
+            $errors = implode('; ', (array) ($payload['errors'] ?? ['error desconocido']));
             throw new RuntimeException('cPanel parse_zone falló: ' . $errors);
         }
 
-        $records = $result['data'] ?? [];
+        $records = $payload['data'] ?? [];
         $serial = 0;
 
         foreach ($records as $record) {
-            if (($record['type'] ?? '') === 'SOA') {
-                $soaData = $record['data'] ?? [];
-                if (is_array($soaData) && isset($soaData[2])) {
-                    $serial = (int) $soaData[2];
+            if (($record['record_type'] ?? '') === 'SOA') {
+                $dataB64 = $record['data_b64'] ?? [];
+                if (is_array($dataB64) && isset($dataB64[2])) {
+                    $decoded = (int) $this->decodeBase64Field($dataB64[2]);
+                    if ($decoded > 0) {
+                        $serial = $decoded;
+                    }
                 }
                 break;
             }
@@ -185,13 +206,11 @@ class CpanelDnsService
         return ['records' => $records, 'serial' => $serial];
     }
 
-    private function extractDataString(array $data): string
+    private function decodeBase64Field(string $b64): string
     {
-        if (empty($data)) {
-            return '';
-        }
+        $clean = str_replace(["\r", "\n"], '', $b64);
 
-        return implode(' ', array_map(fn($v) => trim((string) $v, '"'), $data));
+        return base64_decode($clean, true) ?: '';
     }
 
     private function rawRequest(string $method, string $endpoint, array $params = []): Response
