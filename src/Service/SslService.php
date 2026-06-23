@@ -289,13 +289,26 @@ class SslService
         $this->execCmd([$acmeSh, '--set-default-ca', '--server', $ca], $o, $c);
         $log[] = 'CA configurada: ' . $ca;
 
+        // Check if Cloudflare credentials are configured for DNS-01
+        $cfToken = Configure::read('SslRenew.cloudflareAPIToken');
+        $cfZoneId = Configure::read('SslRenew.cloudflareZoneID');
+        $useDns = !empty($cfToken) && !empty($cfZoneId);
+
         // Issue/renew
         $log[] = "Renovando certificado para: {$domain}...";
 
         if ($standalone) {
             $cmd = [$acmeSh, '--issue', '-d', $domain, '--standalone', '--force'];
+        } elseif ($useDns) {
+            $log[] = 'Usando validación DNS-01 con Cloudflare';
+            $cmd = [$acmeSh, '--issue', '-d', $domain, '--dns', 'dns_cf', '--force'];
         } else {
             $cmd = [$acmeSh, '--issue', '-d', $domain, '--webroot', $webroot, '--force'];
+        }
+
+        if ($useDns) {
+            putenv("CF_Token={$cfToken}");
+            putenv("CF_Zone_ID={$cfZoneId}");
         }
 
         $this->execCmd($cmd, $output, $exitCode);
