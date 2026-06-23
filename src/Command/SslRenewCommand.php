@@ -70,7 +70,7 @@ class SslRenewCommand extends Command
         $io->out('acme.sh ya está instalado');
 
         // 2. Set CA
-        $this->runCommand([$acmeSh, '--set-default-ca', '--server', $ca], $io);
+        $this->runCommand([$acmeSh, '--home', $acmeHome, '--set-default-ca', '--server', $ca], $io);
 
         // 3. Issue / renew certificate
         $io->out("Procesando certificado para: {$domain}");
@@ -84,7 +84,7 @@ class SslRenewCommand extends Command
                 putenv('ACMESH_DNS_MANUAL_CMD=' . $hookScript . ' add');
                 putenv('ACMESH_DNS_MANUAL_CLEANUP=' . $hookScript . ' remove');
 
-                $cmd = [$acmeSh, '--issue', '-d', $domain, '--dns', 'dns_manual', '--force', '--dnssleep', '120'];
+                $cmd = [$acmeSh, '--home', $acmeHome, '--issue', '-d', $domain, '--dns', 'dns_manual', '--force', '--dnssleep', '120'];
             } else {
                 $cmd = [$acmeSh, '--issue', '-d', $domain, '--webroot', $webroot, '--force'];
             }
