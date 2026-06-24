@@ -30,13 +30,7 @@ $this->assign('title', 'Certificado SSL');
     </details>
     <?php endif; ?>
 
-    <?php if (!$configured): ?>
-        <div class="alert alert-warning">
-            <i class="fa-solid fa-triangle-exclamation"></i>
-            No hay dominio configurado. Agrega <code>SslRenew.domain</code> en <code>config/app_local.php</code>.
-        </div>
-
-    <?php elseif (!$ssl->isAcmeInstalled() && $certInfo === null): ?>
+    <?php if (!$ssl->isAcmeInstalled() && $certInfo === null): ?>
         <div class="alert alert-warning">
             <i class="fa-solid fa-triangle-exclamation"></i>
             <strong>acme.sh no está instalado.</strong>

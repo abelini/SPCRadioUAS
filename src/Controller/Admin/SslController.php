@@ -12,16 +12,7 @@ class SslController extends AppController
 {
     public function index(): Response
     {
-        $ssl = new SslService();
-        $domain = $ssl->getDomain();
-        $configured = $domain !== null;
-
-        $certInfo = $configured ? $ssl->getCertInfo($domain) : null;
-
-        $canRunAcme = $ssl->isAcmeInstalled();
-        $dnsProvider = Configure::read('SSLGeneration.dnsProvider') ?? 'webroot';
-
-        $this->set(compact('domain', 'certInfo', 'configured', 'ssl', 'canRunAcme', 'dnsProvider'));
+        $this->set($this->_loadCommonData());
 
         return $this->render();
     }
@@ -33,13 +24,6 @@ class SslController extends AppController
         $type = $this->request->getQuery('type', 'pfx');
         $ssl = new SslService();
         $domain = $ssl->getDomain();
-
-        if ($domain === null) {
-            $this->Flash->error('No hay dominio configurado.');
-
-            return $this->redirect(['action' => 'index']);
-        }
-
         $certInfo = $ssl->getCertInfo($domain);
 
         if (!$certInfo['exists']) {
@@ -83,24 +67,7 @@ class SslController extends AppController
         $ssl = new SslService();
         $domain = $ssl->getDomain();
 
-        if ($domain === null) {
-            $this->Flash->error('No hay dominio configurado en SSLGeneration.domain');
-
-            return $this->redirect(['action' => 'index']);
-        }
-
         $result = $ssl->renew($domain);
-
-        $certInfo = $ssl->getCertInfo($domain);
-        $configured = $domain !== null;
-        $canRunAcme = $ssl->isAcmeInstalled();
-        $dnsProvider = Configure::read('SSLGeneration.dnsProvider') ?? 'webroot';
-
-        $this->set(compact(
-            'domain', 'certInfo', 'configured', 'ssl',
-            'canRunAcme', 'dnsProvider'
-        ));
-
         $this->set('renewLog', $result['log'] ?? []);
 
         if ($result['success']) {
@@ -109,6 +76,18 @@ class SslController extends AppController
             $this->Flash->error('Error: ' . ($result['error'] ?? 'Error desconocido'));
         }
 
+        $this->set($this->_loadCommonData());
+
         return $this->render('index');
+    }
+
+    private function _loadCommonData(): array
+    {
+        $ssl = new SslService();
+        $domain = $ssl->getDomain();
+        $certInfo = $ssl->getCertInfo($domain);
+        $canRunAcme = $ssl->isAcmeInstalled();
+        $dnsProvider = Configure::read('SSLGeneration.dnsProvider');
+        return compact('ssl', 'domain', 'certInfo', 'canRunAcme', 'dnsProvider');
     }
 }
