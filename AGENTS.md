@@ -70,8 +70,8 @@ PHPStan at **level 8**. Psalm at **error level 2** (both in config).
   4. `CpanelDnsCommand` delegates to `CpanelDnsService`.
   5. `CpanelDnsService` uses scoped `Cake\Http\Client` (`host: radiouas.org`, `port: 2083`, `basePath: /execute`, `Authorization: cpanel user:token`).
   6. **`recordName()`** appends trailing dot (FQDN) to prevent cPanel from treating the dname as relative.
-  7. **`addTxtRecord()`** first purges all existing `_acme-challenge` TXT records for the domain, then adds the new one via `mass_edit_zone` (GET, `add` is a JSON object, `data` is unquoted).
-  8. **`removeTxtRecord()`** finds the record by `dname_raw` + decoded `data_b64` (trimmed quotes) and removes via `mass_edit_zone` (GET, `remove` is a plain int, not JSON array).
+  7. **`addTXTRecord()`** adds a TXT record via `mass_edit_zone` (GET, `add` is a JSON object, `data` is unquoted).
+  8. **`removeTXTRecord()`** finds the record by `dname_raw` + decoded `data_b64` (trimmed quotes) and removes via `mass_edit_zone` (GET, `remove` is a plain int, not JSON array).
   9. cPanel UAPI endpoints: `/execute/DNS/parse_zone` (GET, reads zone + serial) and `/execute/DNS/mass_edit_zone` (GET, add/remove records).
   10. Response is flat (`payload.status`, `payload.errors`, `payload.data`), NOT nested under `result`.
   11. Record data is base64-encoded in `data_b64`/`dname_b64`; `dname_raw` has plain text; `record_type` identifies DNS type.

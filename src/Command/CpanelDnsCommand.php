@@ -38,9 +38,9 @@ class CpanelDnsCommand extends Command
             $service = new CpanelDnsService();
 
             if ($action === 'add') {
-                $service->addTxtRecord($domain, $value);
+                $service->addTXTRecord($domain, $value);
             } else {
-                $service->removeTxtRecord($domain, $value);
+                $service->removeTXTRecord($domain, $value);
             }
 
             $io->out('OK');

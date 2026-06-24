@@ -5,7 +5,6 @@
  * @var array|null $certInfo
  * @var bool $configured
  * @var bool $canRunAcme
- * @var bool $isWindows
  * @var string $dnsProvider
  * @var \SPC\Service\SslService $ssl
  * @var array $renewLog
@@ -31,23 +30,13 @@ $this->assign('title', 'Certificado SSL');
     </details>
     <?php endif; ?>
 
-    <?php if (!$canRunAcme): ?>
-        <div class="alert alert-info">
-            <i class="fa-solid fa-circle-info"></i>
-            <strong>Entorno local detectado</strong>
-            <?= $isWindows ? ' (Windows)' : '' ?>.
-            La renovación automática con acme.sh solo funciona en el servidor de producción Linux.
-            Aquí puedes ver la información del PFX que hayas copiado en <code>webroot/cert/</code>.
-        </div>
-    <?php endif; ?>
-
     <?php if (!$configured): ?>
         <div class="alert alert-warning">
             <i class="fa-solid fa-triangle-exclamation"></i>
             No hay dominio configurado. Agrega <code>SslRenew.domain</code> en <code>config/app_local.php</code>.
         </div>
 
-    <?php elseif ($canRunAcme && !$ssl->isAcmeInstalled() && $certInfo === null): ?>
+    <?php elseif (!$ssl->isAcmeInstalled() && $certInfo === null): ?>
         <div class="alert alert-warning">
             <i class="fa-solid fa-triangle-exclamation"></i>
             <strong>acme.sh no está instalado.</strong>
@@ -105,14 +94,6 @@ $this->assign('title', 'Certificado SSL');
             </div>
         </div>
 
-        <?php if ($certInfo['source'] === 'pfx'): ?>
-        <div class="alert alert-info mt-3">
-            <i class="fa-solid fa-circle-info"></i>
-            Mostrando información del archivo PFX en <code><?= h($certInfo['pfxFile']) ?></code>.
-            No hay certificado gestionado por acme.sh todavía.
-        </div>
-        <?php endif; ?>
-
         <div class="stats-section">
             <div class="page-subheader">
                 <h5>Información del certificado</h5>
@@ -134,12 +115,39 @@ $this->assign('title', 'Certificado SSL');
                 <h5>Archivos</h5>
             </div>
             <table class="view-table">
-                <tr><th>Certificado</th><td><?= h($certInfo['certFile']) ?></td></tr>
-                <tr><th>Llave privada</th><td><?= h($certInfo['keyFile']) ?></td></tr>
+                <tr><th>Certificado</th><td>
+                    <?= h($certInfo['certFile']) ?>
+                    <?= $this->Html->link(
+                        '<i class="fa-solid fa-download"></i>',
+                        ['action' => 'download', '?' => ['type' => 'cert']],
+                        ['escapeTitle' => false, 'class' => 'btn-ghost', 'title' => 'Descargar .cer']
+                    ) ?>
+                </td></tr>
+                <tr><th>Fullchain</th><td>
+                    <?= h($certInfo['fullchainFile']) ?>
+                    <?= $this->Html->link(
+                        '<i class="fa-solid fa-download"></i>',
+                        ['action' => 'download', '?' => ['type' => 'fullchain']],
+                        ['escapeTitle' => false, 'class' => 'btn-ghost', 'title' => 'Descargar fullchain.cer']
+                    ) ?>
+                </td></tr>
+                <tr><th>Llave privada</th><td>
+                    <?= h($certInfo['keyFile']) ?>
+                    <?= $this->Html->link(
+                        '<i class="fa-solid fa-download"></i>',
+                        ['action' => 'download', '?' => ['type' => 'key']],
+                        ['escapeTitle' => false, 'class' => 'btn-ghost', 'title' => 'Descargar .key']
+                    ) ?>
+                </td></tr>
                 <tr><th>PFX</th><td>
                     <?= h($certInfo['pfxFile']) ?>
                     <?php if ($certInfo['pfxExists']): ?>
                         <span class="status-badge status-completed">Generado</span>
+                        <?= $this->Html->link(
+                            '<i class="fa-solid fa-download"></i>',
+                            ['action' => 'download', '?' => ['type' => 'pfx']],
+                            ['escapeTitle' => false, 'class' => 'btn-ghost', 'title' => 'Descargar .pfx']
+                        ) ?>
                     <?php else: ?>
                         <span class="status-badge status-pending">Pendiente</span>
                     <?php endif; ?>

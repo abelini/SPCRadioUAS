@@ -18,13 +18,62 @@ class SslController extends AppController
 
         $certInfo = $configured ? $ssl->getCertInfo($domain) : null;
 
-        $canRunAcme = SslService::canRunAcme();
-        $isWindows = SslService::isWindows();
+        $canRunAcme = $ssl->isAcmeInstalled();
         $dnsProvider = Configure::read('SSLGeneration.dnsProvider') ?? 'webroot';
 
-        $this->set(compact('domain', 'certInfo', 'configured', 'ssl', 'canRunAcme', 'isWindows', 'dnsProvider'));
+        $this->set(compact('domain', 'certInfo', 'configured', 'ssl', 'canRunAcme', 'dnsProvider'));
 
         return $this->render();
+    }
+
+    public function download(): Response
+    {
+        $this->request->allowMethod(['get']);
+
+        $type = $this->request->getQuery('type', 'pfx');
+        $ssl = new SslService();
+        $domain = $ssl->getDomain();
+
+        if ($domain === null) {
+            $this->Flash->error('No hay dominio configurado.');
+
+            return $this->redirect(['action' => 'index']);
+        }
+
+        $certInfo = $ssl->getCertInfo($domain);
+
+        if (!$certInfo['exists']) {
+            $this->Flash->error('No hay certificado para descargar.');
+
+            return $this->redirect(['action' => 'index']);
+        }
+
+        $files = [
+            'pfx' => $certInfo['pfxFile'] ?? null,
+            'cert' => $certInfo['certFile'] ?? null,
+            'key' => $certInfo['keyFile'] ?? null,
+            'fullchain' => $certInfo['fullchainFile'] ?? null,
+        ];
+
+        $file = $files[$type] ?? null;
+
+        if ($file === null || !file_exists($file)) {
+            $this->Flash->error('Archivo no encontrado.');
+
+            return $this->redirect(['action' => 'index']);
+        }
+
+        $names = [
+            'pfx' => $domain . '.pfx',
+            'cert' => $domain . '.cer',
+            'key' => $domain . '.key',
+            'fullchain' => 'fullchain.cer',
+        ];
+
+        return $this->response->withFile($file, [
+            'download' => true,
+            'name' => $names[$type],
+        ]);
     }
 
     public function renew(): ?Response
@@ -44,13 +93,12 @@ class SslController extends AppController
 
         $certInfo = $ssl->getCertInfo($domain);
         $configured = $domain !== null;
-        $canRunAcme = SslService::canRunAcme();
-        $isWindows = SslService::isWindows();
+        $canRunAcme = $ssl->isAcmeInstalled();
         $dnsProvider = Configure::read('SSLGeneration.dnsProvider') ?? 'webroot';
 
         $this->set(compact(
             'domain', 'certInfo', 'configured', 'ssl',
-            'canRunAcme', 'isWindows', 'dnsProvider'
+            'canRunAcme', 'dnsProvider'
         ));
 
         $this->set('renewLog', $result['log'] ?? []);

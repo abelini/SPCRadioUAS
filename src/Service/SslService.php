@@ -7,83 +7,29 @@ use Cake\Core\Configure;
 
 class SslService
 {
-    public function getDomain(): ?string
+    public function getDomain(): string
     {
         return Configure::read('SSLGeneration.domain');
     }
 
     public function getEmail(): string
     {
-        return Configure::read('SSLGeneration.email') ?? 'admin@' . ($this->getDomain() ?? 'example.com');
+        return Configure::read('SSLGeneration.email');
     }
 
     public function getPfxPassword(): string
     {
-        return Configure::read('SSLGeneration.pfxPassword') ?? '';
+        return Configure::read('SSLGeneration.pfxPassword');
     }
 
-    public function getPfxDestination(): ?string
+    public function getPfxDestination(): string
     {
         return Configure::read('SSLGeneration.pfxDestination');
-    }
-
-    public static function isWindows(): bool
-    {
-        return PHP_OS_FAMILY === 'Windows';
-    }
-
-    public static function isLocalhost(): bool
-    {
-        $host = $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? '';
-
-        return in_array($host, ['localhost', '127.0.0.1', '::1'], true)
-            || str_starts_with($host, '192.168.')
-            || str_starts_with($host, '10.');
-    }
-
-    public static function canRunAcme(): bool
-    {
-        return !self::isWindows() && !self::isLocalhost();
-    }
-
-    public static function findOpenssl(): ?string
-    {
-        $candidates = ['openssl'];
-
-        if (self::isWindows()) {
-            $programFiles = getenv('ProgramFiles') ?: 'C:\Program Files';
-            $candidates = [
-                'openssl',
-                $programFiles . '\OpenSSL-Win64\bin\openssl.exe',
-                $programFiles . '\OpenSSL-Win32\bin\openssl.exe',
-                'C:\OpenSSL-Win64\bin\openssl.exe',
-                'C:\OpenSSL-Win32\bin\openssl.exe',
-                getenv('SystemRoot') . '\System32\openssl.exe',
-            ];
-        }
-
-        foreach ($candidates as $bin) {
-            $cmd = self::isWindows()
-                ? 'where.exe ' . escapeshellarg($bin) . ' 2>NUL'
-                : 'which ' . escapeshellarg($bin) . ' 2>/dev/null';
-
-            exec($cmd, $output, $code);
-            if ($code === 0 && !empty($output[0])) {
-                return $output[0];
-            }
-        }
-
-        return null;
     }
 
     public function getAcmeHome(): string
     {
         return Configure::read('SSLGeneration.acmeHome') ?? (getenv('HOME') ?: '/root') . '/.acme.sh';
-    }
-
-    public function getWebroot(): string
-    {
-        return Configure::read('SSLGeneration.webroot') ?? (defined('ROOT') ? ROOT . DS . 'webroot' : '/var/www/html/webroot');
     }
 
     public function isAcmeInstalled(): bool
@@ -124,65 +70,13 @@ class SslService
         $targetFile = $certFile;
 
         if (!file_exists($certFile)) {
-            // Try to read from the destination PFX instead
-            if ($pfxDest !== null && file_exists($pfxDest)) {
-                $pfxPass = $this->getPfxPassword();
-                $targetPfx = $pfxDest;
-                $info['pfxFile'] = $pfxDest;
-                $info['pfxExists'] = true;
-                $info['pfxAge'] = filemtime($pfxDest);
-                $info['source'] = 'pfx';
+            $info['error'] = 'No se encontró el certificado en: ' . $certFile;
 
-                $opensslBin = self::findOpenssl();
-                if ($opensslBin === null) {
-                    $info['error'] = 'No se encontró OpenSSL en el sistema.';
-
-                    return $info;
-                }
-
-                $passOpt = $pfxPass !== ''
-                    ? '-passin pass:' . $pfxPass
-                    : '-passin pass:';
-
-                exec(
-                    sprintf(
-                        '%s pkcs12 -in %s -clcerts -nokeys %s 2>&1',
-                        escapeshellarg($opensslBin),
-                        escapeshellarg(str_replace('\\', '/', $targetPfx)),
-                        $passOpt
-                    ),
-                    $pemOutput,
-                    $exitCode
-                );
-
-                if ($exitCode !== 0) {
-                    $info['error'] = 'OpenSSL no pudo leer el PFX: ' . ($pemOutput[0] ?? 'error desconocido');
-
-                    return $info;
-                }
-
-                if (empty($pemOutput)) {
-                    $info['error'] = 'El PFX no contiene un certificado (vació al extraer).';
-
-                    return $info;
-                }
-
-                $pem = implode("\n", $pemOutput);
-
-                // Parse from PEM string via temp file
-                $tmpFile = tempnam(sys_get_temp_dir(), 'ssl_');
-                file_put_contents($tmpFile, $pem);
-                $targetFile = $tmpFile;
-                $info['exists'] = true;
-            } else {
-                return $info;
-            }
+            return $info;
         }
 
         $info['exists'] = true;
-        if ($info['source'] === 'acme') {
-            $info['lastRenew'] = filemtime($targetFile);
-        }
+        $info['lastRenew'] = filemtime($targetFile);
 
         // Parse expiry
         exec(
@@ -229,25 +123,17 @@ class SslService
             $info['sans'] = $matches[1];
         }
 
-        // Clean up temp file
-        if (isset($tmpFile)) {
-            unlink($tmpFile);
+        // PFX info
+        $acmePfx = $certDir . '/' . $domain . '.pfx';
+        if (file_exists($acmePfx)) {
+            $info['pfxExists'] = true;
+            $info['pfxAge'] = filemtime($acmePfx);
+            $info['pfxFile'] = $acmePfx;
         }
-
-        // PFX info (from acme home)
-        if ($info['source'] === 'acme') {
-            $acmePfx = $certDir . '/' . $domain . '.pfx';
-            if (file_exists($acmePfx)) {
-                $info['pfxExists'] = true;
-                $info['pfxAge'] = filemtime($acmePfx);
-                $info['pfxFile'] = $acmePfx;
-            }
-            // Also check destination
-            if ($pfxDest !== null && file_exists($pfxDest)) {
-                $info['pfxFile'] = $pfxDest;
-                $info['pfxExists'] = true;
-                $info['pfxAge'] ??= filemtime($pfxDest);
-            }
+        if ($pfxDest !== null && file_exists($pfxDest)) {
+            $info['pfxFile'] = $pfxDest;
+            $info['pfxExists'] = true;
+            $info['pfxAge'] ??= filemtime($pfxDest);
         }
 
         return $info;
@@ -255,18 +141,9 @@ class SslService
 
     public function renew(string $domain, ?string $email = null): array
     {
-        if (!self::canRunAcme()) {
-            $reason = self::isWindows()
-                ? 'acme.sh requiere Linux. Esta función solo funciona en el servidor de producción.'
-                : 'acme.sh no puede emitir certificados para localhost.';
-
-            return ['success' => false, 'log' => [], 'error' => $reason];
-        }
-
         $acmeHome = $this->getAcmeHome();
         $acmeSh = $acmeHome . '/acme.sh';
         $email ??= $this->getEmail();
-        $webroot = $this->getWebroot();
         $pfxPass = $this->getPfxPassword();
         $pfxDest = $this->getPfxDestination();
 
@@ -294,7 +171,7 @@ class SslService
             $this->ensureDnsApiScript($acmeHome);
             $cmd = [$acmeSh, '--home', $acmeHome, '--issue', '-d', $domain, '--dns', 'dns_cpanel', '--force', '--keylength', '2048', '--dnssleep', '5'];
         } else {
-            $cmd = [$acmeSh, '--issue', '-d', $domain, '--webroot', $webroot, '--force'];
+            $cmd = [$acmeSh, '--home', $acmeHome, '--issue', '-d', $domain, '--webroot', '/tmp', '--force'];
         }
 
         $this->execCmd($cmd, $output, $exitCode);
