@@ -99,7 +99,7 @@ $this->assign('title', 'Certificado SSL');
             <?php if (!empty($certInfo['sans'])): ?>
             <tr><th>SANs</th><td><?= implode(', ', $certInfo['sans']) ?></td></tr>
             <?php endif; ?>
-            <tr><th>Última renovación</th><td><?= $certInfo['lastRenew'] ? date('Y-m-d H:i:s', $certInfo['lastRenew']) : '—' ?></td></tr>
+            <tr><th>Última renovación</th><td><?= $certInfo['lastRenew']->i18nFormat(IntlDateFormatter::FULL) ?></td></tr>
         </table>
 
         <div class="page-subheader">
@@ -144,7 +144,7 @@ $this->assign('title', 'Certificado SSL');
                 <?php endif; ?>
             </td></tr>
             <?php if ($certInfo['pfxExists'] && $certInfo['pfxAge']): ?>
-            <tr><th>PFX generado</th><td><?= date('Y-m-d H:i:s', $certInfo['pfxAge']) ?></td></tr>
+            <tr><th>PFX generado</th><td><?= $certInfo['pfxAge']->i18nFormat(IntlDateFormatter::FULL) ?></td></tr>
             <?php endif; ?>
             <tr><th>Contraseña</th><td><?= $ssl->getPfxPassword() ?></td></tr>
         </table>
