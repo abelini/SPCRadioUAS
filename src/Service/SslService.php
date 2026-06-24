@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace SPC\Service;
 
 use Cake\Core\Configure;
+use Cake\I18n\DateTime;
+
 
 class SslService
 {
@@ -51,7 +53,6 @@ class SslService
         $info = [
             'exists' => false,
             'expiry' => null,
-            'expiryTimestamp' => null,
             'daysLeft' => null,
             'issuer' => null,
             'subject' => null,
@@ -76,7 +77,7 @@ class SslService
         }
 
         $info['exists'] = true;
-        $info['lastRenew'] = filemtime($targetFile);
+        $info['lastRenew'] = DateTime::createFromTimestamp(filemtime($targetFile));
 
         // Parse expiry
         exec(
@@ -86,12 +87,10 @@ class SslService
         );
 
         if ($exitCode === 0 && !empty($endDateOutput[0])) {
-            $endDateStr = substr($endDateOutput[0], 9);
-            $timestamp = strtotime($endDateStr);
-            if ($timestamp !== false) {
-                $info['expiry'] = date('Y-m-d H:i:s', $timestamp);
-                $info['expiryTimestamp'] = $timestamp;
-                $info['daysLeft'] = (int) ceil(($timestamp - time()) / 86400);
+            $expiry = DateTime::parse(substr($endDateOutput[0], 9));
+            if ($expiry !== null) {
+                $info['expiry'] = $expiry;
+                $info['daysLeft'] = $expiry->diffInDays(null, false);
             }
         }
 
@@ -127,13 +126,13 @@ class SslService
         $acmePfx = $certDir . '/' . $domain . '.pfx';
         if (file_exists($acmePfx)) {
             $info['pfxExists'] = true;
-            $info['pfxAge'] = filemtime($acmePfx);
+            $info['pfxAge'] = DateTime::createFromTimestamp(filemtime($acmePfx));
             $info['pfxFile'] = $acmePfx;
         }
         if ($pfxDest !== null && file_exists($pfxDest)) {
             $info['pfxFile'] = $pfxDest;
             $info['pfxExists'] = true;
-            $info['pfxAge'] ??= filemtime($pfxDest);
+            $info['pfxAge'] ??= DateTime::createFromTimestamp(filemtime($pfxDest));
         }
 
         return $info;

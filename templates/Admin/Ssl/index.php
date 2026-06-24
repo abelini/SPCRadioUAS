@@ -31,13 +31,6 @@ $this->assign('title', 'Certificado SSL');
     <?php endif; ?>
 
     <?php if (!$ssl->isAcmeInstalled() && $certInfo === null): ?>
-        <div class="alert alert-warning">
-            <i class="fa-solid fa-triangle-exclamation"></i>
-            <strong>acme.sh no está instalado.</strong>
-            Conéctate por SSH al servidor y ejecuta:<br>
-            <code>curl -sL https://get.acme.sh | sh</code><br>
-            Después de instalar, <a href="<?= $this->Url->build(['action' => 'index']) ?>">recarga esta página</a>.
-        </div>
 
         <div class="stats-section">
             <div class="page-subheader">
@@ -46,8 +39,8 @@ $this->assign('title', 'Certificado SSL');
             <table class="view-table">
                 <tr><th>Dominio</th><td><?= $domain ?></td></tr>
                 <tr><th>Email</th><td><?= $ssl->getEmail() ?></td></tr>
-                <tr><th>Destino PFX</th><td><?= $ssl->getPfxDestination() ?? '(no configurado)' ?></td></tr>
-                <tr><th>Contraseña PFX</th><td><?= $ssl->getPfxPassword() !== '' ? '******' : '<span class="badge-dot badge-dot-danger"></span> vacía' ?></td></tr>
+                <tr><th>Destino PFX</th><td><?= $ssl->getPfxDestination() ?></td></tr>
+                <tr><th>Contraseña PFX</th><td><?= $ssl->getPfxPassword() ?></td></tr>
                 <tr><th>Método DNS</th><td><?= $dnsProvider ?></td></tr>
             </table>
         </div>
@@ -95,7 +88,7 @@ $this->assign('title', 'Certificado SSL');
             <tr><th>Dominio</th><td><?= $domain ?></td></tr>
             <tr><th>Subject</th><td><?= $certInfo['subject'] ?></td></tr>
             <tr><th>Issuer</th><td><?= $certInfo['issuer'] ?></td></tr>
-            <tr><th>Expira</th><td><?= $certInfo['expiry'] ?></td></tr>
+            <tr><th>Expira</th><td><?= $certInfo['expiry']->i18nFormat(IntlDateFormatter::FULL) ?></td></tr>
             <?php if (!empty($certInfo['sans'])): ?>
             <tr><th>SANs</th><td><?= implode(', ', $certInfo['sans']) ?></td></tr>
             <?php endif; ?>
