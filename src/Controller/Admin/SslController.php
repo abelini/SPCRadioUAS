@@ -12,7 +12,7 @@ class SslController extends AppController
 {
     public function index(): Response
     {
-        $this->set($this->_loadCommonData());
+        $this->set($this->_loadData());
 
         return $this->render();
     }
@@ -76,12 +76,12 @@ class SslController extends AppController
             $this->Flash->error('Error: ' . ($result['error'] ?? 'Error desconocido'));
         }
 
-        $this->set($this->_loadCommonData());
+        $this->set($this->_loadData());
 
         return $this->render('index');
     }
 
-    private function _loadCommonData(): array
+    private function _loadData(): array
     {
         $ssl = new SslService();
         $domain = $ssl->getDomain();

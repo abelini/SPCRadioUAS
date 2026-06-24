@@ -107,6 +107,7 @@ PHPStan at **level 8**. Psalm at **error level 2** (both in config).
 
 ## Notable quirks
 
+- **`h()`**: Never use `h()` in view templates. Raw output only.
 - **CSRF**: Skipped only for `Api/` prefix. All `Admin/` POST requests require `_csrfToken`.
 - **Form styling**: Input overrides live in `webroot/css/github-midday.css` and `github-midnight.css` (`.form-control`, `input[type=...]`). No `form.php` element file.
 - **`.page-header h5`**: Gradient background + white uppercase text via CSS.
