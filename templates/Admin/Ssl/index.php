@@ -94,7 +94,7 @@ $this->assign('title', 'Certificado SSL');
             </div>
         </div>
 
-        <div class="page-subheader">
+        <div class="page-subheader mt-3">
             <h5>Información del certificado</h5>
         </div>
         <table class="view-table">
