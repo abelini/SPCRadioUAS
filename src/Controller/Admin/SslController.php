@@ -42,13 +42,25 @@ class SslController extends AppController
 
         $result = $ssl->renew($domain);
 
+        $certInfo = $ssl->getCertInfo($domain);
+        $configured = $domain !== null;
+        $canRunAcme = SslService::canRunAcme();
+        $isWindows = SslService::isWindows();
+        $dnsProvider = Configure::read('SSLGeneration.dnsProvider') ?? 'webroot';
+
+        $this->set(compact(
+            'domain', 'certInfo', 'configured', 'ssl',
+            'canRunAcme', 'isWindows', 'dnsProvider'
+        ));
+
+        $this->set('renewLog', $result['log'] ?? []);
+
         if ($result['success']) {
             $this->Flash->success('Certificado renovado y PFX generado correctamente.');
         } else {
             $this->Flash->error('Error: ' . ($result['error'] ?? 'Error desconocido'));
-            $this->getRequest()->getSession()->write('SslRenewLog', $result['log'] ?? []);
         }
 
-        return $this->redirect(['action' => 'index']);
+        return $this->render('index');
     }
 }

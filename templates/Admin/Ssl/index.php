@@ -8,6 +8,7 @@
  * @var bool $isWindows
  * @var string $dnsProvider
  * @var \SPC\Service\SslService $ssl
+ * @var array $renewLog
  */
 $this->assign('title', 'Certificado SSL');
 ?>
@@ -17,12 +18,12 @@ $this->assign('title', 'Certificado SSL');
 <div class="content-card">
 
     <?php
-    $renewLog = $this->request->getSession()->consume('SslRenewLog');
+    $renewLog = $renewLog ?? $this->request->getSession()->consume('SslRenewLog');
     if ($renewLog):
     ?>
-    <details class="alert alert-danger" style="margin-bottom:1rem;white-space:pre-wrap;font-size:0.85rem;">
+    <details class="alert alert-danger" style="margin-bottom:1rem;white-space:pre-wrap;font-size:0.85rem;" open>
         <summary style="cursor:pointer;font-weight:bold;">
-            <i class="fa-solid fa-circle-exclamation"></i> Log de la última renovación (click para expandir)
+            <i class="fa-solid fa-circle-exclamation"></i> Log de la última renovación
         </summary>
         <div style="margin-top:0.5rem;background:#1a1a2e;color:#e0e0e0;padding:0.75rem;border-radius:4px;font-family:monospace;">
             <?= h(implode("\n", $renewLog)) ?>
