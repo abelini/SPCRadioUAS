@@ -93,9 +93,9 @@ $this->assign('title', 'Certificado SSL');
         </div>
         <table class="view-table">
             <tr><th>Dominio</th><td><?= $domain ?></td></tr>
-            <tr><th>Subject</th><td><?= $certInfo['subject'] ?? '—' ?></td></tr>
-            <tr><th>Issuer</th><td><?= $certInfo['issuer'] ?? '—' ?></td></tr>
-            <tr><th>Expira</th><td><?= $certInfo['expiry'] ?? '—' ?></td></tr>
+            <tr><th>Subject</th><td><?= $certInfo['subject'] ?></td></tr>
+            <tr><th>Issuer</th><td><?= $certInfo['issuer'] ?></td></tr>
+            <tr><th>Expira</th><td><?= $certInfo['expiry'] ?></td></tr>
             <?php if (!empty($certInfo['sans'])): ?>
             <tr><th>SANs</th><td><?= implode(', ', $certInfo['sans']) ?></td></tr>
             <?php endif; ?>
