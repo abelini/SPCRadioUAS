@@ -82,39 +82,19 @@ $this->assign('title', 'Certificado SSL');
 
         <div class="row g-3">
             <div class="col-md-6">
-                <span class="status-dot <?= $dotClass ?>"></span>
-                <strong><?= $statusText ?></strong>
+                <table class="view-table">
+                    <tr><th>Dominio</th><td><?= h($domain) ?></td></tr>
+                    <tr><th>Subject</th><td><?= h($certInfo['subject'] ?? '—') ?></td></tr>
+                    <tr><th>Issuer</th><td><?= h($certInfo['issuer'] ?? '—') ?></td></tr>
+                    <tr><th>Expira</th><td><?= h($certInfo['expiry'] ?? '—') ?></td></tr>
+                    <?php if (!empty($certInfo['sans'])): ?>
+                    <tr><th>SANs</th><td><?= h(implode(', ', $certInfo['sans'])) ?></td></tr>
+                    <?php endif; ?>
+                    <tr><th>Última renovación</th><td><?= $certInfo['lastRenew'] ? date('Y-m-d H:i:s', $certInfo['lastRenew']) : '—' ?></td></tr>
+                </table>
             </div>
             <div class="col-md-6">
-                <?php if ($daysLeft !== null): ?>
-                    <span class="status-badge <?= $badgeClass ?>">
-                        <i class="fa-regular fa-calendar"></i> <?= $daysLeft ?> días
-                    </span>
-                <?php endif; ?>
-            </div>
-        </div>
-
-        <div class="stats-section">
-            <div class="page-subheader">
-                <h5>Información del certificado</h5>
-            </div>
-            <table class="view-table">
-                <tr><th>Dominio</th><td><?= h($domain) ?></td></tr>
-                <tr><th>Subject</th><td><?= h($certInfo['subject'] ?? '—') ?></td></tr>
-                <tr><th>Issuer</th><td><?= h($certInfo['issuer'] ?? '—') ?></td></tr>
-                <tr><th>Expira</th><td><?= h($certInfo['expiry'] ?? '—') ?></td></tr>
-                <?php if (!empty($certInfo['sans'])): ?>
-                <tr><th>SANs</th><td><?= h(implode(', ', $certInfo['sans'])) ?></td></tr>
-                <?php endif; ?>
-                <tr><th>Última renovación</th><td><?= $certInfo['lastRenew'] ? date('Y-m-d H:i:s', $certInfo['lastRenew']) : '—' ?></td></tr>
-            </table>
-        </div>
-
-        <div class="stats-section">
-            <div class="page-subheader">
-                <h5>Archivos</h5>
-            </div>
-            <table class="view-table">
+                <table class="view-table">
                 <tr><th>Certificado</th><td>
                     <?= h($certInfo['certFile']) ?>
                     <?= $this->Html->link(
@@ -155,7 +135,9 @@ $this->assign('title', 'Certificado SSL');
                 <?php if ($certInfo['pfxExists'] && $certInfo['pfxAge']): ?>
                 <tr><th>PFX generado</th><td><?= date('Y-m-d H:i:s', $certInfo['pfxAge']) ?></td></tr>
                 <?php endif; ?>
+                <tr><th>Contraseña</th><td><?= h($ssl->getPfxPassword()) ?></td></tr>
             </table>
+            </div>
         </div>
 
         <?php if ($ssl->getPfxPassword() === ''): ?>
