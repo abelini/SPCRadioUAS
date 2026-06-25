@@ -3,9 +3,8 @@
 <img src="https://radio.uas.edu.mx/wp-content/media/logo.png" alt="Radio UAS" style="display:block;margin:auto;width:30%;display:block;">
 
 <p align="center">
-  <img src="https://github.com/cakephp/app/actions/workflows/ci.yml/badge.svg?branch=master" alt="Build Status">
   <img src="https://img.shields.io/badge/CakePHP-5.3-red?logo=cakephp" alt="CakePHP 5.3">
-  <img src="https://img.shields.io/badge/PHP-8.5-777BB4?logo=php" alt="PHP 8.5">
+  <img src="https://img.shields.io/badge/PHP-8.4-777BB4?logo=php" alt="PHP 8.4">
   <img src="https://img.shields.io/badge/uso-interno-lightgrey" alt="Uso interno">
 </p>
 
@@ -22,7 +21,9 @@ Sistema web interno de Radio Universidad Autónoma de Sinaloa para la gestión o
 - [Stack técnico](#stack-técnico)
 - [Instalación](#instalación)
 - [Configuración](#configuración)
+- [Sistema de layouts y tema](#sistema-de-layouts-y-tema)
 - [Comandos de consola](#comandos-de-consola)
+- [Testing y calidad](#testing-y-calidad)
 
 ---
 
@@ -36,7 +37,11 @@ Sistema web interno de Radio Universidad Autónoma de Sinaloa para la gestión o
 - Visualización de comentarios de Facebook en transmisiones en vivo
 - Control del servidor de streaming (MediaCP) desde la interfaz web
 - Fonoteca virtual integrada vía Emby
+- Transmisión de metadatos NowPlaying a SHOUTcast y encoder RDS (RDi20)
+- Renovación automática de certificados SSL vía acme.sh + cPanel DNS-01
 - Reportes de incidencias de vigilancia
+- Estadísticas de audiencia del streaming
+- Tema claro/oscuro intercambiable
 
 ---
 
@@ -57,6 +62,9 @@ Registro diario de la operación de cabina. Cada entrada agrupa los reportes de 
 ### Reportes de programas
 Control de cumplimiento por programa: estados `V` (en vivo), `G` (grabado), `S` (suspendido) y `X` (ausencia). Genera reportes por periodo con gráficas y cuenta de ausencias en texto (usando `NumberToWords`).
 
+### Temas de programas
+Gestión semanal de temas por programa. Incluye generación de contenido para redes sociales vía Google Gemini.
+
 ### Reportes de incidencias de vigilancia
 Módulo independiente para el registro y consulta de incidencias del área de vigilancia.
 
@@ -72,8 +80,23 @@ Módulo para el registro y seguimiento de solicitudes internas entre áreas.
 ### Stream
 Panel de control del servidor de streaming (MediaCP). Permite verificar el estado del stream, detenerlo y reiniciarlo directamente desde la interfaz sin acceder al servidor externo.
 
+### NowPlaying
+Actualización en tiempo real de metadatos del programa actual hacia SHOUTcast (título de canción/nombre del programa) y encoder RDS (PS, RT, PTY) para datos de radio FM.
+
 ### Asistente IA
 Interfaz interna para interactuar con Google Gemini. Permite generar prompts libres y también se usa de forma integrada en la generación de contenido para redes sociales.
+
+### SSL/TLS
+Panel de administración de certificados SSL. Muestra información del certificado actual (vigencia, emisor, SANs) y permite renovar automáticamente vía acme.sh con validación DNS-01 mediante cPanel UAPI. Descarga de archivos .pfx, .crt, .key y fullchain.
+
+### Stream Hits
+Estadísticas de audiencia del streaming con resúmenes, charts, top geo y datos recientes.
+
+### RDS (RDi20)
+Panel de monitoreo y control del encoder RDS. Permite ver el estado actual de los campos PS, RT, PTY y la conexión telnet al equipo.
+
+### Actualizaciones (Updates)
+Registro de cambios y actualizaciones del sistema visible desde el panel.
 
 ---
 
@@ -92,6 +115,14 @@ Devuelve el programa que está al aire en este momento. Soporta respuesta en `te
 GET /api/schedule/daily?day={1-7}
 ```
 Devuelve la parrilla completa de un día de la semana. Soporta `?source=mobile-app` para adaptar los campos al formato de la app.
+
+### RadioDNS
+
+```
+GET /radiodns/spi/3.1/SI.xml
+GET /radiodns/spi/3.1/radiouas/{date}
+```
+Servicios de información de programa (SI/PI) para directorios de radio en línea (onlineradiobox.com). Formato XML RadioDNS EPG v10.
 
 ### Locutores
 
@@ -117,6 +148,14 @@ GET /api/cabina/getComments
 ```
 Obtiene los comentarios del video en vivo activo en Facebook (Graph API).
 
+### Programas
+
+```
+GET /api/programas/list
+GET /api/programas/get?id={id}
+```
+Listado y detalle de programas radiofónicos.
+
 ### Música (Fonoteca virtual — Emby)
 
 ```
@@ -131,6 +170,20 @@ GET /api/music/playlist?ID={EmbyPlaylistID}
 GET /api/youtube/playlist?list={YouTubePlaylistID}
 ```
 
+### Metadata (NowPlaying)
+
+```
+POST /api/metadata/update
+```
+Endpoint interno para actualizar metadatos del stream. Autenticado con token compartido (`SensitiveData.Shoutcast.token`).
+
+### Stream Hits
+
+```
+POST /api/hits/add
+```
+Registro de hits de audiencia del streaming.
+
 ---
 
 ## Integraciones externas
@@ -140,9 +193,13 @@ GET /api/youtube/playlist?list={YouTubePlaylistID}
 | **Google Gemini** | Generación de contenido para redes sociales y asistente IA interno |
 | **Facebook Graph API** | Comentarios en transmisiones en vivo |
 | **MediaCP (MexiServer)** | Control del servidor de streaming HLS vía API REST |
+| **SHOUTcast (DJ Protocol)** | Transmisión de metadatos NowPlaying (título, estación) vía admin.cgi |
+| **RDi20 (RDS Encoder)** | Control del encoder RDS por TCP/Telnet para datos de radio FM (PS, RT, PTY) |
 | **Emby** | Fonoteca virtual (álbumes, artistas, playlists) |
 | **YouTube Data API** | Playlists públicas de Radio UAS |
 | **Google SMTP (OAuth2)** | Envío de correos (roles de cabina, notificaciones de usuario) |
+| **cPanel UAPI** | Gestión de registros DNS TXT para validación ACME DNS-01 |
+| **Let's Encrypt / ZeroSSL** | Autoridad certificadora para renovación SSL vía acme.sh |
 
 ---
 
@@ -153,6 +210,7 @@ GET /api/youtube/playlist?list={YouTubePlaylistID}
 | PHP | ≥ 8.4 |
 | CakePHP | ^5.3 |
 | CakePHP Authentication | ^3.0 |
+| CakePHP Migrations | ^4.0 |
 | CakePDF (FriendsOfCake) | ^5.0 |
 | google-gemini-php/client | ^2.7 |
 | kwn/number-to-words | ^2.9 |
@@ -181,6 +239,8 @@ bin/cake migrations migrate
 - PHP 8.4 con extensiones: `intl`, `mbstring`, `pdo_mysql`, `openssl`
 - MySQL / MariaDB
 - Servidor web con soporte para `mod_rewrite` (Apache) o configuración equivalente en Nginx
+- OpenSSL (PHP nativo — no requiere binario openssl)
+- Para SSL: acme.sh instalado, acceso a cPanel API con token
 
 ---
 
@@ -196,18 +256,71 @@ Las variables sensibles se gestionan en `config/app_local.php` bajo la clave `Se
 
 ```php
 'SensitiveData' => [
-    'Gemini' => ['APIKey' => '...'],
-    'Facebook' => [
-        'APIv'          => '/v19.0',
-        'RadioUASAppID' => '...',
-        'AccessTokens'  => ['token1', 'token2'],
+    'Gemini' => [
+        'APIKey' => '...',     // Google Gemini AI API key
     ],
-    'MediaCP' => ['APIKey' => '...'],
-    // Gmail OAuth2, Emby, YouTube...
+    'Facebook' => [
+        'APIv'          => '/v25.0',          // Versión de Graph API
+        'RadioUASAppID' => '...',             // App ID de Facebook
+        'AccessTokens'  => ['token1', '...'], // Page access tokens
+    ],
+    'MediaCP' => [
+        'APIKey' => '...',     // Bearer token para API de MediaCP
+    ],
+    'Shoutcast' => [
+        'password' => '...',   // DJ password para admin.cgi
+        'scheme'   => 'http',
+        'host'     => '...',   // Host del servidor SHOUTcast
+        'port'     => 8000,
+        'token'    => '...',   // Token compartido para /api/metadata/update
+    ],
+    'GoogleMail' => [
+        'email'    => 'radio@uas.edu.mx',
+        'password' => '...',   // App password de Gmail (OAuth2)
+    ],
+    'Emby' => [
+        'APIKey' => '...',     // API key del servidor Emby
+    ],
+    'YouTube' => [
+        'APIKey' => '...',     // YouTube Data API key
+    ],
+    'Rdi20' => [
+        'local_host'  => '192.168.1.xxx',  // IP local del encoder RDS
+        'remote_host' => '200.xx.xx.xx',   // IP remota (VPN)
+        'port'        => 8000,
+        'username'    => '...',             // Usuario del encoder
+        'password'    => '...',             // Password del encoder
+    ],
 ]
 ```
 
-Los prompts de Gemini para generación de contenido se configuran en:
+### SSL Generation
+
+Configuración para renovación automática de certificados SSL vía acme.sh con DNS-01 (cPanel):
+
+```php
+'SSLGeneration' => [
+    'domain'         => 'emby.radiouas.org',     // Dominio a renovar
+    'email'          => 'abel@uas.edu.mx',       // Email para CA
+    'pfxPassword'    => '...',                   // Password del archivo .pfx
+    'pfxDestination' => '/etc/ssl/emby.pfx',     // Ruta destino del .pfx
+    'acmeHome'       => '/home/radiouas/.acme.sh',
+    'ca'             => 'letsencrypt',            // CA: letsencrypt | zerossl
+    'dnsProvider'    => 'cpanel',
+    'cpanel' => [
+        'username' => 'radiouas',                // Usuario cPanel
+        'apiToken' => '...',                     // API token de cPanel
+        'zone'     => 'radiouas.org',            // Zona DNS
+        'scheme'   => 'https',
+        'host'     => 'cpanel.radiouas.org',
+        'port'     => 2083,
+    ],
+]
+```
+
+### Prompts de Gemini
+
+Los prompts para generación de contenido vía IA se configuran también en `config/app_local.php`:
 
 ```php
 'Prompts' => [
@@ -218,20 +331,88 @@ Los prompts de Gemini para generación de contenido se configuran en:
 
 ---
 
+## Sistema de layouts y tema
+
+### Layouts por rol
+
+El layout del panel se selecciona automáticamente según el permiso del usuario autenticado:
+
+| Permiso | Layout |
+|---|---|
+| `ADMINISTRATOR` | `administrador` |
+| `CAPTURISTA` | `capturista` |
+| `FONOTECARIO` | `cabina` |
+| `PROGRAMADOR` | `programador` |
+
+Usuarios no autenticados ven el layout `home` (pantalla de login).
+
+### Tema claro/oscuro
+
+El sistema soporta dos temas intercambiables mediante una cookie `Theme`:
+- `github-midday.css` (claro, por defecto)
+- `github-midnight.css` (oscuro)
+
+El toggle se realiza desde el panel (`Admin/Usuarios::setTheme`). La cookie es legible por JavaScript para aplicar el tema sin recargar.
+
+---
+
 ## Comandos de consola
 
-### Reinicio automático del stream
-
-Detiene y reinicia el servicio de streaming vía API de MediaCP. Útil para programarlo en `cron` ante caídas nocturnas.
+### Gestión de streaming
 
 ```bash
+# Reiniciar el stream de MediaCP (cron-friendly)
 bin/cake reset_stream
+
+# Actualizar metadatos NowPlaying → SHOUTcast + RDS
+bin/cake broadcast update
 ```
 
+Ejemplo de cron para reinicio nocturno:
+
 ```
-# Ejemplo: reinicio diario a las 3:00 AM
 0 3 * * * /usr/bin/php /var/www/spc/bin/cake reset_stream >> /var/log/spc_stream.log 2>&1
 ```
+
+Ejemplo de cron para actualización de metadatos (cada minuto):
+
+```
+* * * * * /usr/bin/php /var/www/spc/bin/cake broadcast update >> /var/log/spc_broadcast.log 2>&1
+```
+
+### SSL / Certificados
+
+```bash
+# Renovar certificado SSL vía acme.sh + cPanel DNS-01
+bin/cake ssl_renew <domain> [email] [pfx-destination]
+
+# Gestionar registros DNS TXT para ACME (hook de acme.sh)
+bin/cake cpanel_dns <add|remove> <domain> <challenge>
+```
+
+### Migración de datos
+
+```bash
+# Migrar stream_hits desde SQLite a MySQL
+bin/cake migrate_data
+```
+
+---
+
+## Testing y calidad
+
+```bash
+composer test      # PHPUnit --colors=always
+composer cs-check  # PHP_CodeSniffer --colors -p
+composer cs-fix    # PHPCBF --colors -p
+composer stan      # PHPStan analyse (level 8)
+composer check     # test + cs-check (pre-commit)
+```
+
+- PHPStan configurado en nivel **8**
+- Psalm configurado en nivel **2** (error)
+- CS exceptions: `src/Controller/*` exento de type hints nativos en returns
+- Migraciones construyen la BD de tests automáticamente
 
 ---
 
