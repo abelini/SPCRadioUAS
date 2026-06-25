@@ -61,26 +61,13 @@ PHPStan at **level 8**. Psalm at **error level 2** (both in config).
 - **Local dev** (`config/app_local.php`): SQLite.
 - **Tests**: Migrations build the test DB automatically (`tests/bootstrap.php` runs `(new Migrator())->run()`). Falls back to SQLite with `DATABASE_TEST_URL` env var.
 - **Sensitive config** stored in `config/app_local.php` under `SensitiveData` key (Gemini, Facebook, MediaCP, Gmail OAuth2, Emby, YouTube) and `SSLGeneration` key (SSL cert renewal). Not in `.env`.
-- **`SSLGeneration` keys**: `domain`, `email`, `dnsProvider` (`'cpanel'` or `'webroot'`), `pfxPassword` (`radio`), `pfxDestination` (e.g. `ROOT . DS . 'webroot' . DS . 'cert' . DS . 'cert.pfx'`), `acmeHome`, `ca` (`'letsencrypt'` or `'zerossl'`).
-- **`SSLGeneration.cpanel`**: `username`, `apiToken`, `zone` (e.g. `radiouas.org`). No `baseUrl` — hardcoded in `CpanelDnsService.php` as `https://radiouas.org:2083`.
 - **SSL renewal flow** (`--dns dns_cpanel`, RSA 2048):
-  1. `SslService::renew()` / `SslRenewCommand` calls `ensureDnsApiScript()` which writes `~/.acme.sh/dnsapi/dns_cpanel.sh` (overwrites acme.sh built-in).
+  1. `SslService::renew()` writes `~/.acme.sh/dnsapi/dns_cpanel.sh` (hook script).
   2. acme.sh runs with `--dns dns_cpanel --keylength 2048 --dnssleep 5`.
-  3. The hook script calls `bin/cake cpanel_dns add|remove <domain> <value>`.
-  4. `CpanelDnsCommand` delegates to `CpanelDnsService`.
-  5. `CpanelDnsService` uses scoped `Cake\Http\Client` (`host: radiouas.org`, `port: 2083`, `basePath: /execute`, `Authorization: cpanel user:token`).
-  6. **`recordName()`** appends trailing dot (FQDN) to prevent cPanel from treating the dname as relative.
-  7. **`addTXTRecord()`** adds a TXT record via `mass_edit_zone` (GET, `add` is a JSON object, `data` is unquoted).
-  8. **`removeTXTRecord()`** finds the record by `dname_raw` + decoded `data_b64` (trimmed quotes) and removes via `mass_edit_zone` (GET, `remove` is a plain int, not JSON array).
-  9. cPanel UAPI endpoints: `/execute/DNS/parse_zone` (GET, reads zone + serial) and `/execute/DNS/mass_edit_zone` (GET, add/remove records).
-  10. Response is flat (`payload.status`, `payload.errors`, `payload.data`), NOT nested under `result`.
-  11. Record data is base64-encoded in `data_b64`/`dname_b64`; `dname_raw` has plain text; `record_type` identifies DNS type.
-  12. SOA serial extracted from `base64_decode($soa['data_b64'][2])`.
-  13. After renewal, acme.sh calls the `rm` function to clean up the TXT record.
-  14. CakePHP generates PFX (password `radio`) and copies to `pfxDestination`.
-- **`--keylength 2048`** is required to force RSA and avoid `_ecc` path issues (cert dir = `$acmeHome/$domain`, not `$acmeHome/$domain_ecc`).
-- **`--dnssleep 5`** is sufficient because cPanel DNS update is near-instantaneous on the authoritative server.
-- **Arguments with leading `-`** (e.g. acme challenge values starting with `-`) require `--` before the value in the hook script to prevent CakePHP console from parsing them as short options.
+  3. The hook calls `bin/cake cpanel_dns add|remove <domain> <value>`, which delegates to `CpanelDnsService`.
+  4. `CpanelDnsService` manages TXT records via cPanel UAPI (`parse_zone` + `mass_edit_zone`).
+  5. After renewal, acme.sh cleans up the TXT record.
+  6. PHP genera PFX via `openssl_pkcs12_export_to_file()` y lo copia a destino.
 
 ## Conventions
 
@@ -94,9 +81,8 @@ PHPStan at **level 8**. Psalm at **error level 2** (both in config).
 - `src/Controller/Component/` for shared controller logic
 - `src/Service/` for business logic (GeminiService, ShoutcastService, EpgBuilder, DeviceDetectorService)
 - `src/Trait/APICacheTrait.php` — constants for remote control cache key and broadcast types
+- `src/DTO/` — immutable DTOs (e.g., `Certificate`)
 - `src/Mailer/` — custom mailers (GoogleMailer, RolMailer, UserMailer)
-- **RDS (RDI 20) + Shoutcast**: `BroadcastCommand` (`bin/cake broadcast update`) → `NowPlayingService::get()` → `ShoutcastService::update($data)` + `Rdi20TelnetService::update($data)`. RDS uses TCP/Telnet, sends `XTXT=...\r\n`, confirms with `+`. Cache `last_sent_rds` dedup.
-- **SSL auto-renew via cPanel DNS**: `CpanelDnsService` (`src/Service/CpanelDnsService.php`) manages TXT records via cPanel UAPI at `baseUrl/execute/DNS/*`. Used automatically by `SslService::renew()` and `SslRenewCommand` when `dnsProvider = 'cpanel'`. The workflow: acme.sh calls `dns_cpanel.sh` → `bin/cake cpanel_dns add|remove <domain> <challenge>` → `CpanelDnsService` talks to cPanel API.
 
 ## Testing
 
@@ -107,10 +93,10 @@ PHPStan at **level 8**. Psalm at **error level 2** (both in config).
 
 ## Notable quirks
 
+- **CakePHP classes over raw PHP**: Use `Cake\Http\Client` over `curl_*`, `Cake\I18n\DateTime` over `new DateTime()`/`date()`, `Cake\Network\Socket` over `fsockopen()`, etc. Cake wraps edge cases (SSL, redirects, encoding) that raw functions don't handle.
 - **`h()`**: Never use `h()` in view templates. Raw output only.
+- **Certificate DTO**: `SslService::getCertInfo()` returns `SPC\DTO\Certificate` (not `array`). Access with `$certInfo->property`.
 - **CSRF**: Skipped only for `Api/` prefix. All `Admin/` POST requests require `_csrfToken`.
-- **Form styling**: Input overrides live in `webroot/css/github-midday.css` and `github-midnight.css` (`.form-control`, `input[type=...]`). No `form.php` element file.
-- **`.page-header h5`**: Gradient background + white uppercase text via CSS.
 - **Plugins loaded via `config/plugins.php`**: DebugKit (debug only), Bake (CLI), Migrations (CLI only).
 - **`composer.json` platform**: `"php": "8.5.2"` — ensures consistent dependency resolution.
 - **`DESIGN.md`**: Design token reference for GitHub dark theme (custom properties, spacing scale, typography). Not an instruction file for agents.

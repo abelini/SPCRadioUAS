@@ -124,7 +124,7 @@ class SslService
 
         // Set CA (Let's Encrypt or ZeroSSL)
         $ca = Configure::read('SSLGeneration.ca');
-        $this->execCmd([$acmeSh, '--home', $acmeHome, '--set-default-ca', '--server', $ca], $o, $c);
+        $this->executeCommand([$acmeSh, '--home', $acmeHome, '--set-default-ca', '--server', $ca], $o, $c);
         $log[] = 'CA: ' . $ca;
 
         // Determine DNS provider
@@ -137,7 +137,7 @@ class SslService
         $this->ensureDnsApiScript($acmeHome);
         $cmd = [$acmeSh, '--home', $acmeHome, '--issue', '-d', $domain, '--dns', 'dns_cpanel', '--force', '--keylength', '2048', '--dnssleep', '5'];
 
-        $this->execCmd($cmd, $output, $exitCode);
+        $this->executeCommand($cmd, $output, $exitCode);
         $log = array_merge($log, $output);
 
         if ($exitCode !== 0) {
@@ -199,7 +199,7 @@ class SslService
         chmod($scriptPath, 0755);
     }
 
-    private function execCmd(array $args, ?array &$output = null, ?int &$exitCode = null): array
+    private function executeCommand(array $args, ?array &$output = null, ?int &$exitCode = null): array
     {
         $cmd = implode(' ', array_map('escapeshellarg', $args));
         exec($cmd . ' 2>&1', $output, $exitCode);
