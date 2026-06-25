@@ -1,9 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace SPC\Model\DTO;
+namespace SPC\DTO;
 
 use Cake\I18n\DateTime;
+
 
 class Certificate
 {

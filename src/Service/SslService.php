@@ -7,7 +7,7 @@ use Cake\Core\Configure;
 use Cake\I18n\DateTime;
 use OpenSSLCertificate;
 use OpenSSLAsymmetricKey;
-use SPC\Model\DTO\Certificate;
+use SPC\DTO\Certificate;
 
 class SslService
 {
@@ -98,7 +98,7 @@ class SslService
         return new Certificate(
             exists: true,
             expiry: $expiry,
-            daysLeft: $expiry?->diffInDays(null, false),
+            daysLeft: DateTime::now()->diffInDays($expiry, false),
             issuer: $issuer,
             subject: $parsed['name'] ?? null,
             sans: $sans,
@@ -122,30 +122,20 @@ class SslService
 
         $log = [];
 
-        if (!$this->isAcmeInstalled()) {
-            return ['success' => false, 'log' => [], 'error' => 'acme.sh no está instalado. Instálalo manualmente vía SSH con: curl -sL https://get.acme.sh | sh'];
-        }
-
-        $log[] = 'acme.sh ya instalado.';
-
         // Set CA (Let's Encrypt or ZeroSSL)
-        $ca = Configure::read('SSLGeneration.ca') ?? 'letsencrypt';
+        $ca = Configure::read('SSLGeneration.ca');
         $this->execCmd([$acmeSh, '--home', $acmeHome, '--set-default-ca', '--server', $ca], $o, $c);
-        $log[] = 'CA configurada: ' . $ca;
+        $log[] = 'CA: ' . $ca;
 
         // Determine DNS provider
-        $dnsProvider = Configure::read('SSLGeneration.dnsProvider') ?? 'webroot';
+        $dnsProvider = Configure::read('SSLGeneration.dnsProvider');
 
         // Issue/renew
         $log[] = "Renovando certificado para: {$domain}...";
         $log[] = 'Método DNS: ' . $dnsProvider;
 
-        if ($dnsProvider === 'cpanel') {
-            $this->ensureDnsApiScript($acmeHome);
-            $cmd = [$acmeSh, '--home', $acmeHome, '--issue', '-d', $domain, '--dns', 'dns_cpanel', '--force', '--keylength', '2048', '--dnssleep', '5'];
-        } else {
-            $cmd = [$acmeSh, '--home', $acmeHome, '--issue', '-d', $domain, '--webroot', '/tmp', '--force'];
-        }
+        $this->ensureDnsApiScript($acmeHome);
+        $cmd = [$acmeSh, '--home', $acmeHome, '--issue', '-d', $domain, '--dns', 'dns_cpanel', '--force', '--keylength', '2048', '--dnssleep', '5'];
 
         $this->execCmd($cmd, $output, $exitCode);
         $log = array_merge($log, $output);
@@ -176,16 +166,10 @@ class SslService
         $log[] = 'PFX generado: ' . $pfxFile;
 
         // Copy to destination
-        if ($pfxDest !== null) {
-            $destDir = dirname($pfxDest);
-            if (!is_dir($destDir)) {
-                mkdir($destDir, 0755, true);
-            }
-            if (copy($pfxFile, $pfxDest)) {
-                $log[] = 'PFX copiado a: ' . $pfxDest;
-            } else {
-                $log[] = 'ERROR: No se pudo copiar PFX a: ' . $pfxDest;
-            }
+        if (copy($pfxFile, $pfxDest)) {
+            $log[] = 'PFX copiado a: ' . $pfxDest;
+        } else {
+            $log[] = 'ERROR: No se pudo copiar PFX a: ' . $pfxDest;
         }
 
         return ['success' => true, 'log' => $log, 'error' => null];

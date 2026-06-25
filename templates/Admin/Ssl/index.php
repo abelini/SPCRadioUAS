@@ -27,7 +27,6 @@ $this->assign('title', 'Certificado SSL');
     </details>
     <?php endif; ?>
 
-    <?php if ($certInfo->exists): ?>
         <?php
         $daysLeft = $certInfo->daysLeft;
         if ($daysLeft > 30) {
@@ -67,71 +66,97 @@ $this->assign('title', 'Certificado SSL');
             <h5>Información del certificado</h5>
         </div>
         <table class="view-table">
-            <tr><th>Dominio</th><td><?= $domain ?></td></tr>
-            <tr><th>Subject</th><td><?= $certInfo->subject ?></td></tr>
-            <tr><th>Issuer</th><td><?= $certInfo->issuer ?></td></tr>
-            <tr><th>Expira</th><td><?= $certInfo->expiry->i18nFormat(IntlDateFormatter::FULL) ?></td></tr>
+            <tr>
+                <th>Dominio</th>
+                <td><?= $domain ?></td>
+            </tr>
+            <tr>
+                <th>Subject</th>
+                <td><?= $certInfo->subject ?></td>
+            </tr>
+            <tr>
+                <th>Issuer</th>
+                <td><?= $certInfo->issuer ?></td>
+            </tr>
+            <tr>
+                <th>Expira</th>
+                <td><?= $certInfo->expiry->i18nFormat(IntlDateFormatter::FULL) ?></td>
+            </tr>
             <?php if ($certInfo->sans !== []): ?>
-            <tr><th>SANs</th><td><?= implode(', ', $certInfo->sans) ?></td></tr>
+            <tr>
+                <th>SANs</th>
+                <td><?= implode(', ', $certInfo->sans) ?></td>
+            </tr>
             <?php endif; ?>
-            <tr><th>Última renovación</th><td><?= $certInfo->lastRenew->i18nFormat(IntlDateFormatter::FULL) ?></td></tr>
+            <tr>
+                <th>Última renovación</th>
+                <td><?= $certInfo->lastRenew->i18nFormat(IntlDateFormatter::FULL) ?></td>
+            </tr>
         </table>
 
         <div class="page-subheader">
             <h5>Archivos</h5>
         </div>
         <table class="view-table">
-            <tr><th>Certificado</th><td>
+            <tr>
+                <th>Certificado</th>
+                <td>
                 <?= $certInfo->certFile ?>
                 <?= $this->Html->link(
                     '<i class="fa-solid fa-download"></i>',
                     ['action' => 'download', '?' => ['type' => 'cert']],
                     ['escapeTitle' => false, 'class' => 'btn-ghost', 'title' => 'Descargar .cer']
                 ) ?>
-            </td></tr>
-            <tr><th>Fullchain</th><td>
-                <?= $certInfo->fullchainFile ?>
-                <?= $this->Html->link(
-                    '<i class="fa-solid fa-download"></i>',
-                    ['action' => 'download', '?' => ['type' => 'fullchain']],
-                    ['escapeTitle' => false, 'class' => 'btn-ghost', 'title' => 'Descargar fullchain.cer']
-                ) ?>
-            </td></tr>
-            <tr><th>Llave privada</th><td>
-                <?= $certInfo->keyFile ?>
-                <?= $this->Html->link(
-                    '<i class="fa-solid fa-download"></i>',
-                    ['action' => 'download', '?' => ['type' => 'key']],
-                    ['escapeTitle' => false, 'class' => 'btn-ghost', 'title' => 'Descargar .key']
-                ) ?>
-            </td></tr>
-            <tr><th>PFX</th><td>
-                <?= $certInfo->pfxFile ?>
-                <?php if ($certInfo->pfxExists): ?>
-                    <span class="status-badge status-completed">Generado</span>
+                </td>
+            </tr>
+            <tr>
+                <th>Fullchain</th>
+                <td>
+                    <?= $certInfo->fullchainFile ?>
                     <?= $this->Html->link(
                         '<i class="fa-solid fa-download"></i>',
-                        ['action' => 'download', '?' => ['type' => 'pfx']],
-                        ['escapeTitle' => false, 'class' => 'btn-ghost', 'title' => 'Descargar .pfx']
+                        ['action' => 'download', '?' => ['type' => 'fullchain']],
+                        ['escapeTitle' => false, 'class' => 'btn-ghost', 'title' => 'Descargar fullchain.cer']
                     ) ?>
-                <?php else: ?>
-                    <span class="status-badge status-pending">Pendiente</span>
-                <?php endif; ?>
-            </td></tr>
-            <?php if ($certInfo->pfxExists && $certInfo->pfxAge !== null): ?>
-            <tr><th>PFX generado</th><td><?= $certInfo->pfxAge->i18nFormat(IntlDateFormatter::FULL) ?></td></tr>
-            <?php endif; ?>
-            <tr><th>Contraseña</th><td><?= $ssl->getPfxPassword() ?></td></tr>
+                </td>
+            </tr>
+            <tr>
+                <th>Llave privada</th>
+                <td>
+                    <?= $certInfo->keyFile ?>
+                    <?= $this->Html->link(
+                        '<i class="fa-solid fa-download"></i>',
+                        ['action' => 'download', '?' => ['type' => 'key']],
+                        ['escapeTitle' => false, 'class' => 'btn-ghost', 'title' => 'Descargar .key']
+                    ) ?>
+                </td>
+            </tr>
+            <tr>
+                <th>PFX</th>
+                <td>
+                    <?= $certInfo->pfxFile ?>
+                    <?php if ($certInfo->pfxExists): ?>
+                        <span class="status-badge status-completed">Generado</span>
+                        <?= $this->Html->link(
+                            '<i class="fa-solid fa-download"></i>',
+                            ['action' => 'download', '?' => ['type' => 'pfx']],
+                            ['escapeTitle' => false, 'class' => 'btn-ghost', 'title' => 'Descargar .pfx']
+                        ) ?>
+                    <?php else: ?>
+                        <span class="status-badge status-pending">Pendiente</span>
+                    <?php endif; ?>
+                </td>
+            </tr>
+            <tr>
+                <th>PFX generado</th>
+                <td><?= $certInfo->pfxAge->i18nFormat(IntlDateFormatter::FULL) ?></td>
+            </tr>
+            <tr>
+                <th>Contraseña</th>
+                <td><?= $ssl->getPfxPassword() ?></td>
+            </tr>
         </table>
 
-        <?php if ($ssl->getPfxPassword() === ''): ?>
-        <div class="alert alert-warning mt-3">
-            <i class="fa-solid fa-triangle-exclamation"></i>
-            La contraseña del PFX está vacía. Configura <code>SslRenew.pfxPassword</code> en <code>config/app_local.php</code> si el servicio destino la requiere.
-        </div>
-        <?php endif; ?>
-
-        <?php if ($canRunAcme): ?>
         <div class="actions-bar">
             <?= $this->Form->postButton(
                 '<i class="fa-solid fa-rotate"></i> Renovar ahora',
@@ -139,56 +164,8 @@ $this->assign('title', 'Certificado SSL');
                 [
                     'class' => 'btn btn-primary',
                     'escapeTitle' => false,
-                    'confirm' => '¿Renovar certificado para ' . $domain . '? Se generará un nuevo .pfx.',
+                    'confirm' => '¿Renovar certificado para ' . $domain . '? Se generará un nuevo PFX',
                 ]
             ) ?>
         </div>
-        <?php endif; ?>
-
-    <?php elseif ($certInfo->error !== null): ?>
-        <div class="alert alert-danger">
-            <i class="fa-solid fa-circle-exclamation"></i>
-            <?= $certInfo->error ?>
-        </div>
-
-        <div class="stats-section">
-            <div class="page-subheader">
-                <h5>Configuración</h5>
-            </div>
-            <table class="view-table">
-                <tr><th>Destino PFX</th><td><?= $certInfo->pfxFile ?? $ssl->getPfxDestination() ?? '(no configurado)' ?></td></tr>
-                <tr><th>Contraseña PFX</th><td><?= $ssl->getPfxPassword() !== '' ? '******' : '<span class="badge-dot badge-dot-danger"></span> vacía' ?></td></tr>
-                <tr><th>Método DNS</th><td><?= $dnsProvider ?></td></tr>
-            </table>
-        </div>
-
-    <?php else: ?>
-        <div class="alert alert-info">
-            <i class="fa-solid fa-circle-info"></i>
-            No se encontró un certificado existente para <strong><?= $domain ?></strong>.
-        </div>
-
-        <div class="stats-section">
-            <div class="page-subheader">
-                <h5>Configuración</h5>
-            </div>
-            <table class="view-table">
-                <tr><th>Dominio</th><td><?= $domain ?></td></tr>
-                <tr><th>Email</th><td><?= $ssl->getEmail() ?></td></tr>
-                <tr><th>Destino PFX</th><td><?= $ssl->getPfxDestination() ?? '(no configurado)' ?></td></tr>
-                <tr><th>Contraseña PFX</th><td><?= $ssl->getPfxPassword() !== '' ? '******' : '<span class="badge-dot badge-dot-danger"></span> vacía' ?></td></tr>
-                <tr><th>Método DNS</th><td><?= $dnsProvider ?></td></tr>
-            </table>
-        </div>
-
-        <?php if ($canRunAcme): ?>
-        <div class="actions-bar">
-            <?= $this->Form->postButton(
-                '<i class="fa-solid fa-rotate"></i> Obtener certificado',
-                ['action' => 'renew'],
-                ['class' => 'btn btn-primary', 'escapeTitle' => false]
-            ) ?>
-        </div>
-        <?php endif; ?>
-    <?php endif; ?>
 </div>
