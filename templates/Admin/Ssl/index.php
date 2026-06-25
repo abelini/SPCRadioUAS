@@ -16,10 +16,7 @@ $this->assign('title', 'Certificado SSL');
 </div>
 <div class="content-card">
 
-    <?php
-    $renewLog = $renewLog ?? $this->request->getSession()->consume('SslRenewLog');
-    if ($renewLog):
-    ?>
+    <?php if ($renewLog): ?>
     <details class="alert alert-danger" style="margin-bottom:1rem;white-space:pre-wrap;font-size:0.85rem;" open>
         <summary style="cursor:pointer;font-weight:bold;">
             <i class="fa-solid fa-circle-exclamation"></i> Log de la última renovación
@@ -37,11 +34,26 @@ $this->assign('title', 'Certificado SSL');
                 <h5>Configuración</h5>
             </div>
             <table class="view-table">
-                <tr><th>Dominio</th><td><?= $domain ?></td></tr>
-                <tr><th>Email</th><td><?= $ssl->getEmail() ?></td></tr>
-                <tr><th>Destino PFX</th><td><?= $ssl->getPfxDestination() ?></td></tr>
-                <tr><th>Contraseña PFX</th><td><?= $ssl->getPfxPassword() ?></td></tr>
-                <tr><th>Método DNS</th><td><?= $dnsProvider ?></td></tr>
+                <tr>
+                    <th>Dominio</th>
+                    <td><?= $domain ?></td>
+                </tr>
+                <tr>
+                    <th>Email</th>
+                    <td><?= $ssl->getEmail() ?></td>
+                </tr>
+                <tr>
+                    <th>Destino PFX</th>
+                    <td><?= $ssl->getPfxDestination() ?></td>
+                </tr>
+                <tr>
+                    <th>Contraseña PFX</th>
+                    <td><?= $ssl->getPfxPassword() ?></td>
+                </tr>
+                <tr>
+                    <th>Método DNS</th>
+                    <td><?= $dnsProvider ?></td>
+                </tr>
             </table>
         </div>
 

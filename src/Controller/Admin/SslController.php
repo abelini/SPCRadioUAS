@@ -68,6 +68,8 @@ class SslController extends AppController
         $domain = $ssl->getDomain();
 
         $result = $ssl->renew($domain);
+
+        $this->set($this->_loadData());
         $this->set('renewLog', $result['log'] ?? []);
 
         if ($result['success']) {
@@ -75,8 +77,6 @@ class SslController extends AppController
         } else {
             $this->Flash->error('Error: ' . ($result['error'] ?? 'Error desconocido'));
         }
-
-        $this->set($this->_loadData());
 
         return $this->render('index');
     }
@@ -88,6 +88,8 @@ class SslController extends AppController
         $certInfo = $ssl->getCertInfo($domain);
         $canRunAcme = $ssl->isAcmeInstalled();
         $dnsProvider = Configure::read('SSLGeneration.dnsProvider');
-        return compact('ssl', 'domain', 'certInfo', 'canRunAcme', 'dnsProvider');
+        $renewLog = [];
+
+        return compact('ssl', 'domain', 'certInfo', 'canRunAcme', 'dnsProvider', 'renewLog');
     }
 }
