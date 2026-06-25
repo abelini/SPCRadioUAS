@@ -341,10 +341,10 @@ El layout del panel se selecciona automáticamente según el permiso del usuario
 |---|---|
 | `ADMINISTRATOR` | `administrador` |
 | `CAPTURISTA` | `capturista` |
-| `FONOTECARIO` | `cabina` |
-| `PROGRAMADOR` | `programador` |
+| `LOCUTOR` | `cabina` |
+| `FONOTECARIO` | `programador` |
 
-Usuarios no autenticados ven el layout `home` (pantalla de login).
+Usuarios no autenticados ven el layout `home` (pantalla de login) y la sección de bitácora.
 
 ### Tema claro/oscuro
 
@@ -417,4 +417,4 @@ composer check     # test + cs-check (pre-commit)
 ---
 
 > Uso exclusivo de **Radio Universidad Autónoma de Sinaloa**.  
-> Dirección de Radio UAS — L.C.C. Brenda Rodríguez García
+> Desarrollado por Ing. Abel Bottello
