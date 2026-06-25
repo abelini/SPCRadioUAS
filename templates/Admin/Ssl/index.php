@@ -2,7 +2,7 @@
 /**
  * @var \App\View\AppView $this
  * @var string|null $domain
- * @var array|null $certInfo
+ * @var \SPC\Model\DTO\Certificate $certInfo
  * @var bool $configured
  * @var bool $canRunAcme
  * @var string $dnsProvider
@@ -27,39 +27,9 @@ $this->assign('title', 'Certificado SSL');
     </details>
     <?php endif; ?>
 
-    <?php if (!$ssl->isAcmeInstalled() && $certInfo === null): ?>
-
-        <div class="stats-section">
-            <div class="page-subheader">
-                <h5>Configuración</h5>
-            </div>
-            <table class="view-table">
-                <tr>
-                    <th>Dominio</th>
-                    <td><?= $domain ?></td>
-                </tr>
-                <tr>
-                    <th>Email</th>
-                    <td><?= $ssl->getEmail() ?></td>
-                </tr>
-                <tr>
-                    <th>Destino PFX</th>
-                    <td><?= $ssl->getPfxDestination() ?></td>
-                </tr>
-                <tr>
-                    <th>Contraseña PFX</th>
-                    <td><?= $ssl->getPfxPassword() ?></td>
-                </tr>
-                <tr>
-                    <th>Método DNS</th>
-                    <td><?= $dnsProvider ?></td>
-                </tr>
-            </table>
-        </div>
-
-    <?php elseif ($certInfo && $certInfo['exists']): ?>
+    <?php if ($certInfo->exists): ?>
         <?php
-        $daysLeft = $certInfo['daysLeft'];
+        $daysLeft = $certInfo->daysLeft;
         if ($daysLeft > 30) {
             $dotClass = 'status-dot-success';
             $statusText = 'Vigente';
@@ -98,13 +68,13 @@ $this->assign('title', 'Certificado SSL');
         </div>
         <table class="view-table">
             <tr><th>Dominio</th><td><?= $domain ?></td></tr>
-            <tr><th>Subject</th><td><?= $certInfo['subject'] ?></td></tr>
-            <tr><th>Issuer</th><td><?= $certInfo['issuer'] ?></td></tr>
-            <tr><th>Expira</th><td><?= $certInfo['expiry']->i18nFormat(IntlDateFormatter::FULL) ?></td></tr>
-            <?php if (!empty($certInfo['sans'])): ?>
-            <tr><th>SANs</th><td><?= implode(', ', $certInfo['sans']) ?></td></tr>
+            <tr><th>Subject</th><td><?= $certInfo->subject ?></td></tr>
+            <tr><th>Issuer</th><td><?= $certInfo->issuer ?></td></tr>
+            <tr><th>Expira</th><td><?= $certInfo->expiry->i18nFormat(IntlDateFormatter::FULL) ?></td></tr>
+            <?php if ($certInfo->sans !== []): ?>
+            <tr><th>SANs</th><td><?= implode(', ', $certInfo->sans) ?></td></tr>
             <?php endif; ?>
-            <tr><th>Última renovación</th><td><?= $certInfo['lastRenew']->i18nFormat(IntlDateFormatter::FULL) ?></td></tr>
+            <tr><th>Última renovación</th><td><?= $certInfo->lastRenew->i18nFormat(IntlDateFormatter::FULL) ?></td></tr>
         </table>
 
         <div class="page-subheader">
@@ -112,7 +82,7 @@ $this->assign('title', 'Certificado SSL');
         </div>
         <table class="view-table">
             <tr><th>Certificado</th><td>
-                <?= $certInfo['certFile'] ?>
+                <?= $certInfo->certFile ?>
                 <?= $this->Html->link(
                     '<i class="fa-solid fa-download"></i>',
                     ['action' => 'download', '?' => ['type' => 'cert']],
@@ -120,7 +90,7 @@ $this->assign('title', 'Certificado SSL');
                 ) ?>
             </td></tr>
             <tr><th>Fullchain</th><td>
-                <?= $certInfo['fullchainFile'] ?>
+                <?= $certInfo->fullchainFile ?>
                 <?= $this->Html->link(
                     '<i class="fa-solid fa-download"></i>',
                     ['action' => 'download', '?' => ['type' => 'fullchain']],
@@ -128,7 +98,7 @@ $this->assign('title', 'Certificado SSL');
                 ) ?>
             </td></tr>
             <tr><th>Llave privada</th><td>
-                <?= $certInfo['keyFile'] ?>
+                <?= $certInfo->keyFile ?>
                 <?= $this->Html->link(
                     '<i class="fa-solid fa-download"></i>',
                     ['action' => 'download', '?' => ['type' => 'key']],
@@ -136,8 +106,8 @@ $this->assign('title', 'Certificado SSL');
                 ) ?>
             </td></tr>
             <tr><th>PFX</th><td>
-                <?= $certInfo['pfxFile'] ?>
-                <?php if ($certInfo['pfxExists']): ?>
+                <?= $certInfo->pfxFile ?>
+                <?php if ($certInfo->pfxExists): ?>
                     <span class="status-badge status-completed">Generado</span>
                     <?= $this->Html->link(
                         '<i class="fa-solid fa-download"></i>',
@@ -148,8 +118,8 @@ $this->assign('title', 'Certificado SSL');
                     <span class="status-badge status-pending">Pendiente</span>
                 <?php endif; ?>
             </td></tr>
-            <?php if ($certInfo['pfxExists'] && $certInfo['pfxAge']): ?>
-            <tr><th>PFX generado</th><td><?= $certInfo['pfxAge']->i18nFormat(IntlDateFormatter::FULL) ?></td></tr>
+            <?php if ($certInfo->pfxExists && $certInfo->pfxAge !== null): ?>
+            <tr><th>PFX generado</th><td><?= $certInfo->pfxAge->i18nFormat(IntlDateFormatter::FULL) ?></td></tr>
             <?php endif; ?>
             <tr><th>Contraseña</th><td><?= $ssl->getPfxPassword() ?></td></tr>
         </table>
@@ -175,10 +145,10 @@ $this->assign('title', 'Certificado SSL');
         </div>
         <?php endif; ?>
 
-    <?php elseif ($certInfo !== null && $certInfo['error'] !== null): ?>
+    <?php elseif ($certInfo->error !== null): ?>
         <div class="alert alert-danger">
             <i class="fa-solid fa-circle-exclamation"></i>
-            <?= $certInfo['error'] ?>
+            <?= $certInfo->error ?>
         </div>
 
         <div class="stats-section">
@@ -186,7 +156,7 @@ $this->assign('title', 'Certificado SSL');
                 <h5>Configuración</h5>
             </div>
             <table class="view-table">
-                <tr><th>Destino PFX</th><td><?= $certInfo['pfxFile'] ?? $ssl->getPfxDestination() ?? '(no configurado)' ?></td></tr>
+                <tr><th>Destino PFX</th><td><?= $certInfo->pfxFile ?? $ssl->getPfxDestination() ?? '(no configurado)' ?></td></tr>
                 <tr><th>Contraseña PFX</th><td><?= $ssl->getPfxPassword() !== '' ? '******' : '<span class="badge-dot badge-dot-danger"></span> vacía' ?></td></tr>
                 <tr><th>Método DNS</th><td><?= $dnsProvider ?></td></tr>
             </table>

@@ -5,7 +5,9 @@ namespace SPC\Service;
 
 use Cake\Core\Configure;
 use Cake\I18n\DateTime;
-
+use OpenSSLCertificate;
+use OpenSSLAsymmetricKey;
+use SPC\Model\DTO\Certificate;
 
 class SslService
 {
@@ -41,7 +43,7 @@ class SslService
         return file_exists($acmeSh) && is_executable($acmeSh);
     }
 
-    public function getCertInfo(string $domain): array
+    public function getCertInfo(string $domain): Certificate
     {
         $acmeHome = $this->getAcmeHome();
         $certDir = $acmeHome . '/' . $domain;
@@ -50,92 +52,64 @@ class SslService
         $fullchainFile = $certDir . '/fullchain.cer';
         $pfxDest = $this->getPfxDestination();
 
-        $info = [
-            'exists' => false,
-            'expiry' => null,
-            'daysLeft' => null,
-            'issuer' => null,
-            'subject' => null,
-            'sans' => [],
-            'certFile' => $certFile,
-            'keyFile' => $keyFile,
-            'fullchainFile' => $fullchainFile,
-            'pfxFile' => $certDir . '/' . $domain . '.pfx',
-            'pfxExists' => false,
-            'pfxAge' => null,
-            'lastRenew' => null,
-            'source' => 'acme',
-            'error' => null,
-        ];
-
-        $targetFile = $certFile;
+        $pfxPath = $certDir . '/' . $domain . '.pfx';
 
         if (!file_exists($certFile)) {
-            $info['error'] = 'No se encontró el certificado en: ' . $certFile;
-
-            return $info;
+            return new Certificate(
+                error: 'No se encontró el certificado en: ' . $certFile,
+                certFile: $certFile,
+                keyFile: $keyFile,
+                fullchainFile: $fullchainFile,
+                pfxFile: $pfxPath,
+            );
         }
 
-        $info['exists'] = true;
-        $info['lastRenew'] = DateTime::createFromTimestamp(filemtime($targetFile));
+        $certPem = file_get_contents($certFile);
+        $cert = openssl_x509_read($certPem);
+        $parsed = openssl_x509_parse($cert);
 
-        // Parse expiry
-        exec(
-            'openssl x509 -in ' . escapeshellarg($targetFile) . ' -noout -enddate 2>&1',
-            $endDateOutput,
-            $exitCode
-        );
+        $expiry = isset($parsed['validTo_time_t'])
+            ? DateTime::createFromTimestamp($parsed['validTo_time_t'])
+            : null;
 
-        if ($exitCode === 0 && !empty($endDateOutput[0])) {
-            $expiry = DateTime::parse(substr($endDateOutput[0], 9));
-            if ($expiry !== null) {
-                $info['expiry'] = $expiry;
-                $info['daysLeft'] = $expiry->diffInDays(null, false);
-            }
-        }
+        $issuer = !empty($parsed['issuer'])
+            ? implode(', ', array_map(
+                fn(string $k, string $v): string => "$k=$v",
+                array_keys($parsed['issuer']),
+                $parsed['issuer'],
+            ))
+            : null;
 
-        // Parse issuer
-        exec(
-            'openssl x509 -in ' . escapeshellarg($targetFile) . ' -noout -issuer 2>&1',
-            $issuerOutput
-        );
-        if (!empty($issuerOutput[0])) {
-            $info['issuer'] = substr($issuerOutput[0], 8);
-        }
+        $sanText = $parsed['extensions']['subjectAltName'] ?? '';
+        $sans = $sanText !== '' && preg_match_all('/DNS:([^\s,]+)/', $sanText, $m)
+            ? $m[1]
+            : [];
 
-        // Parse subject
-        exec(
-            'openssl x509 -in ' . escapeshellarg($targetFile) . ' -noout -subject 2>&1',
-            $subjectOutput
-        );
-        if (!empty($subjectOutput[0])) {
-            $info['subject'] = substr($subjectOutput[0], 9);
-        }
+        $pfxExists = file_exists($pfxPath);
+        $pfxAge = $pfxExists ? DateTime::createFromTimestamp(filemtime($pfxPath)) : null;
+        $pfxFile = $pfxPath;
 
-        // Parse SANs
-        exec(
-            'openssl x509 -in ' . escapeshellarg($targetFile) . ' -noout -ext subjectAltName 2>&1',
-            $sanOutput
-        );
-        $sanText = implode("\n", $sanOutput);
-        if (preg_match_all('/DNS:([^\s,]+)/', $sanText, $matches)) {
-            $info['sans'] = $matches[1];
-        }
-
-        // PFX info
-        $acmePfx = $certDir . '/' . $domain . '.pfx';
-        if (file_exists($acmePfx)) {
-            $info['pfxExists'] = true;
-            $info['pfxAge'] = DateTime::createFromTimestamp(filemtime($acmePfx));
-            $info['pfxFile'] = $acmePfx;
-        }
         if ($pfxDest !== null && file_exists($pfxDest)) {
-            $info['pfxFile'] = $pfxDest;
-            $info['pfxExists'] = true;
-            $info['pfxAge'] ??= DateTime::createFromTimestamp(filemtime($pfxDest));
+            $pfxFile = $pfxDest;
+            $pfxExists = true;
+            $pfxAge ??= DateTime::createFromTimestamp(filemtime($pfxDest));
         }
 
-        return $info;
+        return new Certificate(
+            exists: true,
+            expiry: $expiry,
+            daysLeft: $expiry?->diffInDays(null, false),
+            issuer: $issuer,
+            subject: $parsed['name'] ?? null,
+            sans: $sans,
+            certFile: $certFile,
+            keyFile: $keyFile,
+            fullchainFile: $fullchainFile,
+            pfxFile: $pfxFile,
+            pfxExists: $pfxExists,
+            pfxAge: $pfxAge,
+            lastRenew: DateTime::createFromTimestamp(filemtime($certFile)),
+        );
     }
 
     public function renew(string $domain, ?string $email = null): array
@@ -185,38 +159,18 @@ class SslService
 
         $log[] = 'Certificado renovado correctamente.';
 
-        // Generate PFX
+        // Generate PFX with PHP OpenSSL
         $certDir = $acmeHome . '/' . $domain;
         $pfxFile = $certDir . '/' . $domain . '.pfx';
 
         $log[] = 'Generando PFX...';
 
-        if ($pfxPass !== '') {
-            $opensslCmd = sprintf(
-                'openssl pkcs12 -export -out %s -inkey %s -in %s -certfile %s -passout pass:%s',
-                escapeshellarg($pfxFile),
-                escapeshellarg($certDir . '/' . $domain . '.key'),
-                escapeshellarg($certDir . '/' . $domain . '.cer'),
-                escapeshellarg($certDir . '/fullchain.cer'),
-                escapeshellarg($pfxPass)
-            );
-        } else {
-            $opensslCmd = sprintf(
-                'openssl pkcs12 -export -out %s -inkey %s -in %s -certfile %s -passout pass:',
-                escapeshellarg($pfxFile),
-                escapeshellarg($certDir . '/' . $domain . '.key'),
-                escapeshellarg($certDir . '/' . $domain . '.cer'),
-                escapeshellarg($certDir . '/fullchain.cer')
-            );
-        }
+        $cert = openssl_x509_read(file_get_contents($certDir . '/' . $domain . '.cer'));
+        $key = openssl_pkey_get_private(file_get_contents($certDir . '/' . $domain . '.key'));
+        $caCert = openssl_x509_read(file_get_contents($certDir . '/fullchain.cer'));
 
-        exec($opensslCmd . ' 2>&1', $pfxOutput, $pfxExitCode);
-        $log = array_merge($log, $pfxOutput);
-
-        if ($pfxExitCode !== 0) {
-            $pfxReason = 'Error al generar PFX: ' . implode(' | ', array_slice($pfxOutput, -5));
-
-            return ['success' => false, 'log' => $log, 'error' => $pfxReason];
+        if (!openssl_pkcs12_export_to_file($cert, $pfxFile, $key, $pfxPass, ['extracerts' => [$caCert]])) {
+            return ['success' => false, 'log' => $log, 'error' => 'Error al generar PFX: ' . openssl_error_string()];
         }
 
         $log[] = 'PFX generado: ' . $pfxFile;

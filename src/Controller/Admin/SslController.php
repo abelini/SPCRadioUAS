@@ -26,17 +26,17 @@ class SslController extends AppController
         $domain = $ssl->getDomain();
         $certInfo = $ssl->getCertInfo($domain);
 
-        if (!$certInfo['exists']) {
+        if (!$certInfo->exists) {
             $this->Flash->error('No hay certificado para descargar.');
 
             return $this->redirect(['action' => 'index']);
         }
 
         $files = [
-            'pfx' => $certInfo['pfxFile'] ?? null,
-            'cert' => $certInfo['certFile'] ?? null,
-            'key' => $certInfo['keyFile'] ?? null,
-            'fullchain' => $certInfo['fullchainFile'] ?? null,
+            'pfx' => $certInfo->pfxFile ?? null,
+            'cert' => $certInfo->certFile ?? null,
+            'key' => $certInfo->keyFile ?? null,
+            'fullchain' => $certInfo->fullchainFile ?? null,
         ];
 
         $file = $files[$type] ?? null;
