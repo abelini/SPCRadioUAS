@@ -28,7 +28,7 @@ composer check          # test + cs-check (run this before committing)
 bin/cake migrations migrate
 bin/cake reset_stream   # reboot MediaCP stream (cron-friendly)
 bin/cake broadcast update  # push NowPlaying metadata → Shoutcast + RDS
-bin/cake ssl_renew <domain> [email] [pfx-destination]  # renew SSL cert via acme.sh (LE/ZeroSSL) + generate .pfx
+bin/cake ssl_renew <domain> [email] [pfx-destination]  # renew SSL cert via acme.sh (Let's Encrypt) + generate .pfx
 bin/cake cpanel_dns <add|remove> <domain> <challenge>  # manage TXT records via cPanel API (SSL hook)
 ```
 

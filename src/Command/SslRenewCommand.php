@@ -13,7 +13,7 @@ class SslRenewCommand extends Command
     protected function buildOptionParser(\Cake\Console\ConsoleOptionParser $parser): \Cake\Console\ConsoleOptionParser
     {
         $parser->setDescription(
-            'Renueva un certificado SSL vía acme.sh (Let\'s Encrypt / ZeroSSL) y genera .pfx. '
+            'Renueva un certificado SSL vía acme.sh (Let\'s Encrypt) y genera .pfx. '
             . 'Los valores por defecto se leen de Configure::read(\'SSLGeneration.*\') en app_local.php.'
         );
 

@@ -122,7 +122,7 @@ class SslService
 
         $log = [];
 
-        // Set CA (Let's Encrypt or ZeroSSL)
+        // Set CA (Let's Encrypt)
         $ca = Configure::read('SSLGeneration.ca');
         $this->executeCommand([$acmeSh, '--home', $acmeHome, '--set-default-ca', '--server', $ca], $o, $c);
         $log[] = 'CA: ' . $ca;

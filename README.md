@@ -199,7 +199,7 @@ Registro de hits de audiencia del streaming.
 | **YouTube Data API** | Playlists públicas de Radio UAS |
 | **Google SMTP (OAuth2)** | Envío de correos (roles de cabina, notificaciones de usuario) |
 | **cPanel UAPI** | Gestión de registros DNS TXT para validación ACME DNS-01 |
-| **Let's Encrypt / ZeroSSL** | Autoridad certificadora para renovación SSL vía acme.sh |
+| **Let's Encrypt** | Autoridad certificadora para renovación SSL vía acme.sh |
 
 ---
 
@@ -305,7 +305,7 @@ Configuración para renovación automática de certificados SSL vía acme.sh con
     'pfxPassword'    => '...',                   // Password del archivo .pfx
     'pfxDestination' => '/etc/ssl/emby.pfx',     // Ruta destino del .pfx
     'acmeHome'       => '/home/radiouas/.acme.sh',
-    'ca'             => 'letsencrypt',            // CA: letsencrypt | zerossl
+    'ca'             => 'letsencrypt',            // CA: letsencrypt
     'dnsProvider'    => 'cpanel',
     'cpanel' => [
         'username' => 'radiouas',                // Usuario cPanel
