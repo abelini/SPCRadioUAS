@@ -252,44 +252,44 @@ Copiar el archivo de entorno de ejemplo y ajustar los valores:
 cp config/.env.example config/.env
 ```
 
-Las variables sensibles se gestionan en `config/app_local.php` bajo la clave `SensitiveData`:
+Las variables sensibles se gestionan en `config/app_local.php`:
 
 ```php
 'SensitiveData' => [
     'Gemini' => [
-        'APIKey' => '...',     // Google Gemini AI API key
+        'APIKey' => '<Google AI Studio Key>',
     ],
     'Facebook' => [
-        'APIv'          => '/v25.0',          // Versión de Graph API
-        'RadioUASAppID' => '...',             // App ID de Facebook
-        'AccessTokens'  => ['token1', '...'], // Page access tokens
+        'APIv'          => '/v25.0',
+        'RadioUASAppID' => '<Facebook App ID>',
+        'AccessTokens'  => ['token1', 'token2'],
     ],
     'MediaCP' => [
-        'APIKey' => '...',     // Bearer token para API de MediaCP
+        'APIKey' => '<MediaCP API Key>',
     ],
     'Shoutcast' => [
-        'password' => '...',   // DJ password para admin.cgi
+        'password' => '<SHOUTcast Password>',
         'scheme'   => 'http',
-        'host'     => '...',   // Host del servidor SHOUTcast
+        'host'     => '<SHOUTcast host>',
         'port'     => 8000,
-        'token'    => '...',   // Token compartido para /api/metadata/update
+        'token'    => '<SHOUTcast Token>',
     ],
     'GoogleMail' => [
-        'email'    => 'radio@uas.edu.mx',
-        'password' => '...',   // App password de Gmail (OAuth2)
+        'email'    => '<Google Mail Email>',
+        'password' => '<Google Mail Password>',
     ],
     'Emby' => [
-        'APIKey' => '...',     // API key del servidor Emby
+        'APIKey' => '<Emby API Key>',
     ],
     'YouTube' => [
-        'APIKey' => '...',     // YouTube Data API key
+        'APIKey' => '<YouTube Data API Key>',
     ],
     'Rdi20' => [
-        'local_host'  => '192.168.1.xxx',  // IP local del encoder RDS
-        'remote_host' => '200.xx.xx.xx',   // IP remota (VPN)
-        'port'        => 8000,
-        'username'    => '...',             // Usuario del encoder
-        'password'    => '...',             // Password del encoder
+        'local_host'  => '127.0.0.1',
+        'remote_host' => '<RDi20 IP>',
+        'port'        => 23,
+        'username'    => '<RDi20 Username>',
+        'password'    => '<RDi20 Password>',
     ],
 ]
 ```
