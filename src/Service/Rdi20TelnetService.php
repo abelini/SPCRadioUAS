@@ -192,7 +192,7 @@ class Rdi20TelnetService
          * TEMPORAL RT
          */
         //$this->rt = $this->buildRadioText($data->programa);
-        $this->rt = 'EN LA UAS ESTAMOS EN PARO LABORAL INDEFINIDO. Disfruta nuestra musica.';
+        $this->rt = 'PARO LABORAL INDEFINIDO. Disfruta nuestra musica.';
         /**
          * -----
          */
