@@ -22,20 +22,6 @@ class NowPlayingService
 
     public function get(): StreamData
     {
-        /**
-         * TEMPORAL STREAM DATA
-         */
-        return new StreamData(
-            programa: self::DEFAULT_PROGRAM_NAME,
-            produccion: self::DEFAULT_PRODUCTION_NAME,
-            pty: 0,
-            ptn: 'PARO LAB',
-            music: true,
-            sm: true,
-        );
-        /**
-         * -----
-         */
         $rc = Cache::read(self::CONTROL_REMOTO_CACHE);
         if ($rc) {
             if (time() - $rc['inicio'] <= self::MAX_REMOTE_CONTROL_TIME) {
