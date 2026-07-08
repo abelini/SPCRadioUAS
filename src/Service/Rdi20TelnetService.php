@@ -188,6 +188,7 @@ class Rdi20TelnetService
                 return sprintf('Override activo: %s', $this->send());
             }
         }
+        $this->rt = $this->buildRadioText($data->programa);
         $this->ps = self::XPSS;
         $this->pty = $data->pty === 0
             ? Cache::remember('last_pty_' . md5($data->programa), fn() => self::PTY_FALLBACKS[array_rand(self::PTY_FALLBACKS)])
