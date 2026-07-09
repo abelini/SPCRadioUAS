@@ -6,33 +6,29 @@
 /tmp/*
 /vendor/*
 /webroot/img/alexa/*
+/webroot/cert/*
 
-# --- CakePHP Logs y Temporales ---
-# Ignorar el contenido de logs, pero mantener la carpeta
 /logs/*
 !/logs/.gitkeep
 !/logs/empty
 
-# Ignorar caché, sesiones y archivos temporales
 /tmp/*
 !/tmp/.gitkeep
 !/tmp/empty
 
+error_log
+
 # --- Dependencias ---
-# Nunca subir la carpeta vendor (se instala con composer install)
 /vendor/
 
 # --- Base de Datos (SQLite) ---
-# Si usas SQLite localmente, no la subas
 /db/*.sqlite
 
 # --- Sistema Operativo e IDEs ---
-# Archivos basura de Mac y Windows
 .DS_Store
 Thumbs.db
 
 # --- Archivos de Configuración ---
-# Ignorar archivos de configuración locales
 php.ini
 .htaccess
 phpinfo.php
