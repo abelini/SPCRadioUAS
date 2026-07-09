@@ -43,7 +43,7 @@ class ProgramasController extends ApiController
                     'produccion' => $p->produccion,
                     'conduccion' => $p->conduccion,
                     //                    'musical' => (bool)$p->musical,
-                    'image_url' => $p->image_url,
+                    'image' => $p->image_url,
                     'category' => $p->categoria ? [
                         'name' => $p->categoria->name,
                         'slug' => $p->categoria->slug,
@@ -187,6 +187,7 @@ class ProgramasController extends ApiController
                 'program' => $firstProgram->name,
                 'produccion' => $firstProgram->produccion,
                 'conduccion' => $firstProgram->conduccion,
+                'image' => $firstProgram->image_url,
                 'category' => $categoryData,
                 'schedule' => $finalSchedule,
             ];

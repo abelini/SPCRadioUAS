@@ -66,8 +66,13 @@
     </div>
 
     <div class="form-group">
-        <?= $this->Form->label('image_file', 'Imagen de fondo') ?>
-        <?= $this->Form->control('image_file', ['type' => 'file', 'label' => false, 'class' => 'form-control']) ?>
+        <?= $this->Form->label('image', 'Nombre del archivo de imagen') ?>
+        <?= $this->Form->control('image', ['label' => false, 'class' => 'form-control', 'placeholder' => 'programme-cover-x.jpeg']) ?>
+        <?php if ($programa->image): ?>
+            <div style="margin-top:8px;text-align:center">
+                <img src="<?= $programa->image_url ?>" alt="Preview" style="max-width:100%;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.3)">
+            </div>
+        <?php endif; ?>
     </div>
 
     <div class="form-group">

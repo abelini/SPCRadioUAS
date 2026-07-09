@@ -3,34 +3,50 @@
 </div>
 
 <div class="content-card">
-    <table class="view-table">
-        <tr>
-            <th>Producción</th>
-            <td><?= $programa->produccion ?></td>
-        </tr>
-        <tr>
-            <th>PTY</th>
-            <td><?= $programa->pty?->name ?? '—' ?></td>
-        </tr>
-        <tr>
-            <th>PTN</th>
-            <td><?= h($programa->ptn) ?: '—' ?></td>
-        </tr>
-        <tr>
-            <th>Horario</th>
-            <td><?= $programa->horaInicio ?> <i class="fa-solid fa-arrow-right-long"></i> <?= $programa->horaFin ?></td>
-        </tr>
-        <tr>
-            <th>Días</th>
-            <td>
-                <ul>
-                    <?php foreach ($programa->dias as $dias): ?>
-                        <li><?= $dias->name ?></li>
-                    <?php endforeach; ?>
-                </ul>
-            </td>
-        </tr>
-    </table>
+    <div class="row">
+        <div class="col-md-9">
+            <table class="view-table">
+                <tr>
+                    <th>Producción</th>
+                    <td><?= $programa->produccion ?></td>
+                </tr>
+                <tr>
+                    <th>PTY</th>
+                    <td><?= $programa->pty?->name ?? '—' ?></td>
+                </tr>
+                <tr>
+                    <th>PTN</th>
+                    <td><?= h($programa->ptn) ?: '—' ?></td>
+                </tr>
+                <tr>
+                    <th>Horario</th>
+                    <td><?= $programa->horaInicio ?> <i class="fa-solid fa-arrow-right-long"></i> <?= $programa->horaFin ?></td>
+                </tr>
+                <tr>
+                    <th>Días</th>
+                    <td>
+                        <ul>
+                            <?php foreach ($programa->dias as $dias): ?>
+                                <li><?= $dias->name ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="col-md-3">
+            <?php if ($programa->image_url): ?>
+                <div style="text-align:center">
+                    <img src="<?= h($programa->image_url) ?>" alt="<?= $programa->name ?>" style="max-width:100%;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.3)">
+                </div>
+            <?php else: ?>
+                <div style="text-align:center;padding:40px 0;color:var(--color-faded-silver);border:2px dashed var(--color-border-muted);border-radius:8px">
+                    <i class="fa-solid fa-image" style="font-size:3rem;display:block;margin-bottom:8px"></i>
+                    Sin imagen
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
 
     <?php if ($programa->reportable): ?>
         <div class="page-subheader">

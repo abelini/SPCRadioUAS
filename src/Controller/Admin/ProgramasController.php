@@ -9,7 +9,6 @@ use SPC\Model\Entity\ReportesPrograma;
 use Cake\Cache\Cache;
 use Cake\I18n\DateTime;
 use Cake\ORM\Query\SelectQuery;
-use Psr\Http\Message\UploadedFileInterface;
 
 
 class ProgramasController extends AppController
@@ -75,11 +74,6 @@ class ProgramasController extends AppController
 		if ($this->request->is('post')) {
 			$programa = $this->Programas->patchEntity($programa, $this->request->getData());
 
-			$uploaded = $this->_handleImageUpload();
-			if ($uploaded !== null) {
-				$programa->image = $uploaded;
-			}
-
 			if ($this->Programas->save($programa)) {
 				$this->Flash->success(__('The programa has been saved.'));
 
@@ -96,18 +90,7 @@ class ProgramasController extends AppController
 	{
 		$programa = $this->Programas->get($id, admin: true, contain: ['Dias']);
 		if ($this->request->is(['patch', 'post', 'put'])) {
-			$removeImage = (bool)$this->request->getData('remove_image');
-			$newFile = $this->_handleImageUpload();
-
 			$programa = $this->Programas->patchEntity($programa, $this->request->getData());
-
-			if ($newFile !== null) {
-				$this->_deleteImageFile($programa->image);
-				$programa->image = $newFile;
-			} elseif ($removeImage) {
-				$this->_deleteImageFile($programa->image);
-				$programa->image = null;
-			}
 
 			//Borrar cache de la API cuando se edite el programa
 			$cacheKey = 'programa_info_' . md5(strtolower(trim($programa->name)));
@@ -125,47 +108,10 @@ class ProgramasController extends AppController
 		$this->set(compact('programa', 'dias', 'categorias'));
 	}
 
-	/**
-	 * Maneja la subida de imagen de programa.
-	 *
-	 * @return string|null Nombre del archivo subido o null si no hay imagen valida.
-	 */
-	protected function _handleImageUpload(): ?string
-	{
-		$image = $this->request->getData('image_file');
-
-		if (!$image instanceof UploadedFileInterface || $image->getError() !== UPLOAD_ERR_OK) {
-			return null;
-		}
-
-		$ext = strtolower(pathinfo($image->getClientFilename(), PATHINFO_EXTENSION));
-		$filename = md5((string) time()) . '.' . $ext;
-		$dest = WWW_ROOT . 'img' . DS . 'programas' . DS . $filename;
-
-		$image->moveTo($dest);
-
-		return $filename;
-	}
-
-	/**
-	 * Elimina un archivo de imagen del disco.
-	 */
-	protected function _deleteImageFile(?string $filename): void
-	{
-		if ($filename === null) {
-			return;
-		}
-		$path = WWW_ROOT . 'img' . DS . 'programas' . DS . $filename;
-		if (file_exists($path)) {
-			unlink($path);
-		}
-	}
-
 	public function delete($id = null)
 	{
 		$this->request->allowMethod(['post', 'delete']);
 		$programa = $this->Programas->get($id, admin: true);
-		$this->_deleteImageFile($programa->image);
 		if ($this->Programas->delete($programa)) {
 			$this->Flash->success(__('The programa has been deleted.'));
 		} else {

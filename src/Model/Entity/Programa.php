@@ -13,14 +13,13 @@ use Stringable;
 
 class Programa extends Entity implements Stringable
 {
-
-	//public string $XtoWord; // ahora es virtual field via _getXtoWord()
-
 	protected const string UO_ICON = '<i class="fa-solid fa-school"></i>';
 
 	protected const string COLABORADOR_ICON = '<i class="fa-solid fa-user"></i>';
 
 	protected const string MUSICAL_ICON = '<i class="fa-solid fa-music"></i>';
+
+	public const string IMAGE_BASE_URL = 'https://images.radiouas.org/';
 
 	protected array $_accessible = [
 		'name' => true,
@@ -93,7 +92,7 @@ class Programa extends Entity implements Stringable
 		if (empty($this->image)) {
 			return null;
 		}
-		return '/img/programas/' . $this->image;
+		return self::IMAGE_BASE_URL . $this->image;
 	}
 
 	protected function _getIcon(): string
