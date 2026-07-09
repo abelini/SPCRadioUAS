@@ -19,7 +19,7 @@ class Programa extends Entity implements Stringable
 
 	protected const string MUSICAL_ICON = '<i class="fa-solid fa-music"></i>';
 
-	public const string IMAGE_BASE_URL = 'https://images.radiouas.org/';
+	protected const string IMAGE_CDN_URL = 'https://images.radiouas.org/';
 
 	protected array $_accessible = [
 		'name' => true,
@@ -92,7 +92,7 @@ class Programa extends Entity implements Stringable
 		if (empty($this->image)) {
 			return null;
 		}
-		return self::IMAGE_BASE_URL . $this->image;
+		return self::IMAGE_CDN_URL . $this->image;
 	}
 
 	protected function _getIcon(): string

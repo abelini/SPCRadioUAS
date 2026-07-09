@@ -44,6 +44,7 @@ class ScheduleController extends ApiController
 				'name',
 				'horaInicio',
 				'horaFin',
+				'image',
 				'subtitle' => 'produccion',
 				'categoryID',
 				'music' => 'musical',
@@ -55,6 +56,7 @@ class ScheduleController extends ApiController
 				'name',
 				'horaInicio',
 				'horaFin',
+				'image',
 				'produccion',
 				'icon' => 'uo',
 				'music' => 'musical',
@@ -67,26 +69,30 @@ class ScheduleController extends ApiController
 			->get('Programas')
 			->find()
 			->select($select)
-			->contain('CategoriasProgramas', function (SelectQuery $query) {
-				return $query->select(['ID', 'slug']);
-			})
-			->matching('Dias', function (SelectQuery $query) use ($day) {
-				return $query->where(['Dias.ID' => $day]);
-			})
+			->contain('CategoriasProgramas', fn(SelectQuery $query)
+				=> $query->select(['ID', 'slug'])
+			)
+			->matching('Dias', fn(SelectQuery $query)
+				=> $query->where(['Dias.ID' => $day])
+			)
 			->orderByAsc('horaInicio')
-			->all()
-			->toArray();
+			->all();
 
-		foreach ($programas as $id => $programa) {
-			$programas[$id]['dayOfWeek'] = $day;
-			$programas[$id]['slug'] = $programa->categoria->slug;
-			unset($programas[$id]['categoria']);
+		$result = [];
+		foreach ($programas as $programa) {
+			$entry = $programa->toArray();
+			$entry['image'] = $programa->image_url;
+			unset($entry['image_url']);
+			$entry['dayOfWeek'] = $day;
+			$entry['slug'] = $programa->categoria->slug;
+			unset($entry['categoria']);
+			$result[] = $entry;
 		}
 
-		return $this->render()
+		return $this->response
 			->withHeader('Access-Control-Allow-Origin', self::RADIOUAS_URI)
 			->withType('application/json')
-			->withStringBody(json_encode($programas));
+			->withStringBody(json_encode($result));
 	}
 
 	public function si(): Response
@@ -147,7 +153,7 @@ class ScheduleController extends ApiController
 		if (ctype_digit($day) && $day >= 1 && $day <= 7) {
 			return (int) $day;
 		} else {
-			return (new DateTime())->dayOfWeek;
+			return new DateTime()->dayOfWeek;
 		}
 	}
 

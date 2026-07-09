@@ -42,12 +42,12 @@ class ProgramasController extends ApiController
                     'program' => $name,
                     'produccion' => $p->produccion,
                     'conduccion' => $p->conduccion,
-                    //                    'musical' => (bool)$p->musical,
+                    'musical' => (bool) $p->musical,
                     'image' => $p->image_url,
                     'category' => $p->categoria ? [
                         'name' => $p->categoria->name,
                         'slug' => $p->categoria->slug,
-                        //'icon' => $p->categoria->icon,
+                        'icon' => $p->categoria->icon,
                     ] : null,
                     'schedule' => [],
                 ];
@@ -107,7 +107,7 @@ class ProgramasController extends ApiController
                 ->withType('application/json')
                 ->withStatus(400)
                 ->withStringBody(json_encode([
-                    'error' => 'El argumento "name" es obligatorio y debe ser un texto.',
+                    'error' => 'The {name} argument is required.',
                 ]));
         }
 

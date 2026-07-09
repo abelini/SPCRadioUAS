@@ -80,13 +80,17 @@ class CabinaController extends ApiController
 	public function getProgramInfo(): Response
 	{
 		$this->request->allowMethod(['ajax', 'get']);
-		$nombrePrograma = $this->request->getQuery('name');
+		$nombrePrograma = urldecode($this->request->getQuery('name'));
 
 		$programa = $this->getTableLocator()->get('Programas')
 			->find()
 			->where(['name' => $nombrePrograma])
 			->contain('TemasProgramas')
 			->first();
+
+		if ($programa !== null) {
+			$programa->set('image', $programa->image_url);
+		}
 
 		return $this->response
 			->withType('application/json')
