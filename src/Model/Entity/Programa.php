@@ -13,6 +13,10 @@ use Stringable;
 
 class Programa extends Entity implements Stringable
 {
+	private const string SPOKEN_PROGRAMME_DEFAULT_IMAGE = 'programme-cover-0.jpeg';
+
+	private const string MUSICAL_PROGRAMME_DEFAULT_IMAGE = 'programme-cover-99.jpeg';
+
 	protected const string UO_ICON = '<i class="fa-solid fa-school"></i>';
 
 	protected const string COLABORADOR_ICON = '<i class="fa-solid fa-user"></i>';
@@ -67,7 +71,7 @@ class Programa extends Entity implements Stringable
 	{
 		return $this->horaFin;
 	}
-
+/*
 	protected function _getHoraInicioString(): string
 	{
 		return $this->horaInicio->format('H:i:s');
@@ -77,7 +81,7 @@ class Programa extends Entity implements Stringable
 	{
 		return $this->horaFin->format('H:i:s');
 	}
-
+*/
 	protected function _getCategory(): string
 	{
 		if ($this->_fields['music'])
@@ -87,26 +91,22 @@ class Programa extends Entity implements Stringable
 		// culture, science, sports, news, entertainment, children, youth, women, 
 	}
 
-	protected function _getImageUrl(): ?string
+	protected function _getImageUrl(): string
 	{
-		if (empty($this->image)) {
-			return null;
+		if ($this->_fields['image'] == null) {
+			return self::IMAGE_CDN_URL . ($this->_fields['musical'] ? self::MUSICAL_PROGRAMME_DEFAULT_IMAGE : self::SPOKEN_PROGRAMME_DEFAULT_IMAGE);
 		}
-		return self::IMAGE_CDN_URL . $this->image;
+		return self::IMAGE_CDN_URL . $this->_fields['image'];
 	}
 
 	protected function _getIcon(): string
 	{
-		if ($this->_fields['music'])
+		if ($this->_fields['musical'])
 			return self::MUSICAL_ICON;
 		else
 			return $this->_fields['icon'] ? self::UO_ICON : self::COLABORADOR_ICON;
 	}
 
-	/**
-	 * Devuelve en texto (español) cuántas veces el programa no se transmitió por falta.
-	 * Virtual field accesible como $programa->x_to_word o $programa->XtoWord.
-	 */
 	protected function _getXtoWord(): string
 	{
 		$summary = $this->getReportSummary();

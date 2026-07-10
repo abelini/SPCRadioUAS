@@ -340,11 +340,11 @@ class EpgBuilder
         );
         $group->appendChild($longName);
 
-        $presenter = $dom->createElement('presenter');
         if (!empty($programme['conduccion'])) {
+            $presenter = $dom->createElement('presenter');
             $presenter->nodeValue = htmlspecialchars($programme['conduccion'], ENT_XML1);
+            $group->appendChild($presenter);
         }
-        $group->appendChild($presenter);
 
         if (!empty($programme['produccion'])) {
             $longDesc = $dom->createElement(
@@ -353,6 +353,16 @@ class EpgBuilder
             );
             $group->appendChild($longDesc);
         }
+
+        $media = $dom->createElement('e:mediaDescription');
+        $multimedia = $dom->createElement('e:multimedia');
+        $multimedia->setAttribute('url', $programme['image']);
+        $multimedia->setAttribute('width', '1080');
+        $multimedia->setAttribute('height', '1080');
+        $multimedia->setAttribute('mimeValue', 'image/jpeg');
+        $media->appendChild($multimedia);
+        $group->appendChild($media);
+        
 
         $link = $dom->createElement('e:link');
         $link->setAttribute('description', 'Programación Radio UAS');
@@ -376,8 +386,8 @@ class EpgBuilder
         $programmes = [];
 
         foreach ($results as $programme) {
-            $start = DateTime::now()->setTimeFromTimeString($programme->get('hora_inicio_string'));
-            $end = DateTime::now()->setTimeFromTimeString($programme->get('hora_fin_string'));
+            $start = DateTime::now()->setTimeFromTimeString($programme->horaInicio->format('H:i:s'));
+            $end = DateTime::now()->setTimeFromTimeString($programme->horaFin->format('H:i:s'));
 
             if ($end->lessThanOrEquals($start)) {
                 $end = $end->addDays(1);
@@ -388,6 +398,7 @@ class EpgBuilder
                 'name' => $programme->name,
                 'produccion' => $programme->produccion,
                 'conduccion' => $programme->conduccion,
+                'image' => $programme->image_url,
                 'startTime' => $programme->horaInicio->format('H:i:s'),
                 'duration' => $this->isoDuration($start, $end),
                 'days' => array_map(fn($d) => $d->ID, $programme->dias),

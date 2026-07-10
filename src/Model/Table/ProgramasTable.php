@@ -91,10 +91,10 @@ class ProgramasTable extends Table
                 'Programas.horaFin',
                 'Programas.produccion',
                 'Programas.conduccion',
+				'Programas.image',
+				'Programas.musical',
             ])
-            ->contain('Dias', function (SelectQuery $q) {
-                return $q->select(['Dias.ID']);
-            })
+            ->contain('Dias', fn(SelectQuery $query) : SelectQuery => $query->select(['Dias.ID']))
             ->orderByAsc('Programas.horaInicio');
 	}
 	
