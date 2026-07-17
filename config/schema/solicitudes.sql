@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS solicitudes (
     aceptado TINYINT(1) NOT NULL,
     reporteGrabacion TEXT DEFAULT NULL,
     reporteProgramacion TEXT DEFAULT NULL,
+    preasignado TINYINT(1) DEFAULT NULL,
     cancelado TINYINT(1) NOT NULL,
     created DATETIME NOT NULL,
     modified DATETIME NOT NULL

@@ -1,7 +1,7 @@
--- Detalles de Incidencias table
-CREATE TABLE IF NOT EXISTS detalles_incidencias (
+-- Reportes de Vigilancia table
+CREATE TABLE IF NOT EXISTS reportes_vigilancia (
     ID INT(11) NOT NULL AUTO_INCREMENT,
-    incidenciaID INT(11) NOT NULL,
+    bitacoraID INT(11) NOT NULL,
     fire TINYINT(1) DEFAULT NULL,
     moist TINYINT(1) DEFAULT NULL,
     ventilation TINYINT(1) DEFAULT NULL,
@@ -19,5 +19,5 @@ CREATE TABLE IF NOT EXISTS detalles_incidencias (
     blackout_duration INT(11) DEFAULT 0,
     lost_signal_duration INT(11) DEFAULT 0,
     PRIMARY KEY (ID),
-    KEY idx_incidenciaID (incidenciaID)
+    KEY idx_bitacoraID (bitacoraID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

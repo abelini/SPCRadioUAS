@@ -1,6 +1,6 @@
 -- Usuarios table
 CREATE TABLE IF NOT EXISTS usuarios (
-    ID INT(11) PRIMARY KEY AUTOINCREMENT,
+    ID INT(11) NOT NULL AUTO_INCREMENT,
     empleado INT(11) NOT NULL,
     username VARCHAR(30) NOT NULL,
     password VARCHAR(255) NOT NULL,
@@ -8,5 +8,8 @@ CREATE TABLE IF NOT EXISTS usuarios (
     fullname VARCHAR(255) NOT NULL,
     email VARCHAR(64) NOT NULL,
     base TINYINT(1) NOT NULL DEFAULT 0,
-    photo VARCHAR(255) NOT NULL
-);
+    photo VARCHAR(255) NOT NULL,
+    PRIMARY KEY (ID),
+    UNIQUE KEY uk_username (username),
+    UNIQUE KEY uk_empleado (empleado)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

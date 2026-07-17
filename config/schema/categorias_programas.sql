@@ -1,7 +1,8 @@
 -- Categorías de Programas table
 CREATE TABLE IF NOT EXISTS categorias_programas (
-    ID INT(11) PRIMARY KEY AUTOINCREMENT,
+    ID INT(11) NOT NULL AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
     slug VARCHAR(255) NOT NULL,
-    icon VARCHAR(128) NOT NULL
-);
+    icon VARCHAR(128) NOT NULL DEFAULT '',
+    PRIMARY KEY (ID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

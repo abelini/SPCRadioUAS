@@ -1,7 +1,9 @@
 -- Horarios table
 CREATE TABLE IF NOT EXISTS horarios (
-    ID INT(11) PRIMARY KEY AUTOINCREMENT,
+    ID INT(11) NOT NULL AUTO_INCREMENT,
     horaInicio TIME NOT NULL DEFAULT '00:00:00',
     horaFin TIME NOT NULL DEFAULT '00:00:00',
-    turnoID INT(11) NOT NULL
-);
+    turnoID INT(11) NOT NULL,
+    PRIMARY KEY (ID),
+    KEY idx_turnoID (turnoID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

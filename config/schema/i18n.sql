@@ -5,14 +5,14 @@
 # Redistributions of files must retain the above copyright notice.
 # MIT License (https://opensource.org/licenses/mit-license.php)
 
-CREATE TABLE i18n (
-    id int NOT NULL auto_increment,
-    locale varchar(6) NOT NULL,
-    model varchar(255) NOT NULL,
-    foreign_key int(10) NOT NULL,
-    field varchar(255) NOT NULL,
-    content text,
+CREATE TABLE IF NOT EXISTS i18n (
+    id INT NOT NULL AUTO_INCREMENT,
+    locale VARCHAR(6) NOT NULL,
+    model VARCHAR(255) NOT NULL,
+    foreign_key INT(10) NOT NULL,
+    field VARCHAR(255) NOT NULL,
+    content TEXT,
     PRIMARY KEY (id),
-    UNIQUE INDEX I18N_LOCALE_FIELD(locale, model, foreign_key, field),
-    INDEX I18N_FIELD(model, foreign_key, field)
-);
+    UNIQUE KEY I18N_LOCALE_FIELD (locale, model, foreign_key, field),
+    KEY I18N_FIELD (model, foreign_key, field)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
