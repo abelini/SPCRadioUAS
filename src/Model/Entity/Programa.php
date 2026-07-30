@@ -71,17 +71,17 @@ class Programa extends Entity implements Stringable
 	{
 		return $this->horaFin;
 	}
-/*
-	protected function _getHoraInicioString(): string
-	{
-		return $this->horaInicio->format('H:i:s');
-	}
+	/*
+		protected function _getHoraInicioString(): string
+		{
+			return $this->horaInicio->format('H:i:s');
+		}
 
-	protected function _getHoraFinString(): string
-	{
-		return $this->horaFin->format('H:i:s');
-	}
-*/
+		protected function _getHoraFinString(): string
+		{
+			return $this->horaFin->format('H:i:s');
+		}
+	*/
 	protected function _getCategory(): string
 	{
 		if ($this->_fields['music'])
@@ -101,7 +101,7 @@ class Programa extends Entity implements Stringable
 
 	protected function _getIcon(): string
 	{
-		if ($this->_fields['musical'])
+		if ($this->_fields['music'])
 			return self::MUSICAL_ICON;
 		else
 			return $this->_fields['icon'] ? self::UO_ICON : self::COLABORADOR_ICON;
