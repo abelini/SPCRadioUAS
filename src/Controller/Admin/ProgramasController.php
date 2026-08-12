@@ -7,6 +7,7 @@ use SPC\Controller\AppController;
 use SPC\Model\Entity\Programa;
 use SPC\Model\Entity\ReportesPrograma;
 use Cake\Cache\Cache;
+use Cake\Http\Response;
 use Cake\I18n\DateTime;
 use Cake\ORM\Query\SelectQuery;
 
@@ -66,6 +67,27 @@ class ProgramasController extends AppController
 	protected function getDateDiffString(\DateInterval $diff): string
 	{
 		return $diff->y . ' años, ' . $diff->m . ' meses y ' . $diff->d . ' días';
+	}
+
+	public function switchOnAirStatus(): Response
+	{
+		$this->request->allowMethod(['post']);
+		$ids = $this->request->getData('ids');
+		$target = $this->request->getData('target');
+
+		if (empty($ids) || !is_array($ids) || !in_array($target, ['true', 'false'], true)) {
+			$this->Flash->error('Parámetros inválidos.');
+			return $this->redirect(['action' => 'index']);
+		}
+
+		$count = $this->Programas->updateAll(
+			['outOfAir' => $target === 'true'],
+			['ID IN' => $ids]
+		);
+
+		$action = $target === 'true' ? 'Sacados del aire' : 'Enviados al aire';
+		$this->Flash->success("{$action}: {$count} programa(s).");
+		return $this->redirect(['action' => 'index']);
 	}
 
 	public function add()

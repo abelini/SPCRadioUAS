@@ -2,10 +2,20 @@
     <h5><i class="fa-solid fa-radio"></i> Programas</h5>
 </div>
 
+<?= $this->Form->create(null, ['url' => ['action' => 'switchOnAirStatus'], 'type' => 'post']) ?>
+
 <div class="content-card">
+    <div class="toolbar">
+        <?= $this->Form->button(
+            '<i class="fa-solid fa-toggle-off"></i> Selecciona programas',
+            ['name' => 'target', 'value' => '', 'id' => 'toggle-btn', 'class' => 'btn btn-sm', 'disabled' => true, 'escapeTitle' => false]
+        ) ?>
+    </div>
+
     <table class="data-table">
         <thead>
             <tr>
+                <th><input type="checkbox" id="select-all"></th>
                 <th>ID</th>
                 <th>Nombre</th>
                 <th>Logo</th>
@@ -21,6 +31,13 @@
         <tbody>
             <?php foreach ($programas as $programa): ?>
                 <tr>
+                    <td><?= $this->Form->checkbox('ids[]', [
+                        'value' => $programa->ID,
+                        'class' => 'programa-checkbox',
+                        'data-out-of-air' => $programa->outOfAir ? 'true' : 'false',
+                        'label' => false,
+                        'hiddenField' => false,
+                    ]) ?></td>
                     <td><?= $programa->ID ?></td>
                     <td><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background-color:<?= $programa->outOfAir ? '#e74c3c' : '#2ecc71' ?>;margin-right:6px" title="<?= $programa->outOfAir ? 'Fuera del aire' : 'Al aire' ?>"></span><?= $this->Html->link($programa->name, ['action' => 'edit', $programa->ID]) ?></td>
                     <td><?= $programa->image ? '<i class="fa-regular fa-image"></i>' : '' ?></td>
@@ -37,6 +54,8 @@
         </tbody>
     </table>
 
+    <?= $this->Form->end() ?>
+
     <div class="pagination-counter">
         <?= $this->Paginator->counter('Página {{page}} de {{pages}}. Mostrando {{current}} resultados de un total de {{count}}') ?>
     </div>
@@ -51,3 +70,29 @@
 </div>
 
 <?= $this->Html->link('<i class="fa-solid fa-plus"></i>', ['action' => 'add'], ['class' => 'btn-circle', 'escape' => false]) ?>
+
+<script>
+function updateToggleBtn() {
+    var checked = document.querySelectorAll('.programa-checkbox:checked');
+    var btn = document.getElementById('toggle-btn');
+    if (checked.length === 0) {
+        btn.disabled = true;
+        btn.value = '';
+        btn.innerHTML = '<i class="fa-solid fa-toggle-off"></i> Selecciona programas';
+        return;
+    }
+    btn.disabled = false;
+    var out = checked[0].getAttribute('data-out-of-air') === 'true';
+    btn.value = out ? 'false' : 'true';
+    btn.innerHTML = out
+        ? '<i class="fa-solid fa-arrow-up"></i> Enviar al aire'
+        : '<i class="fa-solid fa-arrow-down"></i> Sacar del aire';
+}
+document.getElementById('select-all').addEventListener('change', function () {
+    document.querySelectorAll('.programa-checkbox').forEach(function (cb) { cb.checked = this.checked; }, this);
+    updateToggleBtn();
+});
+document.querySelector('.content-card').addEventListener('change', function (e) {
+    if (e.target.classList.contains('programa-checkbox')) updateToggleBtn();
+});
+</script>
