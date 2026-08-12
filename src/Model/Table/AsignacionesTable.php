@@ -5,9 +5,12 @@ namespace SPC\Model\Table;
 
 use Cake\Event\EventInterface;
 use Cake\Datasource\EntityInterface;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use Cake\Database\Query\SelectQuery as CakeQuerySelect;
+use SPC\Model\Entity\Permiso;
 
 class AsignacionesTable extends Table
 {
@@ -40,6 +43,12 @@ class AsignacionesTable extends Table
 		]);
 	}
 
+	public static function locutoresSubquery(SelectQuery $query): CakeQuerySelect
+	{
+		return $query->getConnection()
+			->selectQuery('usuarioID', 'permisos_usuarios')
+			->where(['permisoID' => Permiso::LOCUTOR]);
+	}
 
 	public function afterMarshal(EventInterface $event, EntityInterface $asignacion, \ArrayObject $data, \ArrayObject $options)
 	{

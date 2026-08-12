@@ -55,7 +55,8 @@ class RolesTable extends Table
 				return $q->where(['diaID' => $date->dayOfWeek])->orderByAsc('horaInicio');
 			})
 			->contain('Asignaciones.Locutores', function (SelectQuery $q) {
-				return $q->select(['ID', 'name', 'photo']);
+				return $q->select(['ID', 'name', 'photo'])
+							->where(['Asignaciones.locutorID IN' => AsignacionesTable::locutoresSubquery($q)]);
 			})
 			->contain('Asignaciones.Horarios', function (SelectQuery $q) {
 				return $q->select(['ID', 'horaInicio', 'horaFin', 'turnoID']);
