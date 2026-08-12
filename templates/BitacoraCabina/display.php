@@ -26,8 +26,10 @@
 		<div
 			class="w3-row-padding w3-padding <?= $asignaciones[$i]->classForCurrent($bitacora->fecha, 'w3-card-4 active'); ?>">
 			<div class="w3-col l2">
-				<p class="w3-bold"><?= $asignaciones[$i]->locutor->name ?></p>
-				<?= $this->Html->image($asignaciones[$i]->locutor->photo, ['class' => 'w3-image profile']) ?>
+				<p class="w3-bold"><?= $asignaciones[$i]->locutor?->name ?></p>
+				<?php if (!empty($asignaciones[$i]->locutor?->photo)): ?>
+					<?= $this->Html->image($asignaciones[$i]->locutor->photo, ['class' => 'w3-image profile']) ?>
+				<?php endif; ?>
 			</div>
 			<div class="w3-col l2">
 				<p><?= $asignaciones[$i]->horario ?></p>
