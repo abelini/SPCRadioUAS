@@ -31,12 +31,13 @@ class VigilantesTable extends Table
 	#[\Override]
 	public function findAll(SelectQuery $query): SelectQuery
 	{
+		$permisos = $query->getConnection()->selectQuery('usuarioID', 'permisos_usuarios')
+			->where(['permisoID' => Permiso::VIGILANTE]);
+
 		return $query
 			->selectAllExcept($this, ['password'])
 			->orderAsc('fullname')
-			->matching('Permisos', function (SelectQuery $query) {
-				return $query->where(['Permisos.ID' => Permiso::VIGILANTE]);
-			});
+			->where([$this->aliasField('ID') . ' IN' => $permisos]);
 	}
 
 	#[\Override]
