@@ -32,7 +32,7 @@
                     <tr>
                         <td></td>
                         <td class="picture">
-                            <?= $this->Html->image($rc->locutor?->photo, ['class' => 'img-small img-border']) ?>
+                            <?= $rc->locutor ? $this->Html->image($rc->locutor->photo, ['class' => 'img-small img-border']) : '' ?>
                         </td>
                         <td colspan="3">
                             <table class="data-table">
