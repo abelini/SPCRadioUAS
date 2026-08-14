@@ -35,7 +35,7 @@ class Worker extends Entity implements \Stringable
 			'protocolVersion' => '2',
 		]);
 		$request = $http->get('/members?search=' . urlencode($this->name));
-		//$request = $http->get('/members', ['search' => urlencode($this->name)]);
+
 		$response = json_decode($request->getStringBody());
 
 		$mediaID = $response[0]->featured_media;
