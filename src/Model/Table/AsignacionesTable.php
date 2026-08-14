@@ -9,13 +9,14 @@ use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
-use Cake\Database\Query\SelectQuery as CakeQuerySelect;
+use Cake\Database\QueryInterface;
 use SPC\Model\Entity\Permiso;
+use \ArrayObject;
 
 class AsignacionesTable extends Table
 {
 
-	protected const int NO_LOCUTOR_ID = 999;
+	public const int NO_LOCUTOR_ID = 999;
 
 	public function initialize(array $config): void
 	{
@@ -43,14 +44,7 @@ class AsignacionesTable extends Table
 		]);
 	}
 
-	public static function locutoresSubquery(SelectQuery $query): CakeQuerySelect
-	{
-		return $query->getConnection()
-			->selectQuery('usuarioID', 'permisos_usuarios')
-			->where(['permisoID' => Permiso::LOCUTOR]);
-	}
-
-	public function afterMarshal(EventInterface $event, EntityInterface $asignacion, \ArrayObject $data, \ArrayObject $options)
+	public function afterMarshal(EventInterface $event, EntityInterface $asignacion, ArrayObject $data, ArrayObject $options)
 	{
 		if (!$asignacion->has('locutorID')) {
 			$asignacion->set('locutorID', self::NO_LOCUTOR_ID);

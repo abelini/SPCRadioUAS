@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace SPC\Controller\Admin;
 
 use SPC\Controller\AppController;
+use SPC\Model\Table\AsignacionesTable;
 use Cake\Collection\Collection;
 use Cake\Http\Response;
 use Cake\I18n\DateTime;
@@ -37,7 +38,9 @@ class RolesController extends AppController
 	{
 		$rol = $this->Roles->get($id, contain: [
 			'Asignaciones' => function (Query $query) {
-				return $query->orderByAsc('horaInicio')
+				return $query
+					->whereNotInList('locutorID', [AsignacionesTable::NO_LOCUTOR_ID])
+					->orderByAsc('horaInicio')
 					->contain([
 						'Locutores' => function (Query $query) {
 							return $query->select(['ID', 'name']);

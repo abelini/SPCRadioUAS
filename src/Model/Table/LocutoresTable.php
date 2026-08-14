@@ -3,13 +3,14 @@ declare(strict_types=1);
 
 namespace SPC\Model\Table;
 
-use SPC\Model\Entity\Permiso;
 use Cake\I18n\DateTime;
 use Cake\Database\Expression\QueryExpression;
 use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use SPC\Model\Table\AsignacionesTable;
+use SPC\Model\Entity\Permiso;
 
 
 class LocutoresTable extends Table
@@ -44,13 +45,6 @@ class LocutoresTable extends Table
 	#[\Override]
 	public function findAll(SelectQuery $query): SelectQuery
 	{
-		return $query
-			->selectAllExcept($this, ['password'])
-			->orderByAsc('fullname')
-			->matching('Permisos', function (SelectQuery $query) {
-				return $query->where(['Permisos.ID' => Permiso::LOCUTOR]);
-			});
-		/*
 		$permisos = $query->getConnection()->selectQuery('usuarioID', 'permisos_usuarios')
 			->where(['permisoID' => Permiso::LOCUTOR]);
 
@@ -58,7 +52,6 @@ class LocutoresTable extends Table
 			->selectAllExcept($this, ['password'])
 			->orderByAsc('fullname')
 			->where([$this->aliasField('ID') . ' IN' => $permisos]);
-			*/
 	}
 
 	#[\Override]

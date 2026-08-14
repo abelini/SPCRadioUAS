@@ -31,14 +31,22 @@ class RolesTable extends Table
 		]);
 
 		$this->hasMany('Asignaciones', [
-			'foreignKey' => 'rolID',
-			'sort' => [
-				'diaID' => 'ASC',
-				'horarioID' => 'ASC'
-			]
-		])
+				'foreignKey' => 'rolID',
+				'sort' => [
+					'diaID' => 'ASC',
+					'horarioID' => 'ASC'
+				]
+			])
 			->setForeignKey('rolID')
 			->setDependent(true);
+	}
+
+	#[\Override]
+	public function findAll(SelectQuery $query): SelectQuery
+	{
+		return $query->matching('Asignaciones', function (SelectQuery $q) {
+			return $q->whereNotInList('locutorID', [AsignacionesTable::NO_LOCUTOR_ID]);
+		});
 	}
 
 	/**
@@ -52,11 +60,12 @@ class RolesTable extends Table
 		return $query
 			->where(['fechaInicio' => $date->startOfWeek()])
 			->contain('Asignaciones', function (SelectQuery $q) use ($date) {
-				return $q->where(['diaID' => $date->dayOfWeek])->orderByAsc('horaInicio');
+				return $q
+						->where(['diaID' => $date->dayOfWeek])->orderByAsc('horaInicio')
+						->whereNotInListOrNull('locutorID', [AsignacionesTable::NO_LOCUTOR_ID]);
 			})
 			->contain('Asignaciones.Locutores', function (SelectQuery $q) {
-				return $q->select(['ID', 'name', 'photo'])
-							->where(['Asignaciones.locutorID IN' => AsignacionesTable::locutoresSubquery($q)]);
+				return $q->select(['ID', 'name', 'photo']);
 			})
 			->contain('Asignaciones.Horarios', function (SelectQuery $q) {
 				return $q->select(['ID', 'horaInicio', 'horaFin', 'turnoID']);
