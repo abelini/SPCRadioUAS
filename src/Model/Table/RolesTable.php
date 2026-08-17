@@ -41,13 +41,14 @@ class RolesTable extends Table
 			->setDependent(true);
 	}
 
+	/*
 	#[\Override]
 	public function findAll(SelectQuery $query): SelectQuery
 	{
 		return $query->matching('Asignaciones', function (SelectQuery $q) {
 			return $q->whereNotInList('locutorID', [AsignacionesTable::NO_LOCUTOR_ID]);
 		});
-	}
+	}*/
 
 	/**
 	 * Returns the active rol for a given date, with asignaciones filtered
