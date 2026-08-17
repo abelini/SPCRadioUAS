@@ -2,10 +2,8 @@
 /**
  * @var \App\View\AppView $this
  * @var string|null $domain
- * @var \SPC\Model\DTO\Certificate $certInfo
- * @var bool $configured
+ * @var \SPC\DTO\Certificate $certInfo
  * @var bool $canRunAcme
- * @var string $dnsProvider
  * @var \SPC\Service\SslService $ssl
  * @var array $renewLog
  */
@@ -80,7 +78,7 @@ $this->assign('title', 'Certificado SSL');
             </tr>
             <tr>
                 <th>Expira</th>
-                <td><?= $certInfo->expiry->i18nFormat(IntlDateFormatter::FULL) ?></td>
+                <td><?= $certInfo->expiry?->i18nFormat(IntlDateFormatter::FULL) ?></td>
             </tr>
             <?php if ($certInfo->sans !== []): ?>
             <tr>
@@ -90,7 +88,7 @@ $this->assign('title', 'Certificado SSL');
             <?php endif; ?>
             <tr>
                 <th>Última renovación</th>
-                <td><?= $certInfo->lastRenew->i18nFormat(IntlDateFormatter::FULL) ?></td>
+                <td><?= $certInfo->lastRenew?->i18nFormat(IntlDateFormatter::FULL) ?></td>
             </tr>
         </table>
 
@@ -149,7 +147,7 @@ $this->assign('title', 'Certificado SSL');
             </tr>
             <tr>
                 <th>PFX generado</th>
-                <td><?= $certInfo->pfxAge->i18nFormat(IntlDateFormatter::FULL) ?></td>
+                <td><?= $certInfo->pfxAge?->i18nFormat(IntlDateFormatter::FULL) ?></td>
             </tr>
             <tr>
                 <th>Contraseña</th>

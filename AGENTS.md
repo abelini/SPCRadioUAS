@@ -29,7 +29,6 @@ bin/cake migrations migrate
 bin/cake reset_stream   # reboot MediaCP stream (cron-friendly)
 bin/cake broadcast update  # push NowPlaying metadata → Shoutcast + RDS
 bin/cake ssl_renew <domain> [email] [pfx-destination]  # renew SSL cert via acme.sh (Let's Encrypt) + generate .pfx
-bin/cake cpanel_dns <add|remove> <domain> <challenge>  # manage TXT records via cPanel API (SSL hook)
 ```
 
 CS exceptions: `phpcs.xml` exempts `src/Controller/*` from native return type hints (`SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingNativeTypeHint`).
@@ -60,14 +59,13 @@ PHPStan at **level 8**. Psalm at **error level 2** (both in config).
 - **Production**: MySQL (`Cake\Database\Driver\Mysql`).
 - **Local dev** (`config/app_local.php`): SQLite.
 - **Tests**: Migrations build the test DB automatically (`tests/bootstrap.php` runs `(new Migrator())->run()`). Falls back to SQLite with `DATABASE_TEST_URL` env var.
-- **Sensitive config** stored in `config/app_local.php` under `SensitiveData` key (Gemini, Facebook, MediaCP, Gmail OAuth2, Emby, YouTube) and `SSLGeneration` key (SSL cert renewal). Not in `.env`.
-- **SSL renewal flow** (`--dns dns_cpanel`, RSA 2048):
-  1. `SslService::renew()` writes `~/.acme.sh/dnsapi/dns_cpanel.sh` (hook script).
-  2. acme.sh runs with `--dns dns_cpanel --keylength 2048 --dnssleep 5`.
-  3. The hook calls `bin/cake cpanel_dns add|remove <domain> <value>`, which delegates to `CpanelDnsService`.
-  4. `CpanelDnsService` manages TXT records via cPanel UAPI (`parse_zone` + `mass_edit_zone`).
-  5. After renewal, acme.sh cleans up the TXT record.
-  6. PHP genera PFX via `openssl_pkcs12_export_to_file()` y lo copia a destino.
+- **Sensitive config** stored in `config/app_local.php` under `SensitiveData` key (Gemini, Facebook, MediaCP, Gmail OAuth2, Emby, YouTube) and `SSL` key (SSL cert renewal). Not in `.env`.
+- **SSL renewal flow** (`--dns dns_cf`, RSA 2048, via Cloudflare API):
+  1. `SslService::renew()` sets `CF_Token` env var from `SSL.cloudflare.apiToken`.
+  2. acme.sh runs with `--dns dns_cf --keylength 2048` (plugin `dns_cf` handles the TXT record via Cloudflare API).
+  3. The Cloudflare token needs `Zone → DNS → Edit` permission for the `radiouas.org` zone.
+  4. After renewal, acme.sh cleans up the TXT record.
+  5. PHP genera PFX via `openssl_pkcs12_export_to_file()` y lo copia a destino.
 
 ## Conventions
 

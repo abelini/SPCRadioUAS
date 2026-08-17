@@ -13,27 +13,27 @@ class SslService
 {
     public function getDomain(): string
     {
-        return Configure::read('SSLGeneration.domain');
+        return Configure::read('SSL.domain');
     }
 
     public function getEmail(): string
     {
-        return Configure::read('SSLGeneration.email');
+        return Configure::read('SSL.email');
     }
 
     public function getPfxPassword(): string
     {
-        return Configure::read('SSLGeneration.pfxPassword');
+        return Configure::read('SSL.pfxPassword');
     }
 
     public function getPfxDestination(): string
     {
-        return Configure::read('SSLGeneration.pfxDestination');
+        return Configure::read('SSL.pfxDestination');
     }
 
     public function getAcmeHome(): string
     {
-        return Configure::read('SSLGeneration.acmeHome') ?? (getenv('HOME') ?: '/root') . '/.acme.sh';
+        return Configure::read('SSL.acmeHome') ?? (getenv('HOME') ?: '/root') . '/.acme.sh';
     }
 
     public function isAcmeInstalled(): bool
@@ -123,19 +123,21 @@ class SslService
         $log = [];
 
         // Set CA (Let's Encrypt)
-        $ca = Configure::read('SSLGeneration.ca');
+        $ca = Configure::read('SSL.ca');
         $this->executeCommand([$acmeSh, '--home', $acmeHome, '--set-default-ca', '--server', $ca], $o, $c);
         $log[] = 'CA: ' . $ca;
 
-        // Determine DNS provider
-        $dnsProvider = Configure::read('SSLGeneration.dnsProvider');
+        // Set Cloudflare API token for DNS-01 challenge
+        $cfToken = Configure::read('SSL.cloudflare.apiToken');
+        if ($cfToken !== null) {
+            putenv('CF_Token=' . $cfToken);
+        }
 
         // Issue/renew
         $log[] = "Renovando certificado para: {$domain}...";
-        $log[] = 'Método DNS: ' . $dnsProvider;
+        $log[] = 'Método DNS: cloudflare';
 
-        $this->ensureDnsApiScript($acmeHome);
-        $cmd = [$acmeSh, '--home', $acmeHome, '--issue', '-d', $domain, '--dns', 'dns_cpanel', '--force', '--keylength', '2048', '--dnssleep', '5'];
+        $cmd = [$acmeSh, '--home', $acmeHome, '--issue', '-d', $domain, '--dns', 'dns_cf', '--force', '--keylength', '2048'];
 
         $this->executeCommand($cmd, $output, $exitCode);
         $log = array_merge($log, $output);
@@ -173,30 +175,6 @@ class SslService
         }
 
         return ['success' => true, 'log' => $log, 'error' => null];
-    }
-
-    private function ensureDnsApiScript(string $acmeHome): void
-    {
-        $dnsApiDir = $acmeHome . '/dnsapi';
-        $scriptPath = $dnsApiDir . '/dns_cpanel.sh';
-
-        if (!is_dir($dnsApiDir)) {
-            mkdir($dnsApiDir, 0755, true);
-        }
-
-        $cakeBin = ROOT . DS . 'bin' . DS . 'cake.php';
-        $phpBin = PHP_BINARY;
-
-        $content = sprintf(
-            "#!/bin/bash\n\ndns_cpanel_add() {\n    %s %s cpanel_dns add \"\$1\" -- \"\$2\"\n}\n\ndns_cpanel_rm() {\n    %s %s cpanel_dns remove \"\$1\" -- \"\$2\"\n}\n",
-            escapeshellarg($phpBin),
-            escapeshellarg($cakeBin),
-            escapeshellarg($phpBin),
-            escapeshellarg($cakeBin)
-        );
-
-        file_put_contents($scriptPath, $content);
-        chmod($scriptPath, 0755);
     }
 
     private function executeCommand(array $args, ?array &$output = null, ?int &$exitCode = null): array

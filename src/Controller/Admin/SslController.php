@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace SPC\Controller\Admin;
 
-use Cake\Core\Configure;
 use Cake\Http\Response;
 use SPC\Controller\AppController;
 use SPC\Service\SslService;
@@ -85,11 +84,10 @@ class SslController extends AppController
     {
         $ssl = new SslService();
         $domain = $ssl->getDomain();
-        $certInfo = $ssl->getCertInfo($domain);
+        $certificate = $ssl->getCertInfo($domain);
         $canRunAcme = $ssl->isAcmeInstalled();
-        $dnsProvider = Configure::read('SSLGeneration.dnsProvider');
         $renewLog = [];
 
-        return compact('ssl', 'domain', 'certInfo', 'canRunAcme', 'dnsProvider', 'renewLog');
+        return compact('ssl', 'domain', 'certificate', 'canRunAcme', 'renewLog');
     }
 }

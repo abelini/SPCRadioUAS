@@ -198,7 +198,7 @@ Registro de hits de audiencia del streaming.
 | **Emby** | Fonoteca virtual (álbumes, artistas, playlists) |
 | **YouTube Data API** | Playlists públicas de Radio UAS |
 | **Google SMTP (OAuth2)** | Envío de correos (roles de cabina, notificaciones de usuario) |
-| **cPanel UAPI** | Gestión de registros DNS TXT para validación ACME DNS-01 |
+| **Cloudflare API** | Gestión de registros DNS TXT para validación ACME DNS-01 |
 | **Let's Encrypt** | Autoridad certificadora para renovación SSL vía acme.sh |
 
 ---
@@ -296,24 +296,18 @@ Las variables sensibles se gestionan en `config/app_local.php`:
 
 ### SSL Generation
 
-Configuración para renovación automática de certificados SSL vía acme.sh con DNS-01 (cPanel):
+Configuración para renovación automática de certificados SSL vía acme.sh con DNS-01 (Cloudflare):
 
 ```php
-'SSLGeneration' => [
+'SSL' => [
     'domain'         => 'emby.radiouas.org',     // Dominio a renovar
     'email'          => 'abel@uas.edu.mx',       // Email para CA
     'pfxPassword'    => '...',                   // Password del archivo .pfx
     'pfxDestination' => '/etc/ssl/emby.pfx',     // Ruta destino del .pfx
     'acmeHome'       => '/home/radiouas/.acme.sh',
     'ca'             => 'letsencrypt',            // CA: letsencrypt
-    'dnsProvider'    => 'cpanel',
-    'cpanel' => [
-        'username' => 'radiouas',                // Usuario cPanel
-        'apiToken' => '...',                     // API token de cPanel
-        'zone'     => 'radiouas.org',            // Zona DNS
-        'scheme'   => 'https',
-        'host'     => 'cpanel.radiouas.org',
-        'port'     => 2083,
+    'cloudflare' => [
+        'apiToken' => '...',                     // Token Zone:DNS:Edit para radiouas.org
     ],
 ]
 ```
@@ -383,11 +377,8 @@ Ejemplo de cron para actualización de metadatos (cada minuto):
 ### SSL / Certificados
 
 ```bash
-# Renovar certificado SSL vía acme.sh + cPanel DNS-01
+# Renovar certificado SSL vía acme.sh + Cloudflare DNS-01
 bin/cake ssl_renew <domain> [email] [pfx-destination]
-
-# Gestionar registros DNS TXT para ACME (hook de acme.sh)
-bin/cake cpanel_dns <add|remove> <domain> <challenge>
 ```
 
 ### Migración de datos

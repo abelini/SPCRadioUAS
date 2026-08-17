@@ -15,7 +15,7 @@ class SslRenewCommand extends Command
     {
         $parser->setDescription(
             'Renueva un certificado SSL vía acme.sh (Let\'s Encrypt) y genera .pfx. '
-            . 'Los valores por defecto se leen de Configure::read(\'SSLGeneration.*\') en app_local.php.'
+            . 'Los valores por defecto se leen de Configure::read(\'SSL.*\') en app_local.php.'
         );
 
         $parser->addArgument('domain', [
@@ -38,26 +38,24 @@ class SslRenewCommand extends Command
     {
         $domain = $args->getArgumentAt(0);
         if ($domain === null) {
-            $domain = Configure::read('SSLGeneration.domain');
+            $domain = Configure::read('SSL.domain');
         }
         if ($domain === null) {
-            $io->error('Debes especificar el dominio como primer argumento o configurar SSLGeneration.domain en app_local.php');
+            $io->error('Debes especificar el dominio como primer argumento o configurar SSL.domain en app_local.php');
 
             return static::CODE_ERROR;
         }
 
-        $email = $args->getArgumentAt(1) ?? Configure::read('SSLGeneration.email');
+        $email = $args->getArgumentAt(1) ?? Configure::read('SSL.email');
         if ($email === null) {
             $email = 'admin@' . $domain;
             $io->warning('No se especificó email. Usando: ' . $email);
         }
 
-        $pfxDest = $args->getArgumentAt(2) ?? Configure::read('SSLGeneration.pfxDestination');
+        $pfxDest = $args->getArgumentAt(2) ?? Configure::read('SSL.pfxDestination');
 
-        $acmeHome = Configure::read('SSLGeneration.acmeHome') ?? getenv('HOME') . '/.acme.sh';
-        $webroot = Configure::read('SSLGeneration.webroot') ?? ROOT . DS . 'webroot';
-        $dnsProvider = Configure::read('SSLGeneration.dnsProvider') ?? 'webroot';
-        $ca = Configure::read('SSLGeneration.ca') ?? 'letsencrypt';
+        $acmeHome = Configure::read('SSL.acmeHome') ?? getenv('HOME') . '/.acme.sh';
+        $ca = Configure::read('SSL.ca') ?? 'letsencrypt';
 
         $acmeSh = $acmeHome . '/acme.sh';
 
@@ -75,14 +73,13 @@ class SslRenewCommand extends Command
 
         // 3. Issue / renew certificate
         $io->out("Procesando certificado para: {$domain}");
-        $io->out('Método DNS: ' . $dnsProvider);
 
-        if ($dnsProvider === 'cpanel') {
-            $this->ensureDnsApiScript($acmeHome);
-            $cmd = [$acmeSh, '--home', $acmeHome, '--issue', '-d', $domain, '--dns', 'dns_cpanel', '--force', '--keylength', '2048', '--dnssleep', '5'];
-        } else {
-            $cmd = [$acmeSh, '--issue', '-d', $domain, '--webroot', $webroot, '--force'];
+        $cfToken = Configure::read('SSL.cloudflare.apiToken');
+        if ($cfToken !== null) {
+            putenv('CF_Token=' . $cfToken);
         }
+
+        $cmd = [$acmeSh, '--home', $acmeHome, '--issue', '-d', $domain, '--dns', 'dns_cf', '--force', '--keylength', '2048'];
 
         $this->runCommand($cmd, $io, $exitCode);
         if ($exitCode !== 0) {
@@ -105,31 +102,21 @@ class SslRenewCommand extends Command
 
         // 5. Generate PFX
         $pfxFile = $certDir . '/' . $domain . '.pfx';
-        $pfxPass = Configure::read('SSLGeneration.pfxPassword') ?? '';
+        $pfxPass = Configure::read('SSL.pfxPassword') ?? '';
         $io->out('Generando PFX...');
 
-        if ($pfxPass !== '') {
-            $opensslCmd = sprintf(
-                'openssl pkcs12 -export -out %s -inkey %s -in %s -certfile %s -passout pass:%s',
-                escapeshellarg($pfxFile),
-                escapeshellarg($keyFile),
-                escapeshellarg($certFile),
-                escapeshellarg($fullchainFile),
-                escapeshellarg($pfxPass)
-            );
-        } else {
-            $opensslCmd = sprintf(
-                'openssl pkcs12 -export -out %s -inkey %s -in %s -certfile %s -passout pass:',
-                escapeshellarg($pfxFile),
-                escapeshellarg($keyFile),
-                escapeshellarg($certFile),
-                escapeshellarg($fullchainFile)
-            );
+        $cert = openssl_x509_read((string)file_get_contents($certFile));
+        $key = openssl_pkey_get_private((string)file_get_contents($keyFile));
+        $caCert = openssl_x509_read((string)file_get_contents($fullchainFile));
+
+        if ($cert === false || $key === false || $caCert === false) {
+            $io->error('Error al leer los archivos del certificado');
+
+            return static::CODE_ERROR;
         }
 
-        exec($opensslCmd . ' 2>&1', $output, $exitCode);
-        if ($exitCode !== 0) {
-            $io->error('Error al generar PFX: ' . implode("\n", $output));
+        if (!openssl_pkcs12_export_to_file($cert, $pfxFile, $key, $pfxPass, ['extracerts' => [$caCert]])) {
+            $io->error('Error al generar PFX: ' . openssl_error_string());
 
             return static::CODE_ERROR;
         }
@@ -167,30 +154,6 @@ class SslRenewCommand extends Command
     private function isInstalled(string $acmeSh): bool
     {
         return file_exists($acmeSh) && is_executable($acmeSh);
-    }
-
-    private function ensureDnsApiScript(string $acmeHome): void
-    {
-        $dnsApiDir = $acmeHome . '/dnsapi';
-        $scriptPath = $dnsApiDir . '/dns_cpanel.sh';
-
-        if (!is_dir($dnsApiDir)) {
-            mkdir($dnsApiDir, 0755, true);
-        }
-
-        $cakeBin = ROOT . DS . 'bin' . DS . 'cake.php';
-        $phpBin = PHP_BINARY;
-
-        $content = sprintf(
-            "#!/bin/bash\n\ndns_cpanel_add() {\n    %s %s cpanel_dns add \"\$1\" -- \"\$2\"\n}\n\ndns_cpanel_rm() {\n    %s %s cpanel_dns remove \"\$1\" -- \"\$2\"\n}\n",
-            escapeshellarg($phpBin),
-            escapeshellarg($cakeBin),
-            escapeshellarg($phpBin),
-            escapeshellarg($cakeBin)
-        );
-
-        file_put_contents($scriptPath, $content);
-        chmod($scriptPath, 0755);
     }
 
     private function runCommand(array $args, ConsoleIo $io, ?int &$exitCode = null): array
