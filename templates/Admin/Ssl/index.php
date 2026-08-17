@@ -2,7 +2,7 @@
 /**
  * @var \App\View\AppView $this
  * @var string|null $domain
- * @var \SPC\DTO\Certificate $certInfo
+ * @var \SPC\DTO\Certificate $certificate
  * @var bool $canRunAcme
  * @var \SPC\Service\SslService $ssl
  * @var array $renewLog
@@ -26,7 +26,7 @@ $this->assign('title', 'Certificado SSL');
     <?php endif; ?>
 
         <?php
-        $daysLeft = $certInfo->daysLeft;
+        $daysLeft = $certificate->daysLeft;
         if ($daysLeft > 30) {
             $dotClass = 'status-dot-success';
             $statusText = 'Vigente';
@@ -70,25 +70,25 @@ $this->assign('title', 'Certificado SSL');
             </tr>
             <tr>
                 <th>Subject</th>
-                <td><?= $certInfo->subject ?></td>
+                <td><?= $certificate->subject ?></td>
             </tr>
             <tr>
                 <th>Issuer</th>
-                <td><?= $certInfo->issuer ?></td>
+                <td><?= $certificate->issuer ?></td>
             </tr>
             <tr>
                 <th>Expira</th>
-                <td><?= $certInfo->expiry?->i18nFormat(IntlDateFormatter::FULL) ?></td>
+                <td><?= $certificate->expiry?->i18nFormat(IntlDateFormatter::FULL) ?></td>
             </tr>
-            <?php if ($certInfo->sans !== []): ?>
+            <?php if ($certificate->sans !== []): ?>
             <tr>
                 <th>SANs</th>
-                <td><?= implode(', ', $certInfo->sans) ?></td>
+                <td><?= implode(', ', $certificate->sans) ?></td>
             </tr>
             <?php endif; ?>
             <tr>
                 <th>Última renovación</th>
-                <td><?= $certInfo->lastRenew?->i18nFormat(IntlDateFormatter::FULL) ?></td>
+                <td><?= $certificate->lastRenew?->i18nFormat(IntlDateFormatter::FULL) ?></td>
             </tr>
         </table>
 
@@ -99,7 +99,7 @@ $this->assign('title', 'Certificado SSL');
             <tr>
                 <th>Certificado</th>
                 <td>
-                <?= $certInfo->certFile ?>
+                <?= $certificate->certFile ?>
                 <?= $this->Html->link(
                     '<i class="fa-solid fa-download"></i>',
                     ['action' => 'download', '?' => ['type' => 'cert']],
@@ -110,7 +110,7 @@ $this->assign('title', 'Certificado SSL');
             <tr>
                 <th>Fullchain</th>
                 <td>
-                    <?= $certInfo->fullchainFile ?>
+                    <?= $certificate->fullchainFile ?>
                     <?= $this->Html->link(
                         '<i class="fa-solid fa-download"></i>',
                         ['action' => 'download', '?' => ['type' => 'fullchain']],
@@ -121,7 +121,7 @@ $this->assign('title', 'Certificado SSL');
             <tr>
                 <th>Llave privada</th>
                 <td>
-                    <?= $certInfo->keyFile ?>
+                    <?= $certificate->keyFile ?>
                     <?= $this->Html->link(
                         '<i class="fa-solid fa-download"></i>',
                         ['action' => 'download', '?' => ['type' => 'key']],
@@ -132,8 +132,8 @@ $this->assign('title', 'Certificado SSL');
             <tr>
                 <th>PFX</th>
                 <td>
-                    <?= $certInfo->pfxFile ?>
-                    <?php if ($certInfo->pfxExists): ?>
+                    <?= $certificate->pfxFile ?>
+                    <?php if ($certificate->pfxExists): ?>
                         <span class="status-badge status-completed">Generado</span>
                         <?= $this->Html->link(
                             '<i class="fa-solid fa-download"></i>',
@@ -147,7 +147,7 @@ $this->assign('title', 'Certificado SSL');
             </tr>
             <tr>
                 <th>PFX generado</th>
-                <td><?= $certInfo->pfxAge?->i18nFormat(IntlDateFormatter::FULL) ?></td>
+                <td><?= $certificate->pfxAge?->i18nFormat(IntlDateFormatter::FULL) ?></td>
             </tr>
             <tr>
                 <th>Contraseña</th>
