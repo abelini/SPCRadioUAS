@@ -33,7 +33,7 @@ class SslService
 
     public function getAcmeHome(): string
     {
-        return Configure::read('SSL.acmeHome') ?? (getenv('HOME') ?: '/root') . '/.acme.sh';
+        return Configure::read('SSL.acmeHome');
     }
 
     public function isAcmeInstalled(): bool
@@ -116,7 +116,7 @@ class SslService
     {
         $acmeHome = $this->getAcmeHome();
         $acmeSh = $acmeHome . '/acme.sh';
-        $email ??= $this->getEmail();
+        $email = $this->getEmail();
         $pfxPass = $this->getPfxPassword();
         $pfxDest = $this->getPfxDestination();
 
