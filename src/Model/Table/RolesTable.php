@@ -41,15 +41,6 @@ class RolesTable extends Table
 			->setDependent(true);
 	}
 
-	/*
-	#[\Override]
-	public function findAll(SelectQuery $query): SelectQuery
-	{
-		return $query->matching('Asignaciones', function (SelectQuery $q) {
-			return $q->whereNotInList('locutorID', [AsignacionesTable::NO_LOCUTOR_ID]);
-		});
-	}*/
-
 	/**
 	 * Returns the active rol for a given date, with asignaciones filtered
 	 * to that specific day, including locutores, horarios, and the day's programas.
@@ -62,8 +53,7 @@ class RolesTable extends Table
 			->where(['fechaInicio' => $date->startOfWeek()])
 			->contain('Asignaciones', function (SelectQuery $q) use ($date) {
 				return $q
-						->where(['diaID' => $date->dayOfWeek])->orderByAsc('horaInicio')
-						->whereNotInListOrNull('locutorID', [AsignacionesTable::NO_LOCUTOR_ID]);
+						->where(['diaID' => $date->dayOfWeek])->orderByAsc('horaInicio');
 			})
 			->contain('Asignaciones.Locutores', function (SelectQuery $q) {
 				return $q->select(['ID', 'name', 'photo']);

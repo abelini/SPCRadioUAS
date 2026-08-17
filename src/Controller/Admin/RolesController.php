@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace SPC\Controller\Admin;
 
 use SPC\Controller\AppController;
-use SPC\Model\Table\AsignacionesTable;
+use SPC\Model\Entity\Asignacion;
 use Cake\Collection\Collection;
 use Cake\Http\Response;
 use Cake\I18n\DateTime;
@@ -39,7 +39,6 @@ class RolesController extends AppController
 		$rol = $this->Roles->get($id, contain: [
 			'Asignaciones' => function (Query $query) {
 				return $query
-					->whereNotInList('locutorID', [AsignacionesTable::NO_LOCUTOR_ID])
 					->orderByAsc('horaInicio')
 					->contain([
 						'Locutores' => function (Query $query) {
@@ -71,9 +70,18 @@ class RolesController extends AppController
 			$previousRol = $this->Roles->find()->where(['fechaInicio' => $requestedStartDate])->first();
 			if ($previousRol === null) {
 				$rol = $this->Roles->patchEntity($rol, $this->request->getData(), ['associated' => ['Asignaciones']]);
+
+				if ($rol->has('asignaciones')) {
+					$rol->asignaciones = array_values(array_filter(
+						(array) $rol->asignaciones,
+						fn (Asignacion $asignacion) => !empty($asignacion->locutorID)
+					));
+				}
+
 				if ($this->Roles->save($rol, ['associated' => ['Asignaciones']])) {
 					$this->Flash->success('Rol de cabina guardado');
-					$this->getMailer('Rol')->new($rol->ID);
+					
+					//$this->getMailer('Rol')->new($rol->ID);
 					return $this->redirect(['action' => 'index']);
 				}
 			} else {
