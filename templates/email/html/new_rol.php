@@ -1,5 +1,7 @@
-<?php $outterTR = 1;
-$innerTR = 1; ?>
+<?php
+$outterTR = 1;
+$innerTR = 1;
+?>
 
 <div style="padding:0.01em 16px;color:#000!important;background-color:#efefef !important;">
 	<?= $this->Html->image($this->Url->image('LogoRolCabinaPDF.png', ['fullBase' => true]), ['style' => 'display:block;float:right;max-width:96px;']) ?>
@@ -20,15 +22,15 @@ $innerTR = 1; ?>
 
 	<table style="border-collapse:collapse;border-spacing:0;width:100%;display:table;border:1px solid #ccc;">
 
-		<?php foreach ($asignaciones as $dateKey => $asignaciones): ?>
+		<?php foreach ($asignaciones as $day => $a): ?>
+			<?php $date = $rol->fechaInicio->addDays(((int) $day) - 1); ?>
 			<tr style="background:#<?= ($outterTR++ % 2 == 0) ? 'eee' : 'fff'; ?>">
 				<td
 					style="width:auto;min-width:104px;max-width:216px;letter-spacing:2px;text-transform:uppercase;position:relative;padding:12px;text-align:center;">
 					<span
 						style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);-ms-transform:translate(-50%,-50%)">
-						<?php $dateObj = new \Cake\I18n\Date($dateKey); ?>
-						<?= $dateObj->i18nFormat("EEEE") ?><br>
-						<?= $dateObj->format('j') ?>
+						<?= $date->i18nFormat("EEEE") ?><br>
+						<?= $date->format('j') ?>
 					</span>
 				</td>
 				<td style="padding:0 !important;">
@@ -38,7 +40,7 @@ $innerTR = 1; ?>
 							<th style="padding:8px;width:50%">Operador</th>
 							<th style="padding:8px;width:50%">Turno</th>
 						</tr>
-						<?php foreach ($asignaciones as $asignacion): ?>
+						<?php foreach ($a as $asignacion): ?>
 							<tr style="background:#<?= ($innerTR++ % 2 == 0) ? 'fff' : 'eee'; ?>">
 								<td style="padding:8px;">
 									<?= $asignacion->locutor->name ?>
@@ -53,6 +55,7 @@ $innerTR = 1; ?>
 				</td>
 				<?php $innerTR = 1; ?>
 			</tr>
+			<?php $date = null; ?>
 		<?php endforeach; ?>
 	</table>
 </div>

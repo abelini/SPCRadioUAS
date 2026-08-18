@@ -7,6 +7,9 @@ use Cake\Mailer\Mailer;
 
 class GoogleMailer extends Mailer
 {
+	private const array TEST_TO = [
+		'abelini@gmail.com' => 'Ing. Abel Bottello'
+	];
 
 	protected const array FROM = [
 		'radio@uas.edu.mx' => 'Dirección de Radio UAS'
@@ -21,6 +24,12 @@ class GoogleMailer extends Mailer
 	protected const array GENERAL_PROFILE = [
 		'from' => self::FROM,
 		'cc' => self::CC,
+		'emailFormat' => 'html',
+	];
+
+	protected const array TEST_PROFILE = [
+		'to' => self::TEST_TO,
+		'from' => self::FROM,
 		'emailFormat' => 'html',
 	];
 

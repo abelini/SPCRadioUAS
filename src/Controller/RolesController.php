@@ -48,6 +48,7 @@ class RolesController extends AppController
 		$this->viewBuilder()->setOption(
 			'pdfConfig',
 			[
+				'engine' => 'CakePdf.WeasyPrint',
 				'download' => true,
 				'orientation' => 'portrait',
 				'pageSize' => 'A4',//'Legal',

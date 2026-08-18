@@ -17,10 +17,11 @@ class RolMailer extends GoogleMailer
 
 	public function __construct()
 	{
-		parent::__construct(self::GENERAL_PROFILE);
+		parent::__construct(self::TEST_PROFILE);
 		$this->setTransport(new GoogleTransport());
 	}
-	public function new(int $rolID): GoogleMailer
+
+	public function new(Rol $rol): GoogleMailer
 	{
 		$rolesRepository = TableRegistry::getTableLocator()->get('Roles');
 		$locutoresRepository = TableRegistry::getTableLocator()->get('Locutores');
@@ -29,18 +30,12 @@ class RolMailer extends GoogleMailer
 			->all()
 			->toArray();
 
-		$rol = $rolesRepository->get($rolID, contain: [
-			'Asignaciones' => function (SelectQuery $query) {
-				return $query->orderByAsc('horaInicio')
-					->contain([
-						'Locutores' => function (SelectQuery $query) {
-							return $query->select(['ID', 'name']);
-						},
-						'Horarios',
-						'Dias'
-					]);
+		$rol = $rolesRepository->loadInto($rol, [
+			'Asignaciones.Locutores' => function (SelectQuery $query) {
+				return $query->select(['ID', 'name']);
 			},
-			'Turnos'
+			'Asignaciones.Horarios',
+			'Asignaciones.Dias'
 		]);
 
 		$asignaciones = (new Collection($rol->asignaciones))->groupBy('diaID')->toArray();
@@ -53,14 +48,14 @@ class RolMailer extends GoogleMailer
 					'controller' => 'Roles',
 					'action' => 'view',
 					'?' => [
-						'rol' => $rolID,
+						'rol' => $rol->ID,
 						'action' => 'download',
 					],
 				],
 				['fullBase' => true, 'escape' => false]
 			)
 		);
-
+		
 		$this
 			->setTo($locutores)
 			->setSubject('Rol de cabina [' . $rol->fechaInicio->format('d/m/y') . '] a [' . $rol->fechaFin->format('d/m/y') . ']')
@@ -71,13 +66,13 @@ class RolMailer extends GoogleMailer
 			->viewBuilder()
 			->addHelpers(['Html', 'Url'])
 			->setTemplate('new_rol');
-
+		/*
 		$this->setAttachments([
-			'RolCabina-' . $rolID . '.pdf' => [
+			'RolCabina-' . $rol->ID . '.pdf' => [
 				'data' => $pdfData,
 				'mimetype' => 'application/pdf',
 			]
-		]);
+		]);*/
 
 		$this->deliver();
 

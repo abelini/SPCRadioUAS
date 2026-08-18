@@ -78,17 +78,16 @@ class RolesController extends AppController
 					));
 				}
 
-				if ($this->Roles->save($rol, ['associated' => ['Asignaciones']])) {
+				if ($rol = $this->Roles->save($rol, ['associated' => ['Asignaciones']])) {
 					$this->Flash->success('Rol de cabina guardado');
-					
-					//$this->getMailer('Rol')->new($rol->ID);
+					$this->getMailer('Rol')->new($rol);
 					return $this->redirect(['action' => 'index']);
 				}
 			} else {
 				$this->Flash->error('Ya existe un rol para esa semana. Primero elimína el rol #' . $previousRol->ID . ' y después vuelve a registrar uno nuevo.');
 				return $this->redirect($this->referer());
 			}
-			$this->Flash->error('The rol could not be saved. Please, try again.');
+			$this->Flash->error('Error al guardar el rol.');
 		}
 		$turnos = $this->Roles->Turnos->find('list')->all();
 		$this->set(compact('rol', 'turnos'));
@@ -102,11 +101,11 @@ class RolesController extends AppController
 		if ($this->request->is(['patch', 'post', 'put'])) {
 			$role = $this->Roles->patchEntity($role, $this->request->getData());
 			if ($this->Roles->save($role)) {
-				$this->Flash->success(__('The role has been saved.'));
+				$this->Flash->success('Rol de cabina actualizado correctamente.');
 
 				return $this->redirect(['action' => 'index']);
 			}
-			$this->Flash->error(__('The role could not be saved. Please, try again.'));
+			$this->Flash->error('Error al actualizar el rol.');
 		}
 		$turnos = $this->Roles->Turnos->find('list', limit: 200)->all();
 		$this->set(compact('role', 'turnos'));
@@ -117,9 +116,9 @@ class RolesController extends AppController
 		$this->request->allowMethod(['post', 'delete']);
 		$role = $this->Roles->get($id);
 		if ($this->Roles->delete($role)) {
-			$this->Flash->success(__('The role has been deleted.'));
+			$this->Flash->success('Rol eliminado correctamente.');
 		} else {
-			$this->Flash->error(__('The role could not be deleted. Please, try again.'));
+			$this->Flash->error('Error al eliminar el rol.');
 		}
 
 		return $this->redirect(['action' => 'index']);

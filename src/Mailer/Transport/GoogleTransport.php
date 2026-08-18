@@ -7,11 +7,15 @@ use Cake\Mailer\Message;
 use Cake\Core\Configure;
 use Cake\Log\Log;
 use InvalidArgumentException;
+use Exception;
+
 
 class GoogleTransport extends SmtpTransport
 {
 	private const SMTP_HOST = 'smtp.gmail.com';
+
 	private const SMTP_PORT = 587;
+	
 	private const SMTP_TIMEOUT = 30;
 
 	private array $googleSmtpConfig = [
@@ -56,7 +60,7 @@ class GoogleTransport extends SmtpTransport
 	{
 		try {
 			return parent::send($message);
-		} catch (\Exception $exception) {
+		} catch (Exception $exception) {
 			Log::error('Error enviando email via Google: ' . $exception->getMessage(), [
 				'exception' => $exception,
 			]);
