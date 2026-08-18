@@ -12,13 +12,13 @@
     <style>
         @page {
             margin: 1cm 1cm;
-            size: letter;
+            size: A4;
         }
         body {
             margin: 0;
             padding: 0;
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-            font-size: 12pt;
+            font-size: 11pt;
             font-weight: 400;
         }
         .w3-container {
