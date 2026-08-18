@@ -4,17 +4,98 @@
     <?= $this->Html->charset() ?>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= $this->fetch('title') ?></title>
-    	<?= $this->Html->meta('favicon.png', 'https://radio.uas.edu.mx/wp-content/uploads/2020/06/cropped-RADIOUAS-LOGO-IOS-32x32.png', ['type' => 'icon']) ?>
-
-    <?= $this->Html->css(['normalize.min', 'fonts', 'cake'], ['fullBase' => true]) ?>
+    <?= $this->Html->meta('favicon.png', 'https://radio.uas.edu.mx/wp-content/uploads/2020/06/cropped-RADIOUAS-LOGO-IOS-32x32.png', ['type' => 'icon']) ?>
 
     <?= $this->fetch('meta') ?>
     <?= $this->fetch('css') ?>
     <?= $this->fetch('script') ?>
-    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-    	<style stype="text/css">
-		@import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
-	</style>
+    <style>
+        @page {
+            margin: 1cm 1cm;
+            size: letter;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 12pt;
+            font-weight: 400;
+        }
+        .w3-container {
+            padding: 0.01em 16px;
+        }
+        .w3-responsive {
+            display: block;
+            overflow-x: auto;
+        }
+        .w3-row:before,
+        .w3-row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+        .w3-col {
+            float: left;
+            width: 100%;
+        }
+        .w3-white {
+            color: #000 !important;
+            background-color: #fff !important;
+        }
+        .w3-border-left {
+            border-left: 1px solid #ccc !important;
+        }
+        .w3-border-top {
+            border-top: 1px solid #ccc !important;
+        }
+        .w3-center {
+            text-align: center !important;
+        }
+        .w3-text-blue-gray {
+            color: #607d8b !important;
+        }
+        .w3-padding {
+            padding: 8px 16px !important;
+        }
+        .w3-padding-16 {
+            padding-top: 16px !important;
+            padding-bottom: 16px !important;
+        }
+        .w3-table,
+        .w3-table-all {
+            border-collapse: collapse;
+            border-spacing: 0;
+            width: 100%;
+            display: table;
+        }
+        .w3-table-all {
+            border: 1px solid #ccc;
+        }
+        .w3-table-all tr {
+            border-bottom: 1px solid #ddd;
+        }
+        .w3-table-all tr:nth-child(odd) {
+            background-color: #fff;
+        }
+        .w3-table-all tr:nth-child(even) {
+            background-color: #f1f1f1;
+        }
+        .w3-table td,
+        .w3-table th,
+        .w3-table-all td,
+        .w3-table-all th {
+            padding: 8px 8px;
+            display: table-cell;
+            text-align: left;
+            vertical-align: top;
+        }
+        .w3-table th:first-child,
+        .w3-table td:first-child,
+        .w3-table-all th:first-child,
+        .w3-table-all td:first-child {
+            padding-left: 16px;
+        }
+    </style>
 </head>
 <body>
 	<nav class="top-nav">
@@ -28,14 +109,9 @@
         </div>
 	</main>
 
-	<script src="https://kit.fontawesome.com/18176e4df9.js" crossorigin="anonymous"></script>
 	<style>
 		.top-nav {padding:1rem;display:inherit;} .logo{margin:auto;max-width:20%;min-width:15%;display:block;}
 		.main {max-width:1200px;margin:0 auto;} footer {padding:32px;}
-		@media only screen and (max-width: 600px) {
-			.w3-container {padding:0;}
-			.top-nav {display:none;}
-		}
 	</style>
 </body>
 </html>

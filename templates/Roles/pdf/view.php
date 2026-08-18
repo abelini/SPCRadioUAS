@@ -1,9 +1,9 @@
 <div class="asignaciones w3-responsive">
 	<div style="background-color:#1a2b4c !important;padding:8px 0 !important;text-align:center;">
-		<h1 style="color:#0094CD !important;font-size:24px;font-family:'Montserrat';">ROL DE CABINA</h1>
+		<h1 style="color:#0094CD !important;font-size:18pt;">ROL DE CABINA</h1>
 	</div>
 	<div style="text-align:center;text-transform:uppercase;background-color:#0094CD !important;padding:1px;">
-		<h2 style="font-size:20px;color:#fff;font-family:'Montserrat';">
+		<h2 style="font-size:15pt;color:#fff;">
 			<?= $rol->fechaInicio->i18nFormat("EEEE d 'de' MMMM") ?> a
 			<?= $rol->fechaFin->i18nFormat("EEEE d 'de' MMMM 'de' YYYY") ?>
 		</h2>
@@ -22,7 +22,7 @@
 				<table class="w3-table w3-table-all by-time">
 					<?php foreach ($asignaciones as $asignacion): ?>
 						<tr>
-							<td><i class="fa-solid fa-user"></i>
+							<td>
 								<?= $asignacion->locutor->name ?>
 							</td>
 							<td>
@@ -39,7 +39,7 @@
 		</div>
 	<?php endforeach; ?>
 	<div class="w3-padding w3-center"
-		style="background:#c49e0d;color:#fff;font-family:'Montserrat';text-transform:uppercase;">
+		style="background:#c49e0d;color:#fff;text-transform:uppercase;">
 		Dirección de Radio Universidad Autónoma de Sinaloa &copy;
 		<?= $rol->fechaInicio->year ?>
 	</div>
@@ -55,7 +55,7 @@
 
 	.day {
 		letter-spacing: 2px;
-		font-size: 18px;
+		font-size: 13.5pt;
 		text-transform: uppercase;
 		width: 180px;
 	}
