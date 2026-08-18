@@ -18,7 +18,7 @@
             margin: 0;
             padding: 0;
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-            font-size: 11pt;
+            font-size: 10pt;
             font-weight: 400;
         }
         .w3-container {

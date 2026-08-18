@@ -1,9 +1,9 @@
 <div class="asignaciones w3-responsive">
 	<div style="background-color:#1a2b4c !important;padding:8px 0 !important;text-align:center;">
-		<h1 style="color:#0094CD !important;font-size:16pt;">ROL DE CABINA</h1>
+		<h1 style="color:#0094CD !important;font-size:15pt;">ROL DE CABINA</h1>
 	</div>
 	<div style="text-align:center;text-transform:uppercase;background-color:#0094CD !important;padding:1px;">
-		<h2 style="font-size:13pt;color:#fff;">
+		<h2 style="font-size:12pt;color:#fff;">
 			<?= $rol->fechaInicio->i18nFormat("EEEE d 'de' MMMM") ?> a
 			<?= $rol->fechaFin->i18nFormat("EEEE d 'de' MMMM 'de' YYYY") ?>
 		</h2>
@@ -55,7 +55,7 @@
 
 	.day {
 		letter-spacing: 2px;
-		font-size: 12pt;
+		font-size: 11pt;
 		text-transform: uppercase;
 		width: 180px;
 	}
