@@ -197,8 +197,10 @@ ServerRequest::addDetector('tablet', function ($request) {
 
 Configure::write('CakePdf', [
 	'engine' => [
-		'className' => 'CakePdf.WkHtmlToPdf',
+		'className' => 'CakePdf.WeasyPrint',
 	],
+    'download' => true,
+    'orientation' => 'portrait',
 ]);
 
 

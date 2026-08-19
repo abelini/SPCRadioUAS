@@ -34,6 +34,9 @@ $cumplimiento = $totalRegistros > 0 ? (($totalRegistros - count($ocurrences['X']
 
 	<div class="col-lg-9">
 		<p class="bar-label">Cumplimiento general (V + G + S)</p>
-		<div class="bar <?= $barColor($cumplimiento) ?>"><?= number_format($cumplimiento, 1, '.', '') ?>%</div>
+		<div class="bar-track">
+			<div class="bar-fill <?= $barColor($cumplimiento) ?>" style="width:<?= $cumplimiento ?>%;"></div>
+			<span class="bar-center"><?= number_format($cumplimiento, 1, '.', '') ?>%</span>
+		</div>
 	</div>
 </div>

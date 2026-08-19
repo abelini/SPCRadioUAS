@@ -76,9 +76,6 @@ class ReportesCabinasController extends AppController
 	public function downloadReport(): Response
 	{
 		$this->viewBuilder()->setOption('pdfConfig', [
-				'engine' => 'CakePdf.WeasyPrint',
-				'download' => true,
-				'orientation' => 'portrait',
 				'pageSize' => 'Letter',
 				'filename' => 'Reporte-' . $this->request->getQuery('t') . '-' . $this->request->getQuery('m'),
 				'margin' => [

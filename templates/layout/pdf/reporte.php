@@ -123,6 +123,15 @@
         .col-lg-3 { width: 25%; }
         .col-lg-9 { width: 75%; }
 
+        /* Tarjeta de programa (4 por fila) */
+        .program-card {
+            flex: 0 0 25%;
+            max-width: 25%;
+            box-sizing: border-box;
+            padding: var(--spacing-8);
+            border-bottom: 1px solid var(--color-subtle-gray);
+        }
+
         /* Enlaces remotos */
         .cr-list {
             list-style: none;
@@ -134,23 +143,23 @@
         .cr-list li {
             flex: 0 0 50%;
             box-sizing: border-box;
-            display: flex;
-            align-items: baseline;
-            gap: var(--spacing-12);
-            padding: 6px 12px;
+            padding: 8px 12px;
             border-bottom: 1px solid #ccc;
-            overflow-wrap: anywhere;
         }
         .cr-list li .cr-name {
-            flex: 1;
+            display: block;
             color: var(--color-ink);
             font-weight: var(--font-weight-medium);
             text-transform: uppercase;
-            font-size: 10pt;
+            font-size: 9pt;
+            line-height: 1.35;
+            overflow-wrap: anywhere;
         }
         .cr-list li .cr-date {
+            display: block;
             color: var(--color-muted-gray);
             font-size: 9pt;
+            margin-top: 2px;
             white-space: nowrap;
         }
 
@@ -187,6 +196,61 @@
             box-sizing: border-box;
             padding: 0 6px;
             margin: var(--spacing-4) auto 0;
+        }
+
+        /* Barra de cumplimiento (pista gris + tramo pintado + número centrado) */
+        .bar-track {
+            position: relative;
+            width: 100%;
+            height: 20px;
+            background: var(--color-faded-silver);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .bar-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            border-radius: 4px;
+        }
+        .bar-center {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            line-height: 20px;
+            text-align: center;
+            color: var(--color-ink);
+            font-size: 9pt;
+            font-weight: 600;
+        }
+        .mini-track {
+            position: relative;
+            width: 128px;
+            height: 14px;
+            background: var(--color-faded-silver);
+            border-radius: 3px;
+            overflow: hidden;
+            margin: var(--spacing-4) auto 0;
+        }
+        .mini-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            border-radius: 3px;
+        }
+        .mini-center {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            line-height: 14px;
+            text-align: center;
+            color: var(--color-ink);
+            font-size: 7.5pt;
+            font-weight: 600;
         }
     </style>
 </head>

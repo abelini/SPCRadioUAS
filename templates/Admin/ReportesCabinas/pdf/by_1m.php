@@ -18,8 +18,10 @@ $cumplimiento = $totalRegistros > 0 ? (($totalRegistros - count($RPByStatus['X']
 $mediaEnlaces = $enlacesRemotos > 0 ? round($enlacesRemotos / $reportStart->daysInMonth, 2) : 0;
 ?>
 <div class="page-header">
-	<h4> Reporte general de <?= $reportStart->i18nFormat("MMMM 'de' yyyy") ?></h4>
+	<h4>Reporte general de <?= $reportStart->i18nFormat("MMMM 'de' yyyy") ?></h4>
 </div>
+
+<h5 style="font-weight:700; margin: var(--spacing-20) 0 var(--spacing-10);">Información general</h5>
 
 <div class="row g-3">
 	<div class="col-12">
@@ -31,13 +33,14 @@ $mediaEnlaces = $enlacesRemotos > 0 ? round($enlacesRemotos / $reportStart->days
 	
 	<div class="col-12">
 		<p class="bar-label">Cumplimiento general (V + G + S)</p>
-		<div class="bar <?= $barColor($cumplimiento) ?>"><?= number_format($cumplimiento, 1, '.', '') ?>%</div>
+		<div class="bar-track">
+			<div class="bar-fill <?= $barColor($cumplimiento) ?>" style="width:<?= $cumplimiento ?>%;"></div>
+			<span class="bar-center"><?= number_format($cumplimiento, 1, '.', '') ?>%</span>
+		</div>
 	</div>
 </div>
 
-<div class="page-subheader">
-		<h4> Informe de enlaces remotos en el período</h4>
-	</div>
+<h5 style="font-weight:700; margin: var(--spacing-20) 0 var(--spacing-10);">Informe de enlaces remotos en el período</h5>
 
 <ul class="cr-list">
 	<?php foreach($crs as $cr) : ?>
@@ -48,23 +51,24 @@ $mediaEnlaces = $enlacesRemotos > 0 ? round($enlacesRemotos / $reportStart->days
 	<?php endforeach; ?>
 </ul>
 
-<div class="page-subheader">
-		<h4> Reportes individuales de cumplimiento</h4>
-	</div>
+<h5 style="font-weight:700; margin: var(--spacing-20) 0 var(--spacing-10);">Reportes individuales de cumplimiento</h5>
 
-<div class="row g-3">
+<div class="row">
 	<?php foreach($programas as $programa) : ?>
 		<?php
 		$p = $programa['reportes'];
 		$pTotal = count($p['V']) + count($p['G']) + count($p['S']) + count($p['X']);
 		$pCumplimiento = $pTotal > 0 ? ((count($p['V']) + count($p['G']) + count($p['S'])) / $pTotal) * 100 : 0;
 		?>
-		<div class="col-12 col-md-6 col-lg-3" style="border-bottom: 1px solid var(--color-subtle-gray); padding: var(--spacing-8);">
+		<div class="program-card">
 			<p style="text-align: center; clear: both; margin: var(--spacing-4) 0;">
 				<?= $programa['name'] ?><br/>
 				<span style="font-weight: bold;"><?= $this->Number->toPercentage($programa['chart']['Cumplimiento'], 1, ['multiply' => true]) ?></span>
 			</p>
-			<div class="mini-bar <?= $barColor($pCumplimiento) ?>" style="width:128px;"><?= number_format($pCumplimiento, 1, '.', '') ?>%</div>
+			<div class="mini-track">
+				<div class="mini-fill <?= $barColor($pCumplimiento) ?>" style="width:<?= $pCumplimiento ?>%;"></div>
+				<span class="mini-center"><?= number_format($pCumplimiento, 1, '.', '') ?>%</span>
+			</div>
 		</div>
 	<?php endforeach; ?>
 </div>

@@ -1,13 +1,30 @@
 <?php
+$barColor = function (float $pct): string {
+	if ($pct >= 90) {
+		return 'bar-green';
+	}
+	if ($pct >= 80) {
+		return 'bar-yellow';
+	}
+	if ($pct >= 70) {
+		return 'bar-orange';
+	}
+	return 'bar-red';
+};
+
 $totalRegistros = $reportesProgramas->count();
-$diasPeriodo = $reportStart->diffInDays($reportEnd) + 1;
 $enlacesRemotos = $reportesCR->sumOf('controles');
-$mediaEnlaces = $enlacesRemotos > 0 ? round($enlacesRemotos / $diasPeriodo, 2) : 0;
+$diasPeriodo = $reportStart->diffInDays($reportEnd) + 1;
 $cumplimiento = $totalRegistros > 0 ? (($totalRegistros - count($RPByStatus['X'])) / $totalRegistros) * 100 : 0;
+$mediaEnlaces = $enlacesRemotos > 0 ? round($enlacesRemotos / $diasPeriodo, 2) : 0;
+$statusBarColors = ['V' => 'bar-green', 'G' => 'bar-orange', 'S' => 'bar-blue', 'X' => 'bar-red'];
 ?>
-<div style="background-color: var(--color-galaxy-blue); padding: var(--spacing-16);" class="report-title">
-	<h4 style="text-align: left; color: white;"> Reporte general del período de <?= $reportStart->i18nFormat("d 'de' MMMM yyyy") ?> a <?= $reportEnd->i18nFormat("d 'de' MMMM yyyy") ?></h4>
+
+<div class="page-header">
+	<h4>Reporte general del período de <?= $reportStart->i18nFormat("d 'de' MMMM yyyy") ?> a <?= $reportEnd->i18nFormat("d 'de' MMMM yyyy") ?></h4>
 </div>
+
+<h5 style="font-weight:700; margin: var(--spacing-20) 0 var(--spacing-10);">Información general</h5>
 
 <div style="display: flex; flex-wrap: wrap; margin: 0 -12px;">
 	<div style="flex: 0 0 100%; max-width: 100%; padding: var(--spacing-16);">
@@ -23,25 +40,23 @@ $cumplimiento = $totalRegistros > 0 ? (($totalRegistros - count($RPByStatus['X']
 	<div style="flex: 0 0 100%; max-width: 100%;">
 		<?php foreach($RPByStatus as $status => $r) : ?>
 		<?php $pct = $totalRegistros > 0 ? count($r) / $totalRegistros * 100 : 0; ?>
-		<div style="display: flex; flex-wrap: wrap; margin: 0 -12px;">
-			<div style="flex: 0 0 25%; max-width: 25%; padding: 24px 0 12px;"><?= $statusLongText[$status] ?> (<?= count($r)?>)</div>
-			<div style="flex: 0 0 75%; max-width: 75%; background-color: var(--color-faded-silver);">
-				<div style="background-color: var(--color-<?= next($printBarColors)?>); padding: var(--spacing-16); color: white; width:<?= $pct ?>%;"><?= round($pct, 2) ?>%</div>
-			</div>
+		<p class="bar-label"><?= $statusLongText[$status] ?> (<?= count($r)?>)</p>
+		<div class="bar-track" style="margin-bottom: var(--spacing-12);">
+			<div class="bar-fill <?= $statusBarColors[$status] ?>" style="width:<?= $pct ?>%;"></div>
+			<span class="bar-center"><?= round($pct, 2) ?>%</span>
 		</div>
 		<?php endforeach; ?>
-		<div style="display: flex; flex-wrap: wrap; margin: 0 -12px;">
-			<div style="flex: 0 0 25%; max-width: 25%; padding: 24px 0 12px;"><strong>Cumplimiento general (Programas en vivo, grabados y justificadamente suspendidos)</strong></div>
-			<div style="flex: 0 0 75%; max-width: 75%; background-color: var(--color-faded-silver);">
-				<div style="background-color: var(--color-green); padding: var(--spacing-16); text-align: center; width:<?= $cumplimiento ?>%;"><?= $this->Number->toPercentage($cumplimiento / 100, 1, ['multiply' => true]) ?></div>
-			</div>
+		<p class="bar-label">Cumplimiento general (Programas en vivo, grabados y justificadamente suspendidos)</p>
+		<div class="bar-track">
+			<div class="bar-fill bar-green" style="width:<?= $cumplimiento ?>%;"></div>
+			<span class="bar-center"><?= $this->Number->toPercentage($cumplimiento / 100, 1, ['multiply' => true]) ?></span>
 		</div>
 	</div>
 </div>
 
-<div style="background-color: var(--color-galaxy-blue); padding: var(--spacing-16);" class="report-subtitle">
-	<h5 style="text-align: left; color: white;"> Informe de los <?= $enlacesRemotos ?> enlaces remotos del período</h5>
-</div>
+
+<h5 style="font-weight:700; margin: var(--spacing-20) 0 var(--spacing-10);">Informe de los <?= $enlacesRemotos ?> enlaces remotos del período</h5>
+
 
 <ul class="cr-list">
 	<?php foreach($crs as $cr) : ?>
@@ -52,22 +67,26 @@ $cumplimiento = $totalRegistros > 0 ? (($totalRegistros - count($RPByStatus['X']
 	<?php endforeach; ?>
 </ul>
 
-<div style="background-color: var(--color-galaxy-blue); padding: var(--spacing-16);" class="report-subtitle">
-	<h5 style="text-align: left; color: white;"> Reportes individuales de cumplimiento de programas</h5>
-</div>
 
-<div style="display: flex; flex-wrap: wrap; margin: 0 -12px;">
+<h5 style="font-weight:700; margin: var(--spacing-20) 0 var(--spacing-10);">Reportes individuales de cumplimiento de programas</h5>
+
+
+<div class="row">
 	<?php foreach($programas as $programa) : ?>
-	<div style="flex: 0 0 25%; max-width: 25%; border-bottom: 1px solid var(--color-subtle-gray);">
-		<p style="text-align: center;" class="c"><?= $programa['name'] ?><br/>
-			<span style="font-weight:bold"><?= $this->Number->toPercentage($programa['chart']['Cumplimiento'], 1, ['multiply' => true])?></span>
-		</p>
-	</div>
+		<?php
+		$p = $programa['reportes'];
+		$pTotal = count($p['V']) + count($p['G']) + count($p['S']) + count($p['X']);
+		$pCumplimiento = $pTotal > 0 ? ((count($p['V']) + count($p['G']) + count($p['S'])) / $pTotal) * 100 : 0;
+		?>
+		<div class="program-card">
+			<p style="text-align: center; clear: both; margin: var(--spacing-4) 0;">
+				<?= $programa['name'] ?><br/>
+				<span style="font-weight: bold;"><?= $this->Number->toPercentage($programa['chart']['Cumplimiento'], 1, ['multiply' => true]) ?></span>
+			</p>
+			<div class="mini-track">
+			<div class="mini-fill <?= $barColor($pCumplimiento) ?>" style="width:<?= $pCumplimiento ?>%;"></div>
+			<span class="mini-center"><?= number_format($pCumplimiento, 1, '.', '') ?>%</span>
+		</div>
+		</div>
 	<?php endforeach; ?>
 </div>
-
-<style>
-	.report-title h4 {color:#fff !important;} .report-title h5{color:#fff !important;font-size:18pt;} 
-	.c{clear:both;}
-	.report-subtitle {page-break-before:always;}
-</style>
