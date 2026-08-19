@@ -86,7 +86,7 @@ $statusBarColors = ['V' => 'bar-green', 'G' => 'bar-orange', 'S' => 'bar-blue', 
 				<?= $programa['name'] ?>
 			</p>
 			<div class="mini-track <?= $barColor($pCumplimiento) ?>">
-				<span class="mini-center"><?= number_format($pCumplimiento, 1, '.', '') ?>%</span>
+				<span class="mini-center"><?= $this->Number->toPercentage($pCumplimiento / 100, 1, ['multiply' => true]) ?></span>
 			</div>
 		</div>
 	<?php endforeach; ?>
