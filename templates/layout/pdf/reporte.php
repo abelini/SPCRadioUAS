@@ -5,18 +5,218 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Reporte</title>
 
-    <?= $this->Html->css(['normalize.min', 'fonts', 'cake'], ['fullBase' => true]) ?>
-
     <?= $this->fetch('meta') ?>
     <?= $this->fetch('css') ?>
     <?= $this->fetch('script') ?>
-    <?//= $this->Html->script('https://www.gstatic.com/charts/loader.js')?>
-	
-	<link rel="stylesheet" href="https://unpkg.com/charts.css@1.1.0/dist/charts.min.css">
-    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-    	<style stype="text/css">
-		@import url('https://fonts.googleapis.com/css2?family=Khand:wght@300;400&display=swap');
-	</style>
+    <style>
+        @page {
+            size: letter;
+            margin: 10mm;
+        }
+        :root {
+            --color-paper: #f6f8fa;
+            --color-border-subtle: #d8dee4;
+            --color-ink: #1f2328;
+            --color-muted-gray: #656d76;
+            --color-polar-blue: #0969da;
+            --color-spring-green: #1a7f37;
+            --color-blue-violet-orb: #8250df;
+            --color-vapor-trail-blue: #218bda;
+            --color-faded-silver: #f0f6fc;
+            --color-subtle-gray: #d8dee4;
+            --color-ghost-white: #ffffff;
+            --color-galaxy-blue: #2A4B7C;
+            --color-green: #22c55e;
+            --color-yellow: #d29922;
+            --color-orange: #f59e0b;
+            --color-blue: #3b82f6;
+            --color-red: #ef4444;
+            --surface-paper: #f6f8fa;
+            --radius-md: 6px;
+            --radius-cards: 8px;
+            --font-weight-medium: 500;
+            --spacing-4: 4px;
+            --spacing-8: 8px;
+            --spacing-10: 10px;
+            --spacing-12: 12px;
+            --spacing-14: 14px;
+            --spacing-16: 16px;
+            --spacing-20: 20px;
+            --spacing-24: 24px;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 10pt;
+            font-weight: 400;
+            color: #1f2328;
+            line-height: 1.5;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 500;
+            text-transform: uppercase;
+            color: #1f2328;
+            margin: 0;
+        }
+        h1 { font-size: 20pt; }
+        h2 { font-size: 17pt; }
+        h3 { font-size: 14pt; }
+        h4 { font-size: 12pt; }
+        h5 { font-size: 10.5pt; }
+        h6 { font-size: 9pt; }
+
+        .top-nav { padding: 1rem; display: inherit; }
+        .top-nav-title { text-align: center; }
+        .logo { margin: auto; max-width: 15%; min-width: 10%; display: block; }
+        .main { max-width: 1100px; margin: 0 auto; }
+        footer { padding: 32px; }
+
+        .w3-container { padding: 0.01em 16px; }
+        .w3-galaxy-blue {
+            color: #fff !important;
+            background-color: #2A4B7C !important;
+        }
+
+        /* Page headers */
+        .page-header {
+            background: linear-gradient(135deg, var(--color-vapor-trail-blue) 0%, var(--color-blue-violet-orb) 100%);
+            border: none;
+            border-radius: var(--radius-cards) var(--radius-cards) 0 0;
+            padding: var(--spacing-16) var(--spacing-24);
+            margin-bottom: 0;
+        }
+        .page-header h4,
+        .page-header h5 {
+            margin: 0;
+            color: #ffffff;
+            text-transform: uppercase;
+            font-size: 13.5pt;
+        }
+        .page-subheader {
+            background: linear-gradient(135deg, rgba(9, 105, 218, 0.06) 0%, rgba(130, 80, 223, 0.06) 100%);
+            border: 1px solid var(--color-border-subtle);
+            border-radius: var(--radius-cards) var(--radius-cards) 0 0;
+            padding: var(--spacing-12) var(--spacing-20);
+            margin-bottom: 0;
+        }
+        .page-subheader h4,
+        .page-subheader h5 {
+            margin: 0;
+            color: var(--color-polar-blue);
+            font-size: 12pt;
+        }
+
+        /* Alerts */
+        .alert {
+            padding: var(--spacing-12) var(--spacing-16);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--spacing-16);
+            font-size: 10pt;
+            line-height: 1.5;
+        }
+        .alert p { margin: 0; }
+        .alert-info {
+            background: rgba(9, 105, 218, 0.1);
+            border: 1px solid rgba(9, 105, 218, 0.3);
+            color: var(--color-polar-blue);
+        }
+        .alert-warning {
+            background: rgba(191, 135, 0, 0.1);
+            border: 1px solid rgba(191, 135, 0, 0.3);
+            color: #d29922;
+        }
+        .alert-success {
+            background: rgba(26, 127, 55, 0.1);
+            border: 1px solid rgba(26, 127, 55, 0.3);
+            color: var(--color-spring-green);
+        }
+        .alert-danger {
+            background: rgba(207, 34, 46, 0.1);
+            border: 1px solid rgba(207, 34, 46, 0.3);
+            color: #f85149;
+        }
+
+        /* Grid */
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 0 calc(-1 * var(--spacing-8));
+        }
+        .row > [class*="col-"] {
+            padding: 0 var(--spacing-8);
+            box-sizing: border-box;
+        }
+        .g-3 { gap: var(--spacing-16); }
+        .col-12 { width: 100%; }
+        .col-md-6 { width: 50%; }
+        .col-lg-3 { width: 25%; }
+        .col-lg-9 { width: 75%; }
+
+        /* Enlaces remotos */
+        .cr-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: var(--spacing-8);
+        }
+        .cr-list li {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-12);
+            padding: var(--spacing-10) var(--spacing-14);
+            background: var(--surface-paper);
+            border: 1px solid var(--color-border-subtle);
+            border-radius: var(--radius-md);
+        }
+        .cr-list li .cr-name {
+            flex: 1;
+            color: var(--color-ink);
+            font-weight: var(--font-weight-medium);
+            text-transform: uppercase;
+            font-size: 10.5pt;
+        }
+        .cr-list li .cr-date {
+            color: var(--color-muted-gray);
+            font-size: 9pt;
+            white-space: nowrap;
+        }
+
+        /* Barras de cumplimiento */
+        .bar {
+            display: block;
+            height: 18px;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 9pt;
+            font-weight: 500;
+            line-height: 18px;
+            text-align: center;
+        }
+        .bar-green { background: var(--color-green); }
+        .bar-yellow { background: var(--color-yellow); }
+        .bar-orange { background: var(--color-orange); }
+        .bar-red { background: var(--color-red); }
+        .bar-label {
+            font-size: 10pt;
+            font-weight: 500;
+            text-transform: uppercase;
+            margin: 0 0 var(--spacing-4);
+        }
+        .mini-bar {
+            display: block;
+            height: 12px;
+            border-radius: 3px;
+            color: #fff;
+            font-size: 7.5pt;
+            font-weight: 500;
+            line-height: 12px;
+            text-align: center;
+            margin: var(--spacing-4) auto 0;
+        }
+    </style>
 </head>
 <body>
 	<nav class="top-nav">
@@ -29,16 +229,5 @@
 			<?= $this->fetch('content') ?>
         </div>
 	</main>
-
-	<style>
-		.w3-galaxy-blue{color:#fff!important;background-color:#2A4B7C!important;}
-		h1{font-family:"Khand";font-weight:400;font-style: normal;color:#2A4B7C;font-size:32px;line-height:32px;font-weight:500;}
-		.top-nav {padding:1rem;display:inherit;} .logo{margin:auto;max-width:15%;min-width:10%;display:block;}
-		.main {max-width:1200px;margin:0 auto;} footer {padding:32px;}
-		@media only screen and (max-width: 600px) {
-			.w3-container {padding:0;}
-			.top-nav {display:none;}
-		}
-	</style>
 </body>
 </html>

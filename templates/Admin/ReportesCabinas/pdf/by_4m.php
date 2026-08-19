@@ -1,5 +1,5 @@
 <div style="background-color: var(--color-galaxy-blue); padding: var(--spacing-16);" class="report-title">
-	<h4 style="text-align: left; color: white;"><i class="fa-solid fa-flag-checkered"></i> Reporte general del período de <?= $reportStart->i18nFormat("d 'de' MMMM yyyy") ?> a <?= $reportEnd->i18nFormat("d 'de' MMMM yyyy") ?></h4>
+	<h4 style="text-align: left; color: white;"> Reporte general del período de <?= $reportStart->i18nFormat("d 'de' MMMM yyyy") ?> a <?= $reportEnd->i18nFormat("d 'de' MMMM yyyy") ?></h4>
 </div>
 
 <div style="display: flex; flex-wrap: wrap; margin: 0 -12px;">
@@ -32,7 +32,7 @@
 </div>
 
 <div style="background-color: var(--color-galaxy-blue); padding: var(--spacing-16);" class="report-subtitle">
-	<h5 style="text-align: left; color: white;"><i class="fa-solid fa-tower-cell"></i> Informe de los <?= $reportesCR->sumOf('controles')?> enlaces remotos del período</h5>
+	<h5 style="text-align: left; color: white;"> Informe de los <?= $reportesCR->sumOf('controles')?> enlaces remotos del período</h5>
 </div>
 
 <div style="display: flex; flex-wrap: wrap; margin: 0 -12px;">
@@ -44,7 +44,7 @@
 </div>
 
 <div style="background-color: var(--color-galaxy-blue); padding: var(--spacing-16);" class="report-subtitle">
-	<h5 style="text-align: left; color: white;"><i class="fa-solid fa-chart-line"></i> Reportes individuales de cumplimiento de programas</h5>
+	<h5 style="text-align: left; color: white;"> Reportes individuales de cumplimiento de programas</h5>
 </div>
 
 <div style="display: flex; flex-wrap: wrap; margin: 0 -12px;">
@@ -58,7 +58,7 @@
 </div>
 
 <style>
-	.report-title h4 {color:#fff !important;} .report-title h5{color:#fff !important;font-size:24px;} 
+	.report-title h4 {color:#fff !important;} .report-title h5{color:#fff !important;font-size:18pt;} 
 	.c{clear:both;} .cr-list{display:inline-grid !important;} .cr-list span {border-bottom:1px solid #ccc !important;padding:0 0 8px;text-transform:uppercase;overflow-x:hidden;}
-	h5 i, h4 i{margin-right:16px;} .report-subtitle {page-break-before:always;}
+	.report-subtitle {page-break-before:always;}
 </style>
