@@ -36,11 +36,13 @@ $statusBarColors = ['V' => 'bar-green', 'G' => 'bar-orange', 'S' => 'bar-blue', 
 
 		<p><strong><?= count($RPByStatus['X'])?> (<?= $XtoWord ?>)</strong> faltas registradas.</p>
 	</div>
-	
+</div>
+
+<h5 class="section-title">Desglose general de cumplimiento</h5>
+
+<div class="row g-3">
 	<div class="col-12">
-
-		<p>Desglose general de cumplimiento</p>
-
+		
 		<?php foreach($RPByStatus as $status => $r) : ?>
 		<?php $pct = $totalRegistros > 0 ? count($r) / $totalRegistros * 100 : 0; ?>
 		<p class="bar-label"><?= $statusLongText[$status] ?> (<?= count($r)?>)</p>
