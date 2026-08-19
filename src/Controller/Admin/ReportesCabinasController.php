@@ -75,9 +75,8 @@ class ReportesCabinasController extends AppController
 	 */
 	public function downloadReport(): Response
 	{
-		$this->viewBuilder()->setOption(
-			'pdfConfig',
-			[
+		$this->viewBuilder()->setOption('pdfConfig', [
+				'engine' => 'CakePdf.WeasyPrint',
 				'download' => true,
 				'orientation' => 'portrait',
 				'pageSize' => 'Letter',
@@ -90,8 +89,8 @@ class ReportesCabinasController extends AppController
 				],
 			]
 		)
-			->setLayout('reporte')
-			->setClassName('CakePdf.Pdf');
+		->setLayout('reporte')
+		->setClassName('CakePdf.Pdf');
 
 		switch ($this->request->getQuery('t')) {
 			case '1PM':
