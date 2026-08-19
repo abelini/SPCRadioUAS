@@ -111,6 +111,7 @@
         .row {
             display: flex;
             flex-wrap: wrap;
+            justify-content: center;
             margin: 0 calc(-1 * var(--spacing-8));
         }
         .row > [class*="col-"] {
@@ -188,7 +189,6 @@
         .bar-label {
             font-size: 10pt;
             font-weight: 500;
-            text-transform: uppercase;
             margin: 0 0 var(--spacing-4);
         }
         .mini-bar {
@@ -235,12 +235,15 @@
         .mini-track {
             position: relative;
             width: 128px;
-            height: 14px;
-            background: var(--color-faded-silver);
-            border-radius: 3px;
+            height: 20px;
+            border-radius: 4px;
             overflow: hidden;
             margin: var(--spacing-4) auto 0;
         }
+        .mini-track.bar-green { background: var(--color-green); }
+        .mini-track.bar-yellow { background: var(--color-yellow); }
+        .mini-track.bar-orange { background: var(--color-orange); }
+        .mini-track.bar-red { background: var(--color-red); }
         .mini-fill {
             position: absolute;
             top: 0;
@@ -253,10 +256,10 @@
             top: 0;
             left: 0;
             right: 0;
-            line-height: 14px;
+            line-height: 20px;
             text-align: center;
-            color: var(--color-ink);
-            font-size: 7.5pt;
+            color: #ffffff;
+            font-size: 9pt;
             font-weight: 600;
         }
     </style>

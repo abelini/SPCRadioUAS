@@ -38,6 +38,9 @@ $statusBarColors = ['V' => 'bar-green', 'G' => 'bar-orange', 'S' => 'bar-blue', 
 	</div>
 	
 	<div class="col-12">
+
+		<p>Desglose general de cumplimiento</p>
+
 		<?php foreach($RPByStatus as $status => $r) : ?>
 		<?php $pct = $totalRegistros > 0 ? count($r) / $totalRegistros * 100 : 0; ?>
 		<p class="bar-label"><?= $statusLongText[$status] ?> (<?= count($r)?>)</p>
@@ -82,8 +85,7 @@ $statusBarColors = ['V' => 'bar-green', 'G' => 'bar-orange', 'S' => 'bar-blue', 
 			<p style="text-align: center; clear: both; margin: var(--spacing-4) 0;">
 				<?= $programa['name'] ?>
 			</p>
-			<div class="mini-track">
-				<div class="mini-fill <?= $barColor($pCumplimiento) ?>" style="width:<?= $pCumplimiento ?>%;"></div>
+			<div class="mini-track <?= $barColor($pCumplimiento) ?>">
 				<span class="mini-center"><?= number_format($pCumplimiento, 1, '.', '') ?>%</span>
 			</div>
 		</div>
