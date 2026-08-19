@@ -21,13 +21,13 @@ $statusBarColors = ['V' => 'bar-green', 'G' => 'bar-orange', 'S' => 'bar-blue', 
 ?>
 
 <div class="page-header">
-	<h4>Reporte general del período de <?= $reportStart->i18nFormat("d 'de' MMMM yyyy") ?> a <?= $reportEnd->i18nFormat("d 'de' MMMM yyyy") ?></h4>
+	<h4>Reporte cuatrimestral - <?= $reportStart->i18nFormat("d 'de' MMMM yyyy") ?> a <?= $reportEnd->i18nFormat("d 'de' MMMM yyyy") ?></h4>
 </div>
 
-<h5 style="font-weight:700; margin: var(--spacing-20) 0 var(--spacing-10);">Información general</h5>
+<h5 class="section-title">Información general</h5>
 
-<div style="display: flex; flex-wrap: wrap; margin: 0 -12px;">
-	<div style="flex: 0 0 100%; max-width: 100%; padding: var(--spacing-16);">
+<div class="row g-3">
+	<div class="col-12">
 		<p>Hay <strong><?= $totalRegistros ?> registros</strong> distribuídos en <strong><?= $programsCount ?> programas</strong> en las bitácoras del mes.</p>
 		
 		<p>Se enlazó por control remoto <strong><?= $enlacesRemotos ?> ocasiones</strong> en los <?= $diasPeriodo ?> días que abarca el cuatrimestre. Esto representa una media de <strong><?= $mediaEnlaces ?></strong> enlaces por día.</p>
@@ -37,7 +37,7 @@ $statusBarColors = ['V' => 'bar-green', 'G' => 'bar-orange', 'S' => 'bar-blue', 
 		<p><strong><?= count($RPByStatus['X'])?> (<?= $XtoWord ?>)</strong> faltas registradas.</p>
 	</div>
 	
-	<div style="flex: 0 0 100%; max-width: 100%;">
+	<div class="col-12">
 		<?php foreach($RPByStatus as $status => $r) : ?>
 		<?php $pct = $totalRegistros > 0 ? count($r) / $totalRegistros * 100 : 0; ?>
 		<p class="bar-label"><?= $statusLongText[$status] ?> (<?= count($r)?>)</p>
@@ -55,7 +55,7 @@ $statusBarColors = ['V' => 'bar-green', 'G' => 'bar-orange', 'S' => 'bar-blue', 
 </div>
 
 
-<h5 style="font-weight:700; margin: var(--spacing-20) 0 var(--spacing-10);">Informe de los <?= $enlacesRemotos ?> enlaces remotos del período</h5>
+<h5 class="section-title">Informe de los <?= $enlacesRemotos ?> enlaces remotos del período</h5>
 
 
 <ul class="cr-list">
@@ -68,7 +68,7 @@ $statusBarColors = ['V' => 'bar-green', 'G' => 'bar-orange', 'S' => 'bar-blue', 
 </ul>
 
 
-<h5 style="font-weight:700; margin: var(--spacing-20) 0 var(--spacing-10);">Reportes individuales de cumplimiento de programas</h5>
+<h5 class="section-title">Reportes individuales de cumplimiento de programas</h5>
 
 
 <div class="row">
@@ -80,13 +80,12 @@ $statusBarColors = ['V' => 'bar-green', 'G' => 'bar-orange', 'S' => 'bar-blue', 
 		?>
 		<div class="program-card">
 			<p style="text-align: center; clear: both; margin: var(--spacing-4) 0;">
-				<?= $programa['name'] ?><br/>
-				<span style="font-weight: bold;"><?= $this->Number->toPercentage($programa['chart']['Cumplimiento'], 1, ['multiply' => true]) ?></span>
+				<?= $programa['name'] ?>
 			</p>
 			<div class="mini-track">
-			<div class="mini-fill <?= $barColor($pCumplimiento) ?>" style="width:<?= $pCumplimiento ?>%;"></div>
-			<span class="mini-center"><?= number_format($pCumplimiento, 1, '.', '') ?>%</span>
-		</div>
+				<div class="mini-fill <?= $barColor($pCumplimiento) ?>" style="width:<?= $pCumplimiento ?>%;"></div>
+				<span class="mini-center"><?= number_format($pCumplimiento, 1, '.', '') ?>%</span>
+			</div>
 		</div>
 	<?php endforeach; ?>
 </div>

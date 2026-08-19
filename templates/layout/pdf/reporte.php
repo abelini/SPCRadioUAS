@@ -132,6 +132,13 @@
             border-bottom: 1px solid var(--color-subtle-gray);
         }
 
+        /* Titulo de seccion (se queda con su contenido, sin salto de hoja) */
+        .section-title {
+            font-weight: 700;
+            margin: var(--spacing-20) 0 var(--spacing-10);
+            break-after: avoid;
+        }
+
         /* Enlaces remotos */
         .cr-list {
             list-style: none;
