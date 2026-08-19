@@ -107,36 +107,6 @@
             font-size: 12pt;
         }
 
-        /* Alerts */
-        .alert {
-            padding: var(--spacing-12) var(--spacing-16);
-            border-radius: var(--radius-md);
-            margin-bottom: var(--spacing-16);
-            font-size: 10pt;
-            line-height: 1.5;
-        }
-        .alert p { margin: 0; }
-        .alert-info {
-            background: rgba(9, 105, 218, 0.1);
-            border: 1px solid rgba(9, 105, 218, 0.3);
-            color: var(--color-polar-blue);
-        }
-        .alert-warning {
-            background: rgba(191, 135, 0, 0.1);
-            border: 1px solid rgba(191, 135, 0, 0.3);
-            color: #d29922;
-        }
-        .alert-success {
-            background: rgba(26, 127, 55, 0.1);
-            border: 1px solid rgba(26, 127, 55, 0.3);
-            color: var(--color-spring-green);
-        }
-        .alert-danger {
-            background: rgba(207, 34, 46, 0.1);
-            border: 1px solid rgba(207, 34, 46, 0.3);
-            color: #f85149;
-        }
-
         /* Grid */
         .row {
             display: flex;
@@ -147,7 +117,7 @@
             padding: 0 var(--spacing-8);
             box-sizing: border-box;
         }
-        .g-3 { gap: var(--spacing-16); }
+        .g-3 { gap: 0; }
         .col-12 { width: 100%; }
         .col-md-6 { width: 50%; }
         .col-lg-3 { width: 25%; }
@@ -158,25 +128,25 @@
             list-style: none;
             padding: 0;
             margin: 0;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: var(--spacing-8);
+            display: flex;
+            flex-wrap: wrap;
         }
         .cr-list li {
+            flex: 0 0 50%;
+            box-sizing: border-box;
             display: flex;
-            align-items: center;
+            align-items: baseline;
             gap: var(--spacing-12);
-            padding: var(--spacing-10) var(--spacing-14);
-            background: var(--surface-paper);
-            border: 1px solid var(--color-border-subtle);
-            border-radius: var(--radius-md);
+            padding: 6px 12px;
+            border-bottom: 1px solid #ccc;
+            overflow-wrap: anywhere;
         }
         .cr-list li .cr-name {
             flex: 1;
             color: var(--color-ink);
             font-weight: var(--font-weight-medium);
             text-transform: uppercase;
-            font-size: 10.5pt;
+            font-size: 10pt;
         }
         .cr-list li .cr-date {
             color: var(--color-muted-gray);
@@ -207,13 +177,15 @@
         }
         .mini-bar {
             display: block;
-            height: 12px;
-            border-radius: 3px;
+            height: 22px;
+            border-radius: 4px;
             color: #fff;
-            font-size: 7.5pt;
+            font-size: 9pt;
             font-weight: 500;
-            line-height: 12px;
+            line-height: 22px;
             text-align: center;
+            box-sizing: border-box;
+            padding: 0 6px;
             margin: var(--spacing-4) auto 0;
         }
     </style>
@@ -221,7 +193,7 @@
 <body>
 	<nav class="top-nav">
 		<div class="top-nav-title">
-			<?= $this->Html->image('logo.png', ['class' => 'logo', 'fullBase' => true])?>
+			<?= $this->Html->image('LogoRolCabinaPDF.png', ['class' => 'logo', 'fullBase' => true])?>
         </div>
 	</nav>
 	<main class="main">

@@ -15,7 +15,7 @@ $barColor = function (float $pct): string {
 $totalRegistros = $reportesProgramas->count();
 $enlacesRemotos = $reportesCR->sumOf('controles');
 $cumplimiento = $totalRegistros > 0 ? (($totalRegistros - count($RPByStatus['X'])) / $totalRegistros) * 100 : 0;
-$mediaEnlaces = $enlacesRemotos > 0 ? round($reportStart->daysInMonth / $enlacesRemotos, 2) : 0;
+$mediaEnlaces = $enlacesRemotos > 0 ? round($enlacesRemotos / $reportStart->daysInMonth, 2) : 0;
 ?>
 <div class="page-header">
 	<h4> Reporte general de <?= $reportStart->i18nFormat("MMMM 'de' yyyy") ?></h4>
@@ -23,22 +23,10 @@ $mediaEnlaces = $enlacesRemotos > 0 ? round($reportStart->daysInMonth / $enlaces
 
 <div class="row g-3">
 	<div class="col-12">
-		<div class="alert alert-info">
-			<p>Hay <strong><?= $totalRegistros ?> registros</strong> distribuídos en <strong><?= $programsCount ?> programas</strong> en las bitácoras del mes.</p>
-		</div>
-		
-		<div class="alert alert-warning">
-			<p>Se enlazó por control remoto <strong><?= $enlacesRemotos ?> ocasiones</strong> en el mes.
-			Esto representa una media de <strong><?= $mediaEnlaces ?></strong> enlaces por día.</p>
-		</div>
-		
-		<div class="alert alert-success">
-			<p>El cumplimiento general en el mes es de: <strong><?= $this->Number->toPercentage($cumplimiento / 100, 1, ['multiply' => true]) ?></strong>.</p>
-		</div>
-		
-		<div class="alert alert-danger">
-			<p><strong><?= count($RPByStatus['X'])?> (<?= $XtoWord ?>)</strong> faltas registradas.</p>
-		</div>
+		<p>Hay <strong><?= $totalRegistros ?> registros</strong> distribuídos en <strong><?= $programsCount ?> programas</strong> en las bitácoras del mes.</p>
+		<p>Se enlazó por control remoto <strong><?= $enlacesRemotos ?> ocasiones</strong> en el mes. Esto representa una media de <strong><?= $mediaEnlaces ?></strong> enlaces por día.</p>
+		<p>El cumplimiento general en el mes es de: <strong><?= $this->Number->toPercentage($cumplimiento / 100, 1, ['multiply' => true]) ?></strong>.</p>
+		<p><strong><?= count($RPByStatus['X'])?> (<?= $XtoWord ?>)</strong> faltas registradas.</p>
 	</div>
 	
 	<div class="col-12">

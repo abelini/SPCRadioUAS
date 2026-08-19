@@ -1,10 +1,8 @@
-<div class="page-header">
-	<h5><i class="fa-solid fa-flag-checkered"></i> Reporte general del período de
+<div class="page-header" style="display:flex; justify-content:space-between; align-items:center;">
+	<h5 style="margin:0;"><i class="fa-solid fa-flag-checkered"></i> Reporte general del período de
 		<?= $reportStart->i18nFormat("d 'de' MMMM yyyy") ?> a <?= $reportEnd->i18nFormat("d 'de' MMMM yyyy") ?>
 	</h5>
-	<div style="position:absolute; right: var(--spacing-16); top: var(--spacing-16);">
-		<?= $this->Html->link('<i class="fa-solid fa-print"></i>', ['action' => 'download-report', '?' => $this->request->getQuery()], ['escapeTitle' => false, 'class' => 'btn btn-outlined']) ?>
-	</div>
+	<?= $this->Html->link('<i class="fa-solid fa-print"></i>', ['action' => 'download-report', '?' => $this->request->getQuery()], ['escapeTitle' => false, 'class' => 'btn btn-outlined']) ?>
 </div>
 
 <div class="content-card">

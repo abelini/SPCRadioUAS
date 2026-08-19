@@ -1,9 +1,10 @@
-<div class="page-header">
-	<h5><i class="fa-solid fa-radio"></i> <?= $programa->name ?></h5>
-	<div style="position:absolute; right: var(--spacing-16); top: var(--spacing-16); color: var(--color-ghost-white);">
-		<?= $start->i18nFormat("d 'de' MMMM YYYY") ?> a <?= $end->i18nFormat("d 'de' MMMM YYYY") ?> <i
-			class="fa-solid fa-calendar-days"></i>
-	</div>
+<div class="page-header" style="display:flex; justify-content:space-between; align-items:center;">
+	<h5 style="margin:0;"><i class="fa-solid fa-radio"></i> <?= $programa->name ?>
+		<span style="display:block; font-size:0.85em; color: var(--color-ghost-white); margin-top: var(--spacing-4);">
+			<?= $start->i18nFormat("d 'de' MMMM YYYY") ?> a <?= $end->i18nFormat("d 'de' MMMM YYYY") ?>
+		</span>
+	</h5>
+	<?= $this->Html->link('<i class="fa-solid fa-print"></i>', ['action' => 'download-report', '?' => $this->request->getQuery()], ['escapeTitle' => false, 'class' => 'btn btn-outlined']) ?>
 </div>
 
 <div class="row g-3">
