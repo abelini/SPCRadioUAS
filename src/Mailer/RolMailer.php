@@ -42,8 +42,7 @@ class RolMailer extends GoogleMailer
 
 		$url = new UrlHelper(new View());
 		$pdfData = file_get_contents(
-			$url->build(
-				[
+			$url->build([
 					'prefix' => false,
 					'controller' => 'Roles',
 					'action' => 'view',
@@ -66,13 +65,13 @@ class RolMailer extends GoogleMailer
 			->viewBuilder()
 			->addHelpers(['Html', 'Url'])
 			->setTemplate('new_rol');
-		/*
+		
 		$this->setAttachments([
 			'RolCabina-' . $rol->ID . '.pdf' => [
 				'data' => $pdfData,
 				'mimetype' => 'application/pdf',
 			]
-		]);*/
+		]);
 
 		$this->deliver();
 
