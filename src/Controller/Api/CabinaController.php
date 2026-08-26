@@ -202,9 +202,8 @@ class CabinaController extends ApiController
 					]);
 					$body = json_decode($response->getStringBody());
 
-					if (isset($body->comments->data)) {
-						$comments = array_reverse($body->comments->data);
-
+					if (isset($body->data)) {
+						$comments = array_reverse($body->data);
 					} else {
 						$comments = [
 							new FBComment()
