@@ -17,7 +17,7 @@ class RolMailer extends GoogleMailer
 
 	public function __construct()
 	{
-		parent::__construct(self::TEST_PROFILE);
+		parent::__construct(self::GENERAL_PROFILE);
 		$this->setTransport(new GoogleTransport());
 	}
 
