@@ -12,7 +12,7 @@ use Cake\Http\Response;
 use Cake\I18n\DateTime;
 use Cake\I18n\Time;
 use Cake\ORM\Query\SelectQuery;
-use SPC\Model\Entity\DefaultComment;
+use SPC\DTO\FBComment;
 use SPC\Service\GeminiService;
 
 
@@ -173,6 +173,7 @@ class CabinaController extends ApiController
 	{
 		$comments = [];
 		$legend = 'No hay transmisiones en curso';
+		$accessTokens = Configure::read('SensitiveData.Facebook.Tokens.User');
 
 		if ($this->isNowBroadcasting()) {
 
@@ -182,8 +183,6 @@ class CabinaController extends ApiController
 				'basePath' => Configure::read('SensitiveData.Facebook.APIv'),
 			]);
 			$liveVideos = Configure::read('SensitiveData.Facebook.RadioUASAppID') . '/live_videos';
-
-			$accessTokens = Configure::read('SensitiveData.Facebook.AccessTokens');
 
 			for ($i = 0; $i < count($accessTokens); $i++) {
 				$response = $http->get($liveVideos, [
@@ -197,9 +196,9 @@ class CabinaController extends ApiController
 					$videoID = $body->data[0]->id;
 					$title = $body->data[0]->title;
 
-					$response = $http->get($videoID, [
-						'fields' => 'comments{from,message,parent,created_time}',
-						'access_token' => $accessTokens[$i],
+					$response = $http->get($videoID . '/comments', [
+						'fields' => 'from,message,parent,created_time',
+						'access_token' => Configure::read('SensitiveData.Facebook.Tokens.Page'),
 					]);
 					$body = json_decode($response->getStringBody());
 
@@ -208,7 +207,7 @@ class CabinaController extends ApiController
 
 					} else {
 						$comments = [
-							new DefaultComment()
+							new FBComment()
 						];
 					}
 					$legend = 'Comentarios en:<br><strong>' . $title . '</strong>';
