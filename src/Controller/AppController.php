@@ -21,7 +21,7 @@ class AppController extends Controller
 
 	protected const string LOGO = 'https://radio.uas.edu.mx/wp-content/images/logo.webp';
 
-	protected const string VERSION = '3.5.2';
+	protected const string VERSION = '3.6.0';
 
 	protected array $paginate = [
 		'limit' => 40,
