@@ -100,21 +100,6 @@ return [
             'path' => CACHE,
             'url' => env('CACHE_DEFAULT_URL', null),
         ],
-        
-        'programas_api' => [
-            'className' => FileEngine::class,
-            'path' => CACHE,
-            'duration' => '+7 days',
-            'prefix' => 'programas_api_',
-        ],
-
-        'yt_rest_calls' => [
-            'className' => RedisEngine::class,
-            'duration' => '+7 days',
-            'url' => env('CACHE_PROGRAMAS_API_URL', 'redis://127.0.0.1:6379/yt_rest_calls_'),
-            'prefix' => 'yt_rest_calls_',
-        ],
-
         '_cake_translations_' => [
             'className' => FileEngine::class,
             'prefix' => 'myapp_cake_core_',
@@ -123,7 +108,6 @@ return [
             'duration' => '+1 years',
             'url' => env('CACHE_CAKECORE_URL', null),
         ],
-
         '_cake_model_' => [
             'className' => FileEngine::class,
             'prefix' => 'myapp_cake_model_',
