@@ -1,6 +1,5 @@
 <?php
 
-use Cake\Cache\Engine\FileEngine;
 use Cake\Database\Connection;
 use Cake\Database\Driver\Mysql;
 use Cake\Log\Engine\FileLog;
@@ -89,33 +88,6 @@ return [
     'Asset' => [
         'timestamp' => true,
         'cacheTime' => '+1 year'
-    ],
-
-    /*
-     * Configure the cache adapters.
-     */
-    'Cache' => [
-        'default' => [
-            'className' => FileEngine::class,
-            'path' => CACHE,
-            'url' => env('CACHE_DEFAULT_URL', null),
-        ],
-        '_cake_translations_' => [
-            'className' => FileEngine::class,
-            'prefix' => 'myapp_cake_core_',
-            'path' => CACHE . 'persistent' . DS,
-            'serialize' => true,
-            'duration' => '+1 years',
-            'url' => env('CACHE_CAKECORE_URL', null),
-        ],
-        '_cake_model_' => [
-            'className' => FileEngine::class,
-            'prefix' => 'myapp_cake_model_',
-            'path' => CACHE . 'models' . DS,
-            'serialize' => true,
-            'duration' => '+1 years',
-            'url' => env('CACHE_CAKEMODEL_URL', null),
-        ],
     ],
 
     /*
