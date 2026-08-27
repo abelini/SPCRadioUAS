@@ -107,15 +107,13 @@ class CabinaController extends ApiController
 				->find()
 				->select(['ID', 'name', 'conduccion'])
 				->where(['name' => $this->request->getData('programa')])
-				->contain('TemasProgramas', function (SelectQuery $query) {
-					return $query->select(['ID', 'ProgramaID', 'invitados', 'tags']);
-				})
+				->contain('TemasProgramas', fn(SelectQuery $query) => $query->select(['ID', 'ProgramaID', 'invitados', 'tags']))
 				->first();
 
 			$conduccion = 'Conductor/a: ' . $programa->conduccion;
-			$invitados = $this->request->getData('invitados') ? 'Invitado(s): ' . $this->request->getData('invitados') : 'Invitado(s): ' . $programa->tema->invitados;
-			$keywords = $programa->tema->tags ? 'Palabras clave/Estilo: ' . $programa->tema->tags : '';
-			$tema = $this->request->getData('tema') ? 'Tema del día: ' . $this->request->getData('tema') : 'Tema del día: ' . $programa->tema->tema;
+			$invitados = $this->request->getData('invitados') ? 'Invitado(s): ' . $this->request->getData('invitados') : 'Invitado(s): ' . $programa->tema?->invitados;
+			$keywords = $programa->tema->tags ? 'Palabras clave/Estilo: ' . $programa->tema?->tags : '';
+			$tema = $this->request->getData('tema') ? 'Tema del día: ' . $this->request->getData('tema') : 'Tema del día: ' . $programa->tema?->tema;
 			$programa = 'Programa: ' . $programa->name;
 
 			$prompt = str_replace(['%programa%', '%conduccion%', '%invitados%', '%tema%', '%keywords%'], [$programa, $conduccion, $invitados, $tema, $keywords], $prompt);
