@@ -10,10 +10,11 @@ class GeminiService
     protected Client $engine;
     protected string $APIKey;
     protected array $models = [
+        'gemini-3.5-flash-lite',       // El modelo Lite más reciente y eficiente
+        'gemini-3.1-flash-lite',       // Gemini 3.1 optimizado para tareas de alta frecuencia
+        'gemini-3.7-flash',
+        'gemini-3.6-flash',
         'gemini-2.5-flash-lite',
-        'gemini-2.0-flash-exp',
-        'gemini-2.0-flash',
-        'gemini-2.0-flash-lite',
         'gemini-flash-lite-latest',
         'gemini-pro-latest',
         'gemini-3-flash-preview'
@@ -25,7 +26,7 @@ class GeminiService
         $this->engine = Gemini::client($this->APIKey);
     }
 
-    public function generateText(string $prompt, string $model = 'gemini-2.5-flash'): string
+    public function generateText(string $prompt, string $model = 'gemini-3.5-flash'): string
     {
         $models = array_merge([$model], $this->models);
 
