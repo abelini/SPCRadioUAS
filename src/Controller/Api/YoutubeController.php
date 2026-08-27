@@ -101,30 +101,4 @@ class YoutubeController extends ApiController
 
 		return $this->render();
 	}
-
-	/*
-	public function playlist(): Response
-	{
-		$playlistID = $this->request->getQuery('list');
-		try {
-			$youtube = new Client(self::YOUTUBE_API_CONFIG);
-			$playlist = $youtube->get('/playlistItems', [
-				'playlistId' => $playlistID,
-				'part' => 'snippet',
-				'maxResults' => 20,
-				'key' => $this->YoutubeAPIKey
-			]);
-			$playlist = json_decode($playlist->getStringBody());
-			debug($playlist);
-			$playlistItems = $playlist->items;
-		} catch (NetworkException $e) {
-			$this->Flash->error('Error de conexión a la API de YouTube: ' . $e->getMessage());
-			$playlistItems = [];
-		}
-		$this->set('playlistItems', $playlistItems);
-		$this->viewBuilder()->setLayout('youtube');
-
-		return $this->render();
-	}
-	*/
 }
