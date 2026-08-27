@@ -109,9 +109,9 @@ return [
         ],
 
         'yt_rest_calls' => [
-            'className' => FileEngine::class,
-            'path' => CACHE,
+            'className' => RedisEngine::class,
             'duration' => '+7 days',
+            'url' => env('CACHE_PROGRAMAS_API_URL', 'redis://127.0.0.1:6379/yt_rest_calls_'),
             'prefix' => 'yt_rest_calls_',
         ],
 
