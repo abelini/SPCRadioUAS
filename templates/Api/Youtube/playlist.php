@@ -9,12 +9,12 @@ if (!empty($playlistItems) && isset($playlistItems[0])) {
     $firstVideoId = '';
 }
 ?>
-	<h2 class="title">Episodio <span id="episode"><?= $episode ?></span>: <span id="video-title"><?= $firstVideoTitle ?></span></h2>
-		
+	<h2 class="title"><?= $playlistTitle ?></h2>
+			
 	<div class="main-stage">
 		<div id="yt-player"></div>
 	</div>
-
+	<h3 class="subtitle" id="video-title"><?= $firstVideoTitle ?></span></h3>
 	<p id="video-desc"><?= $description ?></p>
 
 	<div class="thumbnails-track">

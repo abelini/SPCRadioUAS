@@ -108,12 +108,13 @@ return [
             'prefix' => 'programas_api_',
         ],
 
-        /*
-         * Configure the cache used for general framework caching.
-         * Translation cache files are stored with this configuration.
-         * Duration will be set to '+2 minutes' in bootstrap.php when debug = true
-         * If you set 'className' => 'Null' core cache will be disabled.
-         */
+        'yt_rest_calls' => [
+            'className' => FileEngine::class,
+            'path' => CACHE,
+            'duration' => '+7 days',
+            'prefix' => 'yt_rest_calls_',
+        ],
+
         '_cake_translations_' => [
             'className' => FileEngine::class,
             'prefix' => 'myapp_cake_core_',
@@ -123,12 +124,6 @@ return [
             'url' => env('CACHE_CAKECORE_URL', null),
         ],
 
-        /*
-         * Configure the cache for model and datasource caches. This cache
-         * configuration is used to store schema descriptions, and table listings
-         * in connections.
-         * Duration will be set to '+2 minutes' in bootstrap.php when debug = true
-         */
         '_cake_model_' => [
             'className' => FileEngine::class,
             'prefix' => 'myapp_cake_model_',
