@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace SPC\Model\Enum;
+namespace SPC\Enum;
 
 enum PTY: int
 {

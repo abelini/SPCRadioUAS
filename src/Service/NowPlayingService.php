@@ -9,6 +9,7 @@ use Cake\I18n\Time;
 use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\TableRegistry;
 use SPC\DTO\StreamData;
+use SPC\Enum\PTY;
 
 class NowPlayingService
 {
@@ -19,6 +20,15 @@ class NowPlayingService
     public const string DEFAULT_PROGRAM_NAME = 'Paisajes sonoros';
 
     public const string DEFAULT_PRODUCTION_NAME = 'Fonoteca';
+
+    public const string DEFAULT_PTN = 'Musica';
+
+    /**
+     * Program Type (PTY):
+     * RDS: Easy Listening (Música ligera)
+     * RBDS: Soft (Música Relajante / Suave)
+     */
+    public const int DEFAULT_PTY = 12;
 
     public function get(): StreamData
     {
@@ -45,7 +55,7 @@ class NowPlayingService
             })
             ->orderByAsc('horaInicio')
             ->all();
-
+            
         $nowPlaying = $programas->filter(function ($programa) {
             $now = Time::now();
             if ($programa->horaFin->lessThan($programa->horaInicio)) {
@@ -58,8 +68,8 @@ class NowPlayingService
             return new StreamData(
                 programa: self::DEFAULT_PROGRAM_NAME,
                 produccion: self::DEFAULT_PRODUCTION_NAME,
-                pty: 0,
-                ptn: '',
+                pty: self::DEFAULT_PTY,
+                ptn: self::DEFAULT_PTN,
                 music: true,
                 sm: true,
             );
@@ -70,8 +80,8 @@ class NowPlayingService
         return new StreamData(
             programa: $first->name,
             produccion: $first->produccion,
-            pty: $first->pty?->value ?? 0,
-            ptn: $first->ptn ?? '',
+            pty: $first->pty->value,
+            ptn: $first->ptn,
             music: $first->musical,
             sm: $first->musical,
         );

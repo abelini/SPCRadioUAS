@@ -4,14 +4,16 @@ namespace SPC\Service;
 use Gemini;
 use Gemini\Client;
 use Cake\Core\Configure;
+use Cake\Log\Log;
+use Exception;
 
 class GeminiService
 {
     protected Client $engine;
     protected string $APIKey;
     protected array $models = [
-        'gemini-3.5-flash-lite',       // El modelo Lite más reciente y eficiente
-        'gemini-3.1-flash-lite',       // Gemini 3.1 optimizado para tareas de alta frecuencia
+        'gemini-3.5-flash-lite',
+        'gemini-3.1-flash-lite',
         'gemini-3.7-flash',
         'gemini-3.6-flash',
         'gemini-2.5-flash-lite',
@@ -40,7 +42,7 @@ class GeminiService
                     $result = $this->engine->generativeModel(model: $model)->generateContent($prompt);
                     return $result->text() . '<br><br><br><p class="generated-footnote">Generado con el modelo: ' . $model . '</p>';
 
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     $errorMessage = $e->getMessage();
 
                     if (str_contains($errorMessage, 'quota') || str_contains($errorMessage, '429')) {
@@ -51,12 +53,12 @@ class GeminiService
                             continue;
                         }
                     } else {
-                        \Cake\Log\Log::error("Error crítico en Gemini ($model): " . $errorMessage);
+                        Log::error("Error crítico en Gemini ($model): " . $errorMessage);
                         break;
                     }
                 }
             }
-            \Cake\Log\Log::warning("Cambiando de modelo a $model por exceso de cuota.");
+            Log::warning("Cambiando de modelo a $model por exceso de cuota.");
         }
         return 'Todos los modelos fallaron...';
     }
