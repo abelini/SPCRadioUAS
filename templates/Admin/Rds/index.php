@@ -4,7 +4,7 @@
  * @var array $status
  * @var array|null $override
  */
-use SPC\Model\Enum\PTY;
+use SPC\Enum\PTY;
 
 $this->assign('title', 'Monitor RDS');
 
