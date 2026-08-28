@@ -39,7 +39,7 @@ class ScheduleController extends ApiController
 	public function daily(): Response
 	{
 		if (($this->request->getQuery('source')) !== null && $this->request->getQuery('source') == 'mobile-app') {
-			$select = [
+			$fields = [
 				'ID',
 				'name',
 				'horaInicio',
@@ -52,7 +52,7 @@ class ScheduleController extends ApiController
 				'endTime' => 'horaFin',
 			];
 		} else {
-			$select = [
+			$fields = [
 				'name',
 				'horaInicio',
 				'horaFin',
@@ -68,13 +68,9 @@ class ScheduleController extends ApiController
 		$programas = $this->getTableLocator()
 			->get('Programas')
 			->find()
-			->select($select)
-			->contain('CategoriasProgramas', fn(SelectQuery $query)
-				=> $query->select(['ID', 'slug'])
-			)
-			->matching('Dias', fn(SelectQuery $query)
-				=> $query->where(['Dias.ID' => $day])
-			)
+			->select($fields)
+			->contain('CategoriasProgramas', fn(SelectQuery $query) => $query->select(['ID', 'slug']))
+			->matching('Dias', fn(SelectQuery $query) => $query->where(['Dias.ID' => $day]))
 			->orderByAsc('horaInicio')
 			->all();
 

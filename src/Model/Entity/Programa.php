@@ -94,14 +94,14 @@ class Programa extends Entity implements Stringable
 	protected function _getImageUrl(): string
 	{
 		if ($this->_fields['image'] == null) {
-			return self::IMAGE_CDN_URL . ($this->_fields['musical'] ? self::MUSICAL_PROGRAMME_DEFAULT_IMAGE : self::SPOKEN_PROGRAMME_DEFAULT_IMAGE);
+			return self::IMAGE_CDN_URL . ($this->_fields['music'] ? self::MUSICAL_PROGRAMME_DEFAULT_IMAGE : self::SPOKEN_PROGRAMME_DEFAULT_IMAGE);
 		}
 		return self::IMAGE_CDN_URL . $this->_fields['image'];
 	}
 
 	protected function _getIcon(): string
 	{
-		if ($this->_fields['musical'])
+		if ($this->_fields['music'])
 			return self::MUSICAL_ICON;
 		else
 			return $this->_fields['icon'] ? self::UO_ICON : self::COLABORADOR_ICON;
