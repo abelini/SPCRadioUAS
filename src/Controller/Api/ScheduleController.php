@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace SPC\Controller\Api;
 
+use Cake\Cache\Cache;
 use SPC\Controller\ApiController;
+use SPC\DTO\StreamData;
 use SPC\Service\EpgBuilder;
 use SPC\Service\NowPlayingService;
 use Cake\Event\EventInterface;
@@ -16,9 +18,11 @@ class ScheduleController extends ApiController
 {
 	protected const string RADIOUAS_URI = 'https://radio.uas.edu.mx';
 
+	protected const string OVERRIDE_CACHE_KEY = 'schedule_override';
+
 	public function now(): Response
 	{
-		$nowPlaying = (new NowPlayingService())->get();
+		$nowPlaying = $this->getOverrideStreamData() ?? (new NowPlayingService())->get();
 		$plainText = $nowPlaying->produccion . ' - ' . $nowPlaying->programa;
 
 		if ($this->request->getQuery('format') === 'json') {
@@ -34,6 +38,28 @@ class ScheduleController extends ApiController
 			->withHeader('Access-Control-Allow-Origin', self::RADIOUAS_URI)
 			->withType('text/plain')
 			->withStringBody($plainText);
+	}
+
+	private function getOverrideStreamData(): ?StreamData
+	{
+		$override = Cache::read(self::OVERRIDE_CACHE_KEY);
+		if ($override === null) {
+			return null;
+		}
+
+		if ($override['expires_at'] < time()) {
+			Cache::delete(self::OVERRIDE_CACHE_KEY);
+			return null;
+		}
+
+		return new StreamData(
+			programa: $override['programa'],
+			produccion: $override['produccion'],
+			pty: 0,
+			ptn: '',
+			music: (bool) $override['music'],
+			sm: (bool) $override['music'],
+		);
 	}
 
 	public function daily(): Response
@@ -64,6 +90,19 @@ class ScheduleController extends ApiController
 				'ends' => 'horaFin',
 			];
 		}
+
+		$override = Cache::read(self::OVERRIDE_CACHE_KEY);
+		if ($override !== null && $override['expires_at'] < time()) {
+			Cache::delete(self::OVERRIDE_CACHE_KEY);
+			$override = null;
+		}
+		if ($override !== null) {
+			return $this->response
+				->withHeader('Access-Control-Allow-Origin', self::RADIOUAS_URI)
+				->withType('application/json')
+				->withStringBody(json_encode($this->buildOverrideEntry($override)));
+		}
+
 		$day = $this->getRequestedDay();
 		$programas = $this->getTableLocator()
 			->get('Programas')
@@ -89,6 +128,30 @@ class ScheduleController extends ApiController
 			->withHeader('Access-Control-Allow-Origin', self::RADIOUAS_URI)
 			->withType('application/json')
 			->withStringBody(json_encode($result));
+	}
+
+	private function buildOverrideEntry(array $override): array
+	{
+		$timeParts = explode(':', $override['hora_inicio']);
+		$hours = (int) ($timeParts[0] ?? 0);
+		$minutes = (int) ($timeParts[1] ?? 0);
+
+		$start = DateTime::now();
+		$start->setTime($hours, $minutes);
+		$end = clone $start;
+		$end->modify('+' . $override['duration_minutes'] . ' minutes');
+
+		return [
+			'name' => $override['programa'],
+			'horaInicio' => $start->format('H:i'),
+			'horaFin' => $end->format('H:i'),
+			'image' => '',
+			'produccion' => $override['produccion'],
+			'icon' => null,
+			'music' => (bool) $override['music'],
+			'starts' => $start->format('H:i'),
+			'ends' => $end->format('H:i'),
+		];
 	}
 
 	public function si(): Response
