@@ -64,7 +64,7 @@ class NowPlayingService
             return $now->between($programa->horaInicio, $programa->horaFin);
         });*/
 
-        $nowPlaying = new ArrayObject();
+        $nowPlaying = new \ArrayObject();
 
         if ($nowPlaying->count() === 0) {
             return new StreamData(
