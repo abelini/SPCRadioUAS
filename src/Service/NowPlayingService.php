@@ -24,7 +24,7 @@ class NowPlayingService
     public const string DEFAULT_PTN = 'Musica';
 
     /**
-     * Program Type (PTY):
+     * Program Type (PTY): 12
      * RDS: Easy Listening (Música ligera)
      * RBDS: Soft (Música Relajante / Suave)
      */
@@ -55,14 +55,16 @@ class NowPlayingService
             })
             ->orderByAsc('horaInicio')
             ->all();
-            
+        /*
         $nowPlaying = $programas->filter(function ($programa) {
             $now = Time::now();
             if ($programa->horaFin->lessThan($programa->horaInicio)) {
                 return $now->greaterThanOrEquals($programa->horaInicio) || $now->lessThanOrEquals($programa->horaFin);
             }
             return $now->between($programa->horaInicio, $programa->horaFin);
-        });
+        });*/
+
+        $nowPlaying = [];
 
         if ($nowPlaying->count() === 0) {
             return new StreamData(
