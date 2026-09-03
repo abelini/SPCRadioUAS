@@ -12,28 +12,6 @@ use SPC\DTO\StreamData;
 
 class ScheduleController extends AppController
 {
-    /*
-    private const string CACHE_CONFIG = 'programas_api';
-
-    private const string CACHE_KEY = 'schedule_override';
-
-    private const string DEFAULT_PROGRAMA = 'Paisajes sonoros';
-
-    private const string DEFAULT_PRODUCCION = 'Fonoteca';
-
-    private const string DEFAULT_CONDUCCION = 'Auto DJ';
-
-    private const bool DEFAULT_MUSIC = true;
-
-    private const string DEFAULT_HORA_INICIO = '00:00';
-
-    private const int DEFAULT_DURATION_MINUTES = 60;
-
-    private const int DEFAULT_PTY = 12;
-
-    private const string DEFAULT_PTN = 'Musica';
-    */
-
     use APICacheTrait;
 
     public function override(): Response
@@ -45,18 +23,19 @@ class ScheduleController extends AppController
             return $this->redirect(['action' => 'override']);
         }
 
-        $midnight = (new DateTime())->setTime(23, 59, 59);
+        $now = DateTime::now();
+        $midnight = $now->endOfDay();
 
         if ($this->request->is('post')) {
             $data = $this->request->getData();
             $untilMidnight = !empty($data['until_midnight']);
 
             if ($untilMidnight) {
-                $durationMinutes = parent::$datetime->diffInMinutes($midnight);
+                $durationMinutes = $now->diffInMinutes($midnight);
                 $expiresAt = $midnight->getTimestamp();
             } else {
                 $durationMinutes = (int) $data['duration_minutes'];
-                $expiresAt = parent::$datetime->getTimestamp() + ($durationMinutes * 60);
+                $expiresAt = $now->addMinutes($durationMinutes)->getTimestamp();
             }
 
             Cache::write(self::SCHEDULE_CACHE_KEY, [
@@ -82,7 +61,7 @@ class ScheduleController extends AppController
             $override = null;
         }
 
-        $minutesUntilMidnight = parent::$datetime->diffInMinutes($midnight);
+        $minutesUntilMidnight = $now->diffInMinutes($midnight);
         $defaultPrograma = StreamData::DEFAULT_PROGRAM_NAME;
         $defaultProduccion = StreamData::DEFAULT_PRODUCTION_NAME;
         $defaultConduccion = StreamData::DEFAULT_CONDUCCION;

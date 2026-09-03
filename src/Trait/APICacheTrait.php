@@ -40,22 +40,22 @@ trait APICacheTrait
         return true;
     }
 
-	protected function getActiveOverride(): StreamData
-	{
-		$override = Cache::read(self::SCHEDULE_CACHE_KEY, self::SCHEDULE_CACHE_CONFIG);
-		
-		return new StreamData(
-			programa: $override['programa'],
-			produccion: $override['produccion'],
-			pty: (int) $override['pty'],
-			ptn: $override['ptn'],
-			music: (bool) $override['music'],
-			sm: (bool) $override['music'],
-			conduccion: $override['conduccion'],
-			image: Programa::getDefaultCover(musical: (bool) $override['music']),
-			horaInicio: Time::createFromFormat('H:i', $override['hora_inicio']),
-			durationMinutes: $override['duration_minutes'],
-			expiresAt: $override['expires_at'],
-		);
-	}
+    protected function getActiveOverride(): StreamData
+    {
+        $override = Cache::read(self::SCHEDULE_CACHE_KEY, self::SCHEDULE_CACHE_CONFIG);
+
+        return new StreamData(
+            programa: $override['programa'],
+            produccion: $override['produccion'],
+            pty: (int) $override['pty'],
+            ptn: $override['ptn'],
+            music: (bool) $override['music'],
+            sm: (bool) $override['music'],
+            conduccion: $override['conduccion'],
+            image: Programa::getDefaultCover(musical: (bool) $override['music']),
+            horaInicio: Time::createFromFormat('H:i', $override['hora_inicio']),
+            durationMinutes: $override['duration_minutes'],
+            expiresAt: $override['expires_at'],
+        );
+    }
 }
