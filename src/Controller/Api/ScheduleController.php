@@ -49,18 +49,27 @@ class ScheduleController extends ApiController
 		$isMobileApp = ($this->request->getQuery('source')) !== null && $this->request->getQuery('source') == 'mobile-app';
 
 		$fields = $isMobileApp ? [
-				'ID', 'name', 'horaInicio', 'horaFin', 'image', 'categoryID',
-				'subtitle' => 'produccion',
-				'music' => 'musical',
-				'startTime' => 'horaInicio',
-				'endTime' => 'horaFin',
-			] : [
-				'name', 'horaInicio', 'horaFin', 'image', 'produccion',
-				'icon' => 'uo',
-				'music' => 'musical',
-				'starts' => 'horaInicio',
-				'ends' => 'horaFin',
-			];
+			'ID',
+			'name',
+			'horaInicio',
+			'horaFin',
+			'image',
+			'categoryID',
+			'subtitle' => 'produccion',
+			'music' => 'musical',
+			'startTime' => 'horaInicio',
+			'endTime' => 'horaFin',
+		] : [
+			'name',
+			'horaInicio',
+			'horaFin',
+			'image',
+			'produccion',
+			'icon' => 'uo',
+			'music' => 'musical',
+			'starts' => 'horaInicio',
+			'ends' => 'horaFin',
+		];
 
 		$programas = $this->getTableLocator()
 			->get('Programas')
@@ -91,7 +100,11 @@ class ScheduleController extends ApiController
 		}
 
 		if ($this->isOverrideActive()) {
-			$result = $this->spliceOverride($this->getActiveOverride(), $result, $isMobileApp);
+			//$result = $this->spliceOverride($this->getActiveOverride(), $result, $isMobileApp);
+			return $this->response
+				->withHeader('Access-Control-Allow-Origin', self::RADIOUAS_URI)
+				->withType('application/json')
+				->withStringBody(json_encode([]));
 		}
 
 		return $this->response
@@ -149,7 +162,7 @@ class ScheduleController extends ApiController
 			array_splice($merged, $index, 0, [$overrideEntry]);
 		}
 
-		if (! $isMobileApp) {
+		if (!$isMobileApp) {
 			foreach ($merged as &$entry) {
 				$entry['starts'] = $entry['starts']->i18nFormat('h:mm a', 'en-US');
 				$entry['ends'] = $entry['ends']->i18nFormat('h:mm a', 'en-US');

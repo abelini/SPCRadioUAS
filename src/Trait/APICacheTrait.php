@@ -53,7 +53,7 @@ trait APICacheTrait
             sm: (bool) $override['music'],
             conduccion: $override['conduccion'],
             image: Programa::getDefaultCover(musical: (bool) $override['music']),
-            horaInicio: Time::createFromFormat('H:i', $override['hora_inicio']),
+            horaInicio: Time::parse($override['hora_inicio']),
             durationMinutes: $override['duration_minutes'],
             expiresAt: $override['expires_at'],
         );
