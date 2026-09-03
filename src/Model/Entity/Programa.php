@@ -91,10 +91,15 @@ class Programa extends Entity implements Stringable
 		// culture, science, sports, news, entertainment, children, youth, women, 
 	}
 
+	public static function getDefaultCover(bool $musical = true): string
+	{
+		return self::IMAGE_CDN_URL . ($musical ? self::MUSICAL_PROGRAMME_DEFAULT_IMAGE : self::SPOKEN_PROGRAMME_DEFAULT_IMAGE);
+	}
+
 	protected function _getImageUrl(): string
 	{
 		if ($this->_fields['image'] == null) {
-			return self::IMAGE_CDN_URL . ($this->_fields['music'] ? self::MUSICAL_PROGRAMME_DEFAULT_IMAGE : self::SPOKEN_PROGRAMME_DEFAULT_IMAGE);
+			return self::getDefaultCover((bool) ($this->_fields['music'] ?? false));
 		}
 		return self::IMAGE_CDN_URL . $this->_fields['image'];
 	}

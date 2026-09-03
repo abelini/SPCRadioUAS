@@ -7,18 +7,34 @@ use Cake\Cache\Cache;
 use Cake\Http\Response;
 use SPC\Controller\AppController;
 use Cake\I18n\DateTime;
+use SPC\Trait\APICacheTrait;
+use SPC\DTO\StreamData;
 
 class ScheduleController extends AppController
 {
-    private const string SCHEDULE_CACHE_KEY = 'schedule_override';
+    /*
+    private const string CACHE_CONFIG = 'programas_api';
 
-    private const string SCHEDULE_CACHE_CONFIG = 'programas_api';
-    private const string DEFAULT_PROGRAMA = 'Programa Especial';
-    private const string DEFAULT_PRODUCCION = 'Producción Especial';
-    private const string DEFAULT_CONDUCCION = '';
-    private const bool DEFAULT_MUSIC = false;
+    private const string CACHE_KEY = 'schedule_override';
+
+    private const string DEFAULT_PROGRAMA = 'Paisajes sonoros';
+
+    private const string DEFAULT_PRODUCCION = 'Fonoteca';
+
+    private const string DEFAULT_CONDUCCION = 'Auto DJ';
+
+    private const bool DEFAULT_MUSIC = true;
+
     private const string DEFAULT_HORA_INICIO = '00:00';
+
     private const int DEFAULT_DURATION_MINUTES = 60;
+
+    private const int DEFAULT_PTY = 12;
+
+    private const string DEFAULT_PTN = 'Musica';
+    */
+
+    use APICacheTrait;
 
     public function override(): Response
     {
@@ -29,26 +45,28 @@ class ScheduleController extends AppController
             return $this->redirect(['action' => 'override']);
         }
 
+        $midnight = (new DateTime())->setTime(23, 59, 59);
+
         if ($this->request->is('post')) {
             $data = $this->request->getData();
             $untilMidnight = !empty($data['until_midnight']);
 
             if ($untilMidnight) {
-                $midnight = (new DateTime())->setTime(23, 59, 59);
-                $now = DateTime::now();
-                $durationMinutes = (int) (($midnight->getTimestamp() - $now->getTimestamp()) / 60);
+                $durationMinutes = parent::$datetime->diffInMinutes($midnight);
                 $expiresAt = $midnight->getTimestamp();
             } else {
-                $durationMinutes = (int) ($data['duration_minutes'] ?? self::DEFAULT_DURATION_MINUTES);
-                $expiresAt = time() + ($durationMinutes * 60);
+                $durationMinutes = (int) $data['duration_minutes'];
+                $expiresAt = parent::$datetime->getTimestamp() + ($durationMinutes * 60);
             }
 
             Cache::write(self::SCHEDULE_CACHE_KEY, [
-                'programa' => $data['programa'] ?? self::DEFAULT_PROGRAMA,
-                'produccion' => $data['produccion'] ?? self::DEFAULT_PRODUCCION,
-                'conduccion' => $data['conduccion'] ?? self::DEFAULT_CONDUCCION,
+                'programa' => $data['programa'],
+                'produccion' => $data['produccion'],
+                'conduccion' => $data['conduccion'],
                 'music' => !empty($data['music']),
-                'hora_inicio' => $data['hora_inicio'] ?? self::DEFAULT_HORA_INICIO,
+                'pty' => (int) $data['pty'],
+                'ptn' => $data['ptn'],
+                'hora_inicio' => $data['hora_inicio'],
                 'duration_minutes' => $durationMinutes,
                 'expires_at' => $expiresAt,
             ], self::SCHEDULE_CACHE_CONFIG);
@@ -64,16 +82,15 @@ class ScheduleController extends AppController
             $override = null;
         }
 
-        $now = DateTime::now();
-        $midnight = $now->setTime(23, 59, 59);
-        $minutesUntilMidnight = (int) (($midnight->getTimestamp() - $now->getTimestamp()) / 60);
-
-        $defaultPrograma = self::DEFAULT_PROGRAMA;
-        $defaultProduccion = self::DEFAULT_PRODUCCION;
-        $defaultConduccion = self::DEFAULT_CONDUCCION;
-        $defaultMusic = self::DEFAULT_MUSIC;
-        $defaultHoraInicio = self::DEFAULT_HORA_INICIO;
-        $defaultDurationMinutes = self::DEFAULT_DURATION_MINUTES;
+        $minutesUntilMidnight = parent::$datetime->diffInMinutes($midnight);
+        $defaultPrograma = StreamData::DEFAULT_PROGRAM_NAME;
+        $defaultProduccion = StreamData::DEFAULT_PRODUCTION_NAME;
+        $defaultConduccion = StreamData::DEFAULT_CONDUCCION;
+        $defaultMusic = StreamData::DEFAULT_MUSICAL;
+        $defaultHoraInicio = StreamData::DEFAULT_HORA_INICIO;
+        $defaultDurationMinutes = StreamData::DEFAULT_DURATION_MINUTES;
+        $defaultPty = StreamData::DEFAULT_PTY;
+        $defaultPtn = StreamData::DEFAULT_PTN;
 
         $this->set(compact(
             'override',
@@ -84,6 +101,8 @@ class ScheduleController extends AppController
             'defaultMusic',
             'defaultHoraInicio',
             'defaultDurationMinutes',
+            'defaultPty',
+            'defaultPtn',
         ));
 
         return $this->render();

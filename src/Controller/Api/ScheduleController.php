@@ -3,34 +3,36 @@ declare(strict_types=1);
 
 namespace SPC\Controller\Api;
 
-use Cake\Cache\Cache;
+use Cake\Event\EventInterface;
+use Cake\Http\Response;
+use Cake\I18n\DateTime;
+use Cake\I18n\Time;
+use Cake\ORM\Query\SelectQuery;
 use SPC\Controller\ApiController;
 use SPC\DTO\StreamData;
 use SPC\Service\EpgBuilder;
 use SPC\Service\NowPlayingService;
-use Cake\Event\EventInterface;
-use Cake\Http\Response;
-use Cake\I18n\DateTime;
-use Cake\ORM\Query\SelectQuery;
+use SPC\Trait\APICacheTrait;
 
 
 class ScheduleController extends ApiController
 {
 	protected const string RADIOUAS_URI = 'https://radio.uas.edu.mx';
-	protected const string OVERRIDE_CACHE_KEY = 'schedule_override';
-	protected const string SCHEDULE_CACHE_CONFIG = 'programas_api';
+
+	use APICacheTrait;
 
 	public function now(): Response
 	{
-		$nowPlaying = $this->getOverrideStreamData() ?? (new NowPlayingService())->get();
-		$plainText = $nowPlaying->produccion . ' - ' . $nowPlaying->programa;
+		$streamData = new NowPlayingService()->get();
 
 		if ($this->request->getQuery('format') === 'json') {
 			return $this->render()
 				->withHeader('Access-Control-Allow-Origin', self::RADIOUAS_URI)
 				->withType('application/json')
-				->withStringBody(json_encode($nowPlaying));
+				->withStringBody(json_encode($streamData));
 		}
+
+		$plainText = $streamData->produccion . ' - ' . $streamData->programa;
 
 		$this->viewBuilder()->setLayout(null);
 
@@ -40,70 +42,26 @@ class ScheduleController extends ApiController
 			->withStringBody($plainText);
 	}
 
-	private function getOverrideStreamData(): ?StreamData
-	{
-		$override = Cache::read(self::OVERRIDE_CACHE_KEY, self::SCHEDULE_CACHE_CONFIG);
-		if ($override === null) {
-			return null;
-		}
-
-		if ($override['expires_at'] < time()) {
-			Cache::delete(self::OVERRIDE_CACHE_KEY, self::SCHEDULE_CACHE_CONFIG);
-			return null;
-		}
-
-		return new StreamData(
-			programa: $override['programa'],
-			produccion: $override['produccion'],
-			pty: 0,
-			ptn: '',
-			music: (bool) $override['music'],
-			sm: (bool) $override['music'],
-		);
-	}
-
 	public function daily(): Response
 	{
-		if (($this->request->getQuery('source')) !== null && $this->request->getQuery('source') == 'mobile-app') {
-			$fields = [
-				'ID',
-				'name',
-				'horaInicio',
-				'horaFin',
-				'image',
+		$day = $this->getRequestedDay();
+
+		$isMobileApp = ($this->request->getQuery('source')) !== null && $this->request->getQuery('source') == 'mobile-app';
+
+		$fields = $isMobileApp ? [
+				'ID', 'name', 'horaInicio', 'horaFin', 'image', 'categoryID',
 				'subtitle' => 'produccion',
-				'categoryID',
 				'music' => 'musical',
 				'startTime' => 'horaInicio',
 				'endTime' => 'horaFin',
-			];
-		} else {
-			$fields = [
-				'name',
-				'horaInicio',
-				'horaFin',
-				'image',
-				'produccion',
+			] : [
+				'name', 'horaInicio', 'horaFin', 'image', 'produccion',
 				'icon' => 'uo',
 				'music' => 'musical',
 				'starts' => 'horaInicio',
 				'ends' => 'horaFin',
 			];
-		}
 
-		$override = Cache::read(self::OVERRIDE_CACHE_KEY, self::SCHEDULE_CACHE_CONFIG);
-		if ($override !== null && $override['expires_at'] < time()) {
-			Cache::delete(self::OVERRIDE_CACHE_KEY, self::SCHEDULE_CACHE_CONFIG);
-			$override = null;
-		}
-		if ($override !== null) {
-			return $this->response
-				->withHeader('Access-Control-Allow-Origin', self::RADIOUAS_URI)
-				->withType('application/json')
-				->withStringBody(json_encode($this->buildOverrideEntry($override)));
-		}
-
-		$day = $this->getRequestedDay();
 		$programas = $this->getTableLocator()
 			->get('Programas')
 			->find()
@@ -121,7 +79,19 @@ class ScheduleController extends ApiController
 			$entry['dayOfWeek'] = $day;
 			$entry['slug'] = $programa->categoria->slug;
 			unset($entry['categoria']);
+
+			if ($isMobileApp) {
+				$entry['startTime'] = $programa->horaInicio;
+				$entry['endTime'] = $programa->horaFin;
+			} else {
+				$entry['starts'] = $programa->horaInicio;
+				$entry['ends'] = $programa->horaFin;
+			}
 			$result[] = $entry;
+		}
+
+		if ($this->isOverrideActive()) {
+			$result = $this->spliceOverride($this->getActiveOverride(), $result, $isMobileApp);
 		}
 
 		return $this->response
@@ -130,28 +100,87 @@ class ScheduleController extends ApiController
 			->withStringBody(json_encode($result));
 	}
 
-	private function buildOverrideEntry(array $override): array
+	private function spliceOverride(StreamData $override, array $entries, bool $isMobileApp): array
 	{
-		$timeParts = explode(':', $override['hora_inicio']);
-		$hours = (int) ($timeParts[0] ?? 0);
-		$minutes = (int) ($timeParts[1] ?? 0);
+		$startKey = $isMobileApp ? 'startTime' : 'starts';
+		$endKey = $isMobileApp ? 'endTime' : 'ends';
 
-		$start = DateTime::now();
-		$start->setTime($hours, $minutes);
-		$end = clone $start;
-		$end->modify('+' . $override['duration_minutes'] . ' minutes');
+		$overrideStart = $override->horaInicio;
+		$overrideEnd = $overrideStart->addMinutes($override->durationMinutes);
 
-		return [
-			'name' => $override['programa'],
-			'horaInicio' => $start->format('H:i'),
-			'horaFin' => $end->format('H:i'),
-			'image' => '',
-			'produccion' => $override['produccion'],
-			'icon' => null,
-			'music' => (bool) $override['music'],
-			'starts' => $start->format('H:i'),
-			'ends' => $end->format('H:i'),
+		$merged = [];
+		foreach ($entries as $entry) {
+			/** @var Time $start */
+			$start = $entry[$startKey];
+			/** @var Time $end */
+			$end = $entry[$endKey];
+			if ($end <= $start) {
+				$end = $end->addDays(1);
+			}
+
+			if ($end <= $overrideStart || $start >= $overrideEnd) {
+				$merged[] = $entry;
+				continue;
+			}
+			if ($start < $overrideStart) {
+				$entry[$endKey] = $overrideStart;
+				$merged[] = $entry;
+				continue;
+			}
+			if ($end > $overrideEnd) {
+				$entry[$startKey] = $overrideEnd;
+				$merged[] = $entry;
+			}
+		}
+
+		$overrideEntry = $this->buildOverrideEntry($override, $isMobileApp, $overrideStart, $overrideEnd);
+
+		$index = null;
+		foreach ($merged as $i => $entry) {
+			if ($entry[$startKey] >= $overrideEnd) {
+				$index = $i;
+				break;
+			}
+		}
+
+		if ($index === null) {
+			$merged[] = $overrideEntry;
+		} else {
+			array_splice($merged, $index, 0, [$overrideEntry]);
+		}
+
+		if (! $isMobileApp) {
+			foreach ($merged as &$entry) {
+				$entry['starts'] = $entry['starts']->i18nFormat('h:mm a', 'en-US');
+				$entry['ends'] = $entry['ends']->i18nFormat('h:mm a', 'en-US');
+			}
+			unset($entry);
+		}
+
+		return $merged;
+	}
+
+	private function buildOverrideEntry(StreamData $override, bool $isMobileApp, Time $start, Time $end): array
+	{
+		$entry = [
+			'name' => $override->programa,
+			'image' => $override->image,
+			'music' => $override->music,
 		];
+
+		if ($isMobileApp) {
+			$entry['subtitle'] = $override->produccion;
+			$entry['categoryID'] = null;
+			$entry['startTime'] = $start;
+			$entry['endTime'] = $end;
+		} else {
+			$entry['produccion'] = $override->produccion;
+			$entry['icon'] = null;
+			$entry['starts'] = $start;
+			$entry['ends'] = $end;
+		}
+
+		return $entry;
 	}
 
 	public function si(): Response

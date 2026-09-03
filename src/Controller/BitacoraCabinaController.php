@@ -45,12 +45,12 @@ class BitacoraCabinaController extends AppController
 
 		$this->set(compact('bitacora', 'asignaciones', 'programStatuses', 'disabledSubmit', 'checkTimeToDisable', ));
 
-		$controlActivo = Cache::read(self::CONTROL_REMOTO_CACHE);
+		$controlActivo = Cache::read(self::CR_CACHE_KEY, self::CR_CACHE_CONFIG);
 		if ($controlActivo) {
 			$tiempoTranscurrido = time() - $controlActivo['inicio'];
 
-			if ($tiempoTranscurrido > self::MAX_REMOTE_CONTROL_TIME) {
-				Cache::delete(self::CONTROL_REMOTO_CACHE);
+			if ($tiempoTranscurrido > self::CR_MAX_TIME) {
+				Cache::delete(self::CR_CACHE_KEY, self::CR_CACHE_CONFIG);
 				$controlActivo = null;
 			}
 		}
@@ -91,7 +91,7 @@ class BitacoraCabinaController extends AppController
 	public function stopRemoteStream(): Response
 	{
 		$this->request->allowMethod(['post']);
-		Cache::delete(self::CONTROL_REMOTO_CACHE);
+		Cache::delete(self::CR_CACHE_KEY, self::CR_CACHE_CONFIG);
 		$this->Flash->success('El control remoto ha finalizado. La programación regular ha vuelto a la normalidad.');
 		return $this->redirect($this->referer());
 	}

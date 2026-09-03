@@ -123,14 +123,14 @@ class CabinaController extends ApiController
 
 			$prompt = str_replace(['%evento%', '%participantes%'], [$evento, $participantes], $prompt);
 
-			$controlActual = Cache::read(self::CONTROL_REMOTO_CACHE);
+			$controlActual = Cache::read(self::CR_CACHE_KEY, self::CR_CACHE_CONFIG);
 
 			if (!$controlActual || $controlActual['evento'] !== $evento) {
-				Cache::write(self::CONTROL_REMOTO_CACHE, [
+				Cache::write(self::CR_CACHE_KEY, [
 					'evento' => $evento,
 					'produccion' => 'Transmisión remota',
 					'inicio' => DateTime::now()->getTimestamp()
-				]);
+				], self::CR_CACHE_CONFIG);
 			}
 		}
 

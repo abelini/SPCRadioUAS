@@ -10,41 +10,35 @@ use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\TableRegistry;
 use SPC\DTO\StreamData;
 use SPC\Enum\PTY;
+use SPC\Model\Entity\Programa;
+use SPC\Trait\APICacheTrait;
 
-class NowPlayingService
+
+final class NowPlayingService
 {
-    public const string CONTROL_REMOTO_CACHE = 'active_remote_broadcast';
-
-    public const int MAX_REMOTE_CONTROL_TIME = 7200;
-
-    public const string DEFAULT_PROGRAM_NAME = 'Paisajes sonoros';
-
-    public const string DEFAULT_PRODUCTION_NAME = 'Fonoteca';
-
-    public const string DEFAULT_PTN = 'Musica';
-
-    /**
-     * Program Type (PTY): 12
-     * RDS: Easy Listening (Música ligera)
-     * RBDS: Soft (Música Relajante / Suave)
-     */
-    public const int DEFAULT_PTY = 12;
+    use APICacheTrait;
 
     public function get(): StreamData
     {
-        $rc = Cache::read(self::CONTROL_REMOTO_CACHE);
+        $rc = Cache::read(self::CR_CACHE_KEY, self::CR_CACHE_CONFIG);
         if ($rc) {
-            if (time() - $rc['inicio'] <= self::MAX_REMOTE_CONTROL_TIME) {
+            if (time() - $rc['inicio'] <= self::CR_MAX_TIME) {
                 return new StreamData(
                     programa: $rc['evento'],
                     produccion: $rc['produccion'],
                     pty: 0,
-                    ptn: '',
+                    ptn: 'Enlace',
                     music: false,
                     sm: false,
+                    image: Programa::getDefaultCover(musical:false),
+                    horaInicio: Time::now(),
                 );
             }
-            Cache::delete(self::CONTROL_REMOTO_CACHE);
+            Cache::delete(self::CR_CACHE_KEY, self::CR_CACHE_CONFIG);
+        }
+
+        if ($this->isOverrideActive()) {
+            return $this->getActiveOverride();
         }
 
         $programas = TableRegistry::getTableLocator()
@@ -66,12 +60,14 @@ class NowPlayingService
 
         if ($nowPlaying->count() === 0) {
             return new StreamData(
-                programa: self::DEFAULT_PROGRAM_NAME,
-                produccion: self::DEFAULT_PRODUCTION_NAME,
-                pty: self::DEFAULT_PTY,
-                ptn: self::DEFAULT_PTN,
-                music: true,
-                sm: true,
+                programa: StreamData::DEFAULT_PROGRAM_NAME,
+                produccion: StreamData::DEFAULT_PRODUCTION_NAME,
+                pty: StreamData::DEFAULT_PTY,
+                ptn: StreamData::DEFAULT_PTN,
+                music: StreamData::DEFAULT_MUSICAL,
+                sm: StreamData::DEFAULT_MUSICAL,
+                image: Programa::getDefaultCover(musical: StreamData::DEFAULT_MUSICAL),
+                horaInicio: Time::now(),
             );
         }
 
@@ -84,6 +80,8 @@ class NowPlayingService
             ptn: $first->ptn,
             music: $first->musical,
             sm: $first->musical,
+            image: $first->image_url,
+            horaInicio: $first->horaInicio,
         );
     }
 }
