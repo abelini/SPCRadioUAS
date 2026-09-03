@@ -17,8 +17,8 @@ use Cake\ORM\Query\SelectQuery;
 class ScheduleController extends ApiController
 {
 	protected const string RADIOUAS_URI = 'https://radio.uas.edu.mx';
-
 	protected const string OVERRIDE_CACHE_KEY = 'schedule_override';
+	protected const string SCHEDULE_CACHE_CONFIG = 'programas_api';
 
 	public function now(): Response
 	{
@@ -42,13 +42,13 @@ class ScheduleController extends ApiController
 
 	private function getOverrideStreamData(): ?StreamData
 	{
-		$override = Cache::read(self::OVERRIDE_CACHE_KEY);
+		$override = Cache::read(self::OVERRIDE_CACHE_KEY, self::SCHEDULE_CACHE_CONFIG);
 		if ($override === null) {
 			return null;
 		}
 
 		if ($override['expires_at'] < time()) {
-			Cache::delete(self::OVERRIDE_CACHE_KEY);
+			Cache::delete(self::OVERRIDE_CACHE_KEY, self::SCHEDULE_CACHE_CONFIG);
 			return null;
 		}
 
@@ -91,9 +91,9 @@ class ScheduleController extends ApiController
 			];
 		}
 
-		$override = Cache::read(self::OVERRIDE_CACHE_KEY);
+		$override = Cache::read(self::OVERRIDE_CACHE_KEY, self::SCHEDULE_CACHE_CONFIG);
 		if ($override !== null && $override['expires_at'] < time()) {
-			Cache::delete(self::OVERRIDE_CACHE_KEY);
+			Cache::delete(self::OVERRIDE_CACHE_KEY, self::SCHEDULE_CACHE_CONFIG);
 			$override = null;
 		}
 		if ($override !== null) {
@@ -171,7 +171,7 @@ class ScheduleController extends ApiController
 
 		try {
 			$date = DateTime::createFromFormat('Ymd', substr($dateParam, 0, 8));
-		} catch (InvalidArgumentException $e) {
+		} catch (\InvalidArgumentException $e) {
 			$date = DateTime::now();
 		}
 

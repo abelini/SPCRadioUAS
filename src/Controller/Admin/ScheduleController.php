@@ -12,6 +12,7 @@ class ScheduleController extends AppController
 {
     private const string SCHEDULE_CACHE_KEY = 'schedule_override';
 
+    private const string SCHEDULE_CACHE_CONFIG = 'programas_api';
     private const string DEFAULT_PROGRAMA = 'Programa Especial';
     private const string DEFAULT_PRODUCCION = 'Producción Especial';
     private const string DEFAULT_CONDUCCION = '';
@@ -22,7 +23,7 @@ class ScheduleController extends AppController
     public function override(): Response
     {
         if ($this->request->getQuery('cancel') !== null) {
-            Cache::delete(self::SCHEDULE_CACHE_KEY);
+            Cache::delete(self::SCHEDULE_CACHE_KEY, self::SCHEDULE_CACHE_CONFIG);
             $this->Flash->success('Override de schedule cancelado.');
 
             return $this->redirect(['action' => 'override']);
@@ -35,10 +36,10 @@ class ScheduleController extends AppController
             if ($untilMidnight) {
                 $midnight = (new DateTime())->setTime(23, 59, 59);
                 $now = DateTime::now();
-                $durationMinutes = (int)(($midnight->getTimestamp() - $now->getTimestamp()) / 60);
+                $durationMinutes = (int) (($midnight->getTimestamp() - $now->getTimestamp()) / 60);
                 $expiresAt = $midnight->getTimestamp();
             } else {
-                $durationMinutes = (int)($data['duration_minutes'] ?? self::DEFAULT_DURATION_MINUTES);
+                $durationMinutes = (int) ($data['duration_minutes'] ?? self::DEFAULT_DURATION_MINUTES);
                 $expiresAt = time() + ($durationMinutes * 60);
             }
 
@@ -50,22 +51,22 @@ class ScheduleController extends AppController
                 'hora_inicio' => $data['hora_inicio'] ?? self::DEFAULT_HORA_INICIO,
                 'duration_minutes' => $durationMinutes,
                 'expires_at' => $expiresAt,
-            ]);
+            ], self::SCHEDULE_CACHE_CONFIG);
 
             $this->Flash->success('Override de schedule aplicado.');
 
             return $this->redirect(['action' => 'override']);
         }
 
-        $override = Cache::read(self::SCHEDULE_CACHE_KEY);
+        $override = Cache::read(self::SCHEDULE_CACHE_KEY, self::SCHEDULE_CACHE_CONFIG);
         if ($override !== null && $override['expires_at'] < time()) {
-            Cache::delete(self::SCHEDULE_CACHE_KEY);
+            Cache::delete(self::SCHEDULE_CACHE_KEY, self::SCHEDULE_CACHE_CONFIG);
             $override = null;
         }
 
         $now = DateTime::now();
         $midnight = $now->setTime(23, 59, 59);
-        $minutesUntilMidnight = (int)(($midnight->getTimestamp() - $now->getTimestamp()) / 60);
+        $minutesUntilMidnight = (int) (($midnight->getTimestamp() - $now->getTimestamp()) / 60);
 
         $defaultPrograma = self::DEFAULT_PROGRAMA;
         $defaultProduccion = self::DEFAULT_PRODUCCION;
