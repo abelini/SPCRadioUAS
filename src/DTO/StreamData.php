@@ -1,9 +1,9 @@
 <?php
+
 declare(strict_types=1);
 
 namespace SPC\DTO;
 
-use Cake\I18n\Time;
 
 final class StreamData
 {
@@ -19,8 +19,6 @@ final class StreamData
 
     public const bool DEFAULT_MUSICAL = true;
 
-    public const string DEFAULT_HORA_INICIO = '00:00';
-
     public const int DEFAULT_DURATION_MINUTES = 60;
 
     public function __construct(
@@ -31,9 +29,9 @@ final class StreamData
         public readonly bool $music,
         public readonly bool $sm,
         public readonly string $image,
-        public readonly Time $horaInicio,
-        public readonly ?string $conduccion = null,
-        public readonly ?int $durationMinutes = null,
+        public readonly int $horaInicio,
+        public readonly string $conduccion = self::DEFAULT_CONDUCCION,
+        public readonly int $durationMinutes = self::DEFAULT_DURATION_MINUTES,
         public readonly ?int $expiresAt = null,
     ) {}
 }

@@ -1,15 +1,16 @@
 <?php
+
 declare(strict_types=1);
 
 namespace SPC\Service;
 
 use Cake\Cache\Cache;
+use Cake\Core\Configure;
 use Cake\I18n\DateTime;
 use Cake\I18n\Time;
 use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\TableRegistry;
 use SPC\DTO\StreamData;
-use SPC\Enum\PTY;
 use SPC\Model\Entity\Programa;
 use SPC\Trait\APICacheTrait;
 
@@ -30,8 +31,8 @@ final class NowPlayingService
                     ptn: 'Enlace',
                     music: false,
                     sm: false,
-                    image: Programa::getDefaultCover(musical:false),
-                    horaInicio: Time::now(),
+                    image: Programa::getDefaultCover(musical: false),
+                    horaInicio: $rc['inicio'],
                 );
             }
             Cache::delete(self::CR_CACHE_KEY, self::CR_CACHE_CONFIG);
@@ -67,7 +68,7 @@ final class NowPlayingService
                 music: StreamData::DEFAULT_MUSICAL,
                 sm: StreamData::DEFAULT_MUSICAL,
                 image: Programa::getDefaultCover(musical: StreamData::DEFAULT_MUSICAL),
-                horaInicio: Time::now(),
+                horaInicio: DateTime::now()->getTimestamp(),
             );
         }
 
@@ -81,7 +82,7 @@ final class NowPlayingService
             music: $first->musical,
             sm: $first->musical,
             image: $first->image_url,
-            horaInicio: $first->horaInicio,
+            horaInicio: DateTime::createFromFormat('H:i:s', $first->horaInicio->format('H:i:s'))->getTimestamp(),
         );
     }
 }

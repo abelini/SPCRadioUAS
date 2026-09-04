@@ -1,10 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace SPC\Trait;
 
 use Cake\Cache\Cache;
-use Cake\I18n\Time;
+use Cake\Core\Configure;
+use Cake\I18n\DateTime;
 use SPC\DTO\StreamData;
 use SPC\Model\Entity\Programa;
 
@@ -47,13 +49,13 @@ trait APICacheTrait
         return new StreamData(
             programa: $override['programa'],
             produccion: $override['produccion'],
-            pty: (int) $override['pty'],
+            pty: $override['pty'],
             ptn: $override['ptn'],
-            music: (bool) $override['music'],
-            sm: (bool) $override['music'],
+            music: $override['music'],
+            sm: $override['music'],
             conduccion: $override['conduccion'],
-            image: Programa::getDefaultCover(musical: (bool) $override['music']),
-            horaInicio: Time::parse($override['hora_inicio']),
+            image: Programa::getDefaultCover(musical: $override['music']),
+            horaInicio: $override['hora_inicio'],
             durationMinutes: $override['duration_minutes'],
             expiresAt: $override['expires_at'],
         );

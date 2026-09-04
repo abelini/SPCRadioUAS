@@ -1,29 +1,12 @@
-<?php
-/**
- * @var \App\View\AppView $this
- * @var array|null $override
- * @var int $minutesUntilMidnight
- * @var string $defaultPrograma
- * @var string $defaultProduccion
- * @var string $defaultConduccion
- * @var bool $defaultMusic
- * @var string $defaultHoraInicio
- * @var int $defaultDurationMinutes
- * @var int $defaultPty
- * @var string $defaultPtn
- */
+<?php $this->assign('title', 'Override de Schedule'); ?>
 
-use SPC\Enum\PTY;
-$this->assign('title', 'Override de Schedule');
-
-?>
 <div class="page-header">
     <h5><i class="fa-solid fa-calendar-days"></i> Sobreescribir la programación habitual</h5>
 </div>
 
 <?php if ($override !== null): ?>
 <div class="alert alert-warning">
-    <p>Override activo hasta las <?= date('H:i', $override['expires_at']) ?>
+    <p>Programación habitual pausada hasta el <strong><?= $this->Time->i18nFormat(date:$override['expires_at'], format:$intlFormat, timezone:$timezone) ?></strong>
     — <?= $this->Html->link('Cancelar', ['action' => 'override', '?' => ['cancel' => 1]]) ?></p>
 </div>
 <?php endif; ?>
@@ -77,22 +60,12 @@ $this->assign('title', 'Override de Schedule');
 
     <div class="form-group">
         <?= $this->Form->label('pty', 'PTY (Program Type)') ?>
-        <?= $this->Form->select('pty', array_column(PTY::cases(), 'name'), ['class' => 'form-control', 'default' => (int)($override['pty'] ?? $defaultPty)]) ?>
+        <?= $this->Form->select('pty', $programTypes, ['class' => 'form-control', 'default' => (int)($override['pty'] ?? $defaultPty)]) ?>
     </div>
 
     <div class="form-group">
         <?= $this->Form->label('ptn', 'PTN (Program Type Name)') ?>
         <?= $this->Form->text('ptn', ['class' => 'form-control', 'maxlength' => 8, 'value' => $override['ptn'] ?? $defaultPtn]) ?>
-    </div>
-
-    <div class="form-group">
-        <?= $this->Form->label('hora_inicio', 'Hora de inicio') ?>
-        <?= $this->Form->control('hora_inicio', [
-            'type' => 'time',
-            'label' => false,
-            'value' => $override['hora_inicio'] ?? $defaultHoraInicio,
-            'class' => 'form-control',
-        ]) ?>
     </div>
 
     <div class="form-group">
@@ -106,21 +79,27 @@ $this->assign('title', 'Override de Schedule');
             'class' => 'form-control',
             'id' => 'durationInput',
         ]) ?>
-        <small style="color: var(--color-muted-gray)">Default: <?= $minutesUntilMidnight ?> min (hasta medianoche)</small>
+        <small style="color: var(--color-muted-gray)">
+            <ul style="margin: 0 1rem;; padding: 0.5rem 1rem;">
+                <li><?= $minutesUntilMidnight ?> min (hasta hoy a las 23:59)</li>
+                <li>1440 min (1 día)</li>
+                <li>10080 min (7 días)</li>
+            </ul>
+        </small>
     </div>
 
     <div class="form-group">
         <?= $this->Form->control('until_midnight', [
             'type' => 'checkbox',
             'id' => 'untilMidnight',
-            'label' => 'Hasta medianoche',
+            'label' => ' Hasta medianoche',
         ]) ?>
     </div>
 
     <div class="actions-bar">
-        <?= $this->Form->button('<i class="fa-solid fa-check"></i> Aplicar Override', ['class' => 'btn btn-primary', 'escapeTitle' => false]) ?>
+        <?= $this->Form->button('<i class="fa-solid fa-check"></i> Sobreescribir programación', ['class' => 'btn btn-primary', 'escapeTitle' => false]) ?>
         <?php if ($override !== null): ?>
-            <?= $this->Html->link('<i class="fa-solid fa-xmark"></i> Cancelar override', ['action' => 'override', '?' => ['cancel' => 1]], ['class' => 'btn btn-outlined', 'escapeTitle' => false]) ?>
+            <?= $this->Html->link('<i class="fa-solid fa-xmark"></i> Cancelar programación', ['action' => 'override', '?' => ['cancel' => 1]], ['class' => 'btn btn-outlined', 'escapeTitle' => false]) ?>
         <?php endif; ?>
     </div>
 

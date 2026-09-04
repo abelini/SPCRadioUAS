@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace SPC\Controller\Api;
@@ -100,100 +101,17 @@ class ScheduleController extends ApiController
 		}
 
 		if ($this->isOverrideActive()) {
-			//$result = $this->spliceOverride($this->getActiveOverride(), $result, $isMobileApp);
+			$override = $this->getActiveOverride();
 			return $this->response
 				->withHeader('Access-Control-Allow-Origin', self::RADIOUAS_URI)
 				->withType('application/json')
-				->withStringBody(json_encode([]));
+				->withStringBody(json_encode($override));
 		}
 
 		return $this->response
 			->withHeader('Access-Control-Allow-Origin', self::RADIOUAS_URI)
 			->withType('application/json')
 			->withStringBody(json_encode($result));
-	}
-
-	private function spliceOverride(StreamData $override, array $entries, bool $isMobileApp): array
-	{
-		$startKey = $isMobileApp ? 'startTime' : 'starts';
-		$endKey = $isMobileApp ? 'endTime' : 'ends';
-
-		$overrideStart = $override->horaInicio;
-		$overrideEnd = $overrideStart->addMinutes($override->durationMinutes);
-
-		$merged = [];
-		foreach ($entries as $entry) {
-			/** @var Time $start */
-			$start = $entry[$startKey];
-			/** @var Time $end */
-			$end = $entry[$endKey];
-			if ($end <= $start) {
-				$end = $end->addDays(1);
-			}
-
-			if ($end <= $overrideStart || $start >= $overrideEnd) {
-				$merged[] = $entry;
-				continue;
-			}
-			if ($start < $overrideStart) {
-				$entry[$endKey] = $overrideStart;
-				$merged[] = $entry;
-				continue;
-			}
-			if ($end > $overrideEnd) {
-				$entry[$startKey] = $overrideEnd;
-				$merged[] = $entry;
-			}
-		}
-
-		$overrideEntry = $this->buildOverrideEntry($override, $isMobileApp, $overrideStart, $overrideEnd);
-
-		$index = null;
-		foreach ($merged as $i => $entry) {
-			if ($entry[$startKey] >= $overrideEnd) {
-				$index = $i;
-				break;
-			}
-		}
-
-		if ($index === null) {
-			$merged[] = $overrideEntry;
-		} else {
-			array_splice($merged, $index, 0, [$overrideEntry]);
-		}
-
-		if (!$isMobileApp) {
-			foreach ($merged as &$entry) {
-				$entry['starts'] = $entry['starts']->i18nFormat('h:mm a', 'en-US');
-				$entry['ends'] = $entry['ends']->i18nFormat('h:mm a', 'en-US');
-			}
-			unset($entry);
-		}
-
-		return $merged;
-	}
-
-	private function buildOverrideEntry(StreamData $override, bool $isMobileApp, Time $start, Time $end): array
-	{
-		$entry = [
-			'name' => $override->programa,
-			'image' => $override->image,
-			'music' => $override->music,
-		];
-
-		if ($isMobileApp) {
-			$entry['subtitle'] = $override->produccion;
-			$entry['categoryID'] = null;
-			$entry['startTime'] = $start;
-			$entry['endTime'] = $end;
-		} else {
-			$entry['produccion'] = $override->produccion;
-			$entry['icon'] = null;
-			$entry['starts'] = $start;
-			$entry['ends'] = $end;
-		}
-
-		return $entry;
 	}
 
 	public function si(): Response
