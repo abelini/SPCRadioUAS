@@ -74,11 +74,7 @@ class ScheduleController extends ApiController
 
 		$programas = $this->getTableLocator()
 			->get('Programas')
-			->find()
-			->select($fields)
-			->contain('CategoriasProgramas', fn(SelectQuery $query) => $query->select(['ID', 'slug']))
-			->matching('Dias', fn(SelectQuery $query) => $query->where(['Dias.ID' => $day]))
-			->orderByAsc('horaInicio')
+			->find('allForDay', $day)
 			->all();
 
 		$result = [];

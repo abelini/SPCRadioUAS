@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace SPC\Service;
 
 use Cake\Cache\Cache;
-use Cake\Core\Configure;
 use Cake\I18n\DateTime;
 use Cake\I18n\Time;
-use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\TableRegistry;
 use SPC\DTO\StreamData;
 use SPC\Model\Entity\Programa;
@@ -44,11 +42,7 @@ final class NowPlayingService
 
         $programas = TableRegistry::getTableLocator()
             ->get('Programas')
-            ->find()
-            ->matching('Dias', function (SelectQuery $query) {
-                return $query->where(['Dias.ID' => new DateTime()->dayOfWeek]);
-            })
-            ->orderByAsc('horaInicio')
+            ->find('allForDay', new DateTime()->dayOfWeek)
             ->all();
 
         $nowPlaying = $programas->filter(function ($programa) {

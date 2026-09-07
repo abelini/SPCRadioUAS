@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace SPC\Model\Table;
@@ -82,22 +83,40 @@ class ProgramasTable extends Table
 		);
 	}
 
-	public function findAllForSchedule(SelectQuery $query): SelectQuery {
+	public function findAllForSchedule(SelectQuery $query): SelectQuery
+	{
 		return
 			$query->select([
-                'Programas.ID',
-                'Programas.name',
-                'Programas.horaInicio',
-                'Programas.horaFin',
-                'Programas.produccion',
-                'Programas.conduccion',
+				'Programas.ID',
+				'Programas.name',
+				'Programas.horaInicio',
+				'Programas.horaFin',
+				'Programas.produccion',
+				'Programas.conduccion',
 				'Programas.image',
 				'Programas.musical',
-            ])
-            ->contain('Dias', fn(SelectQuery $query) : SelectQuery => $query->select(['Dias.ID']))
-            ->orderByAsc('Programas.horaInicio');
+			])
+			->contain('Dias', fn(SelectQuery $query): SelectQuery => $query->select(['Dias.ID']))
+			->orderByAsc('Programas.horaInicio');
 	}
-	
+
+	public function findAllForDay(SelectQuery $query, int $day): SelectQuery
+	{
+		return
+			$query->select([
+				'ID',
+				'name',
+				'horaInicio',
+				'horaFin',
+				'produccion',
+				'image',
+				'musical'
+			])
+			->contain('CategoriasProgramas', fn(SelectQuery $query): SelectQuery => $query->select(['ID', 'slug', 'icon']))
+			->matching('Dias', fn(SelectQuery $query): SelectQuery => $query->where(['Dias.ID' => $day]))
+			->orderByAsc('horaInicio');
+	}
+
 
 	public function findStats(SelectQuery $query): SelectQuery
 	{

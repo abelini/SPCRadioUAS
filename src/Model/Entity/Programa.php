@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace SPC\Model\Entity;
@@ -22,6 +23,14 @@ class Programa extends Entity implements Stringable
 	protected const string COLABORADOR_ICON = '<i class="fa-solid fa-user"></i>';
 
 	protected const string MUSICAL_ICON = '<i class="fa-solid fa-music"></i>';
+
+	protected const string UO_ICON_CLASS = 'fa-solid fa-user';
+
+	protected const string MUSICAL_ICON_CLASS = 'fa-solid fa-music';
+
+	protected const string DEFAULT_NAME = 'Paisajes sonoros';
+
+	protected const string DEFAULT_PRODUCTION = 'Fonoteca';
 
 	protected const string IMAGE_CDN_URL = 'https://images.radiouas.org/';
 
@@ -94,6 +103,21 @@ class Programa extends Entity implements Stringable
 	public static function getDefaultCover(bool $musical = true): string
 	{
 		return self::IMAGE_CDN_URL . ($musical ? self::MUSICAL_PROGRAMME_DEFAULT_IMAGE : self::SPOKEN_PROGRAMME_DEFAULT_IMAGE);
+	}
+
+	public static function getDefaultIcon(bool $musical = true): string
+	{
+		return $musical ? self::MUSICAL_ICON_CLASS : self::UO_ICON_CLASS;
+	}
+
+	public static function getDefaultProduction(): string
+	{
+		return self::DEFAULT_PRODUCTION;
+	}
+
+	public static function getDefaultName(): string
+	{
+		return self::DEFAULT_NAME;
 	}
 
 	protected function _getImageUrl(): string
