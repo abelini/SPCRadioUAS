@@ -25,8 +25,7 @@
 
     <?php if ($overrideActive): ?>
         <div class="alert alert-danger">
-            <p><i class="fa-solid fa-triangle-exclamation"></i> Hay una programación sobreescrita activa.
-                <?= $this->Html->link('Cancelarla', ['action' => 'index', '?' => ['cancel' => 1]]) ?></p>
+            <p><i class="fa-solid fa-triangle-exclamation"></i> Actualmente la programación está siendo sobreescrita. <?= $this->Html->link('Ver más <i class="fa-solid fa-up-right-from-square"></i>', ['controller' => 'Schedule', 'action' => 'override'], ['escapeTitle' => false]) ?></p>
         </div>
     <?php endif; ?>
 
