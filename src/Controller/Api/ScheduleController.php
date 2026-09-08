@@ -84,6 +84,7 @@ class ScheduleController extends ApiController
 			unset($entry['image_url']);
 			$entry['dayOfWeek'] = $day;
 			$entry['slug'] = $programa->categoria->slug;
+			$entry['icon'] = $programa->categoria->icon;
 			unset($entry['categoria']);
 
 			if ($isMobileApp) {
