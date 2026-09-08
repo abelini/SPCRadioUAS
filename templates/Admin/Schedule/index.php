@@ -18,7 +18,7 @@
 
         <div class="schedule-actions">
             <?php if (!$overrideActive): ?>
-                <?= $this->Html->link('<i class="fa-solid fa-pen"></i> Activar programación', ['action' => 'override'], ['class' => 'btn btn-outlined', 'escapeTitle' => false]) ?>
+                <?= $this->Html->link('<i class="fa-solid fa-pen"></i> Sobreescribir programación', ['action' => 'override'], ['class' => 'btn btn-outlined', 'escapeTitle' => false]) ?>
             <?php endif; ?>
         </div>
     </div>
