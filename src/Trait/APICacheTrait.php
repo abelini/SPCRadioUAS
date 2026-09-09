@@ -71,7 +71,7 @@ trait APICacheTrait
             sm: $override['music'],
             conduccion: $override['conduccion'],
             image: Programa::getDefaultCover(musical: $override['music']),
-            horaInicio: $override['hora_inicio'],
+            horaInicio: DateTime::now()->getTimestamp(),
             //durationMinutes: $override['duration_minutes'],
             //expiresAt: $override['expires_at'],
         );

@@ -89,7 +89,7 @@ class ScheduleController extends ApiController
 		}
 
 		if ($this->isOverrideActive()) {
-			$override = $this->getActiveOverride();
+			$override = $this->getActiveOverride(daily: true);
 			return $this->response
 				->withHeader('Access-Control-Allow-Origin', self::RADIOUAS_URI)
 				->withType('application/json')
