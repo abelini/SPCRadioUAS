@@ -41,11 +41,11 @@
         <tbody>
             <?php foreach ($items as $item): ?>
                 <tr>
-                    <td><span class="schedule-hours"><?= $item->horaInicio->i18nFormat('h:mm a', 'en-US') ?> <i class="fa-solid fa-arrow-right"></i> <?= $item->horaFin->i18nFormat('h:mm a', 'en-US') ?></span></td>
+                    <td><span class="schedule-hours"><?= $item->startTime->i18nFormat('h:mm a', 'en-US') ?> <i class="fa-solid fa-arrow-right"></i> <?= $item->endTime->i18nFormat('h:mm a', 'en-US') ?></span></td>
                     <td><img class="schedule-thumb" src="<?= $item->image ?>" alt=""></td>
                     <td><span class="schedule-name"><i class="<?= $item->icon ?>"></i>
                             <?= $item->ID !== 999 ? $this->Html->link($item->name, ['controller' => 'Programas', 'action' => 'view', $item->ID]) : $item->name ?></span></td>
-                    <td><?= h($item->produccion) ?></td>
+                    <td><?= h($item->producer) ?></td>
                 </tr>
             <?php endforeach; ?>
         </tbody>

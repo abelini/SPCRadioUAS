@@ -8,6 +8,7 @@ use Cake\Cache\Cache;
 use Cake\I18n\DateTime;
 use Cake\I18n\Time;
 use Cake\ORM\TableRegistry;
+use SPC\DTO\RadioBroadcast;
 use SPC\DTO\StreamData;
 use SPC\Model\Entity\Programa;
 use SPC\Trait\APICacheTrait;
@@ -17,7 +18,7 @@ final class NowPlayingService
 {
     use APICacheTrait;
 
-    public function get(): StreamData
+    public function get(): RadioBroadcast
     {
         $rc = Cache::read(self::CR_CACHE_KEY, self::CR_CACHE_CONFIG);
         if ($rc) {
@@ -55,12 +56,6 @@ final class NowPlayingService
 
         if ($nowPlaying->count() === 0) {
             return new StreamData(
-                programa: StreamData::DEFAULT_PROGRAM_NAME,
-                produccion: StreamData::DEFAULT_PRODUCTION_NAME,
-                pty: StreamData::DEFAULT_PTY,
-                ptn: StreamData::DEFAULT_PTN,
-                music: StreamData::DEFAULT_MUSICAL,
-                sm: StreamData::DEFAULT_MUSICAL,
                 image: Programa::getDefaultCover(musical: StreamData::DEFAULT_MUSICAL),
                 horaInicio: DateTime::now()->getTimestamp(),
             );
@@ -71,11 +66,12 @@ final class NowPlayingService
         return new StreamData(
             programa: $first->name,
             produccion: $first->produccion,
-            pty: $first->pty->value,
+            conduccion: $first->conduccion,
+            pty: $first->pty,
             ptn: $first->ptn,
             music: $first->musical,
             sm: $first->musical,
-            image: $first->image_url,
+            image: $first->image,
             horaInicio: DateTime::createFromFormat('H:i:s', $first->horaInicio->format('H:i:s'))->getTimestamp(),
         );
     }

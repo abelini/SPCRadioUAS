@@ -9,6 +9,7 @@ use Cake\I18n\DateTime;
 use Cake\ORM\Entity;
 use Cake\Collection\Collection;
 use SPC\Model\Entity\ReportesPrograma;
+use SPC\Enum\PTY;
 use Stringable;
 
 
@@ -30,7 +31,11 @@ class Programa extends Entity implements Stringable
 
 	protected const string DEFAULT_NAME = 'Paisajes sonoros';
 
-	protected const string DEFAULT_PRODUCTION = 'Fonoteca';
+	protected const string DEFAULT_PRODUCER = 'Fonoteca';
+
+	protected const string DEFAULT_HOST = 'Radio DJ';
+
+	//protected const int DEFAULT_PTY = 8;
 
 	protected const string IMAGE_CDN_URL = 'https://images.radiouas.org/';
 
@@ -80,17 +85,7 @@ class Programa extends Entity implements Stringable
 	{
 		return $this->horaFin;
 	}
-	/*
-	protected function _getHoraInicioString(): string
-	{
-		return $this->horaInicio->format('H:i:s');
-	}
 
-	protected function _getHoraFinString(): string
-	{
-		return $this->horaFin->format('H:i:s');
-	}
-	*/
 	protected function _getCategory(): string
 	{
 		if ($this->_fields['musical'])
@@ -112,12 +107,37 @@ class Programa extends Entity implements Stringable
 
 	public static function getDefaultProduction(): string
 	{
-		return self::DEFAULT_PRODUCTION;
+		return self::DEFAULT_PRODUCER;
 	}
 
 	public static function getDefaultName(): string
 	{
 		return self::DEFAULT_NAME;
+	}
+
+	protected function _getHost(): string
+	{
+		return $this->hasValue('conduccion') ? $this->_fields['conduccion'] : self::DEFAULT_HOST;
+	}
+
+	protected function _getProducer(): string
+	{
+		return $this->hasValue('produccion') ? $this->_fields['produccion'] : self::DEFAULT_PRODUCER;
+	}
+
+	protected function _getSlug(): string
+	{
+		return $this->_fields['categoria']['slug'] ?? 'music';
+	}
+
+	protected function _getPty(): int
+	{
+		return (int) $this->_fields['pty']->value ?? (int) PTY::SoftMusic->value;
+	}
+
+	protected function _getImage(): string
+	{
+		return $this->_getImageUrl();
 	}
 
 	protected function _getImageUrl(): string

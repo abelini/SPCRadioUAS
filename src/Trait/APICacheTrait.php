@@ -7,6 +7,8 @@ namespace SPC\Trait;
 use Cake\Cache\Cache;
 use Cake\Core\Configure;
 use Cake\I18n\DateTime;
+use SPC\DTO\RadioBroadcast;
+use SPC\DTO\RadioProgram;
 use SPC\DTO\StreamData;
 use SPC\Model\Entity\Programa;
 
@@ -42,9 +44,23 @@ trait APICacheTrait
         return true;
     }
 
-    protected function getActiveOverride(): StreamData
+    protected function getActiveOverride(bool $daily = false): RadioBroadcast
     {
         $override = Cache::read(self::SCHEDULE_CACHE_KEY, self::SCHEDULE_CACHE_CONFIG);
+
+        if ($daily) {
+            return new RadioProgram(
+                ID: $override['ID'],
+                name: $override['name'],
+                producer: $override['producer'],
+                host: $override['host'],
+                slug: $override['slug'],
+                image: $override['image'],
+                startTime: $override['horaInicio'],
+                endTime: $override['horaFin'],
+                icon: $override['icon'],
+            );
+        }
 
         return new StreamData(
             programa: $override['programa'],
@@ -56,8 +72,8 @@ trait APICacheTrait
             conduccion: $override['conduccion'],
             image: Programa::getDefaultCover(musical: $override['music']),
             horaInicio: $override['hora_inicio'],
-            durationMinutes: $override['duration_minutes'],
-            expiresAt: $override['expires_at'],
+            //durationMinutes: $override['duration_minutes'],
+            //expiresAt: $override['expires_at'],
         );
     }
 }

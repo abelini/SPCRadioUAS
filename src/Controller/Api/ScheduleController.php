@@ -10,7 +10,7 @@ use Cake\I18n\DateTime;
 use Cake\I18n\Time;
 use Cake\ORM\Query\SelectQuery;
 use SPC\Controller\ApiController;
-use SPC\DTO\StreamData;
+use SPC\DTO\RadioProgram;
 use SPC\Service\EpgBuilder;
 use SPC\Service\NowPlayingService;
 use SPC\Trait\APICacheTrait;
@@ -24,16 +24,16 @@ class ScheduleController extends ApiController
 
 	public function now(): Response
 	{
-		$streamData = new NowPlayingService()->get();
+		$broadcast = new NowPlayingService()->get();
 
 		if ($this->request->getQuery('format') === 'json') {
 			return $this->render()
 				->withHeader('Access-Control-Allow-Origin', self::RADIOUAS_URI)
 				->withType('application/json')
-				->withStringBody(json_encode($streamData));
+				->withStringBody(json_encode($broadcast));
 		}
 
-		$plainText = $streamData->produccion . ' - ' . $streamData->programa;
+		$plainText = $broadcast->producer . ' - ' . $broadcast->name;
 
 		$this->viewBuilder()->setLayout(null);
 
@@ -47,30 +47,7 @@ class ScheduleController extends ApiController
 	{
 		$day = $this->getRequestedDay();
 
-		$isMobileApp = ($this->request->getQuery('source')) !== null && $this->request->getQuery('source') == 'mobile-app';
-
-		$fields = $isMobileApp ? [
-			'ID',
-			'name',
-			'horaInicio',
-			'horaFin',
-			'image',
-			'categoryID',
-			'subtitle' => 'produccion',
-			'music' => 'musical',
-			'startTime' => 'horaInicio',
-			'endTime' => 'horaFin',
-		] : [
-			'name',
-			'horaInicio',
-			'horaFin',
-			'image',
-			'produccion',
-			'icon' => 'uo',
-			'music' => 'musical',
-			'starts' => 'horaInicio',
-			'ends' => 'horaFin',
-		];
+		$isMobileApp = $this->request->getQuery('source') !== null && $this->request->getQuery('source') == 'mobile-app';
 
 		$programas = $this->getTableLocator()
 			->get('Programas')
@@ -78,23 +55,37 @@ class ScheduleController extends ApiController
 			->all();
 
 		$result = [];
-		foreach ($programas as $programa) {
-			$entry = $programa->toArray();
-			$entry['image'] = $programa->image_url;
-			unset($entry['image_url']);
-			$entry['dayOfWeek'] = $day;
-			$entry['slug'] = $programa->categoria->slug;
-			$entry['icon'] = $programa->categoria->icon;
-			unset($entry['categoria']);
 
-			if ($isMobileApp) {
-				$entry['startTime'] = $programa->horaInicio;
-				$entry['endTime'] = $programa->horaFin;
-			} else {
-				$entry['starts'] = $programa->horaInicio;
-				$entry['ends'] = $programa->horaFin;
-			}
-			$result[] = $entry;
+		foreach ($programas as $programa) {
+			$result[] = new RadioProgram(
+				ID: $programa->ID,
+				name: $programa->name,
+				producer: $programa->produccion,
+				host: $programa->host,
+				slug: $programa->categoria->slug,
+				image: $programa->image_url,
+				startTime: $programa->horaInicio,
+				endTime: $programa->horaFin,
+				icon: $programa->categoria->icon,
+				PTY: $programa->pty,
+				PTN: $programa->ptn,
+				music: $programa->musical,
+			);
+		}
+
+		if ($isMobileApp) {
+			$result = array_map(fn(RadioProgram $programa): array => [
+				'ID' => $programa->ID,
+				'name' => $programa->name,
+				'produccion' => $programa->producer,
+				'image' => $programa->image,
+				'musical' => $programa->music,
+				'dayOfWeek' => $day,
+				'slug' => $programa->slug,
+				'icon' => $programa->icon,
+				'startTime' => $programa->startTime->format('H:i:s'),
+				'endTime' => $programa->endTime->format('H:i:s'),
+			], $result);
 		}
 
 		if ($this->isOverrideActive()) {

@@ -109,8 +109,11 @@ class ProgramasTable extends Table
 				'horaInicio',
 				'horaFin',
 				'produccion',
+				'conduccion',
 				'image',
-				'musical'
+				'musical',
+				'pty',
+				'ptn',
 			])
 			->contain('CategoriasProgramas', fn(SelectQuery $query): SelectQuery => $query->select(['ID', 'slug', 'icon']))
 			->matching('Dias', fn(SelectQuery $query): SelectQuery => $query->where(['Dias.ID' => $day]))

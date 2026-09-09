@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace SPC\Controller\Admin;
 
 use SPC\Controller\AppController;
-use SPC\DTO\ProgrammeItem;
+use SPC\DTO\RadioProgram;
 use SPC\DTO\StreamData;
 use SPC\Enum\PTY;
 use SPC\Model\Entity\Programa;
@@ -15,7 +15,7 @@ use Cake\Collection\Collection;
 use Cake\Core\Configure;
 use Cake\Http\Response;
 use Cake\I18n\DateTime;
-use Cake\ORM\Query\SelectQuery;
+use Cake\I18n\Time;
 use IntlDateFormatter;
 
 
@@ -54,7 +54,19 @@ class ScheduleController extends AppController
         $this->set(compact('dayNames', 'activeDay', 'items', 'overrideActive'));
         $this->render();
     }
-
+    /*
+    public function __construct(
+        public readonly int $ID,
+        public readonly string $name,
+        public readonly string $producer,
+        public readonly string $host,
+        public readonly string $slug,
+        public readonly string $image,
+        public readonly string $icon,
+        public readonly Time $startTime,
+        public readonly Time $endTime,
+    ) {}
+        */
     private function buildDayItems(iterable $programas): Collection
     {
         $items = [];
@@ -64,24 +76,29 @@ class ScheduleController extends AppController
                 $prevEnd = $prev->horaFin->getHours() * 60 + $prev->horaFin->getMinutes();
                 $curStart = $p->horaInicio->getHours() * 60 + $p->horaInicio->getMinutes();
                 if ($curStart > $prevEnd) {
-                    $items[] = new ProgrammeItem(
+                    // PAISAJES SONOROS
+                    $items[] = new RadioProgram(
                         ID: 999,
-                        horaInicio: $prev->horaFin,
-                        horaFin: $p->horaInicio,
+                        startTime: $prev->horaFin,
+                        endTime: $p->horaInicio,
                         name: Programa::getDefaultName(),
-                        produccion: Programa::getDefaultProduction(),
+                        producer: Programa::getDefaultProduction(),
+                        host: $p->host,
                         image: Programa::getDefaultCover(musical: true),
                         icon: Programa::getDefaultIcon(musical: true),
+                        slug: 'Music',
                     );
                 }
             }
-            $items[] = new ProgrammeItem(
+            $items[] = new RadioProgram(
                 ID: $p->ID,
-                horaInicio: $p->horaInicio,
-                horaFin: $p->horaFin,
                 name: $p->name,
-                produccion: $p->produccion,
+                producer: $p->produccion,
+                host: $p->conduccion,
+                slug: $p->categoria->slug,
                 image: $p->image_url,
+                startTime: $p->horaInicio,
+                endTime: $p->horaFin,
                 icon: $p->categoria->icon,
             );
             $prev = $p;
@@ -124,7 +141,7 @@ class ScheduleController extends AppController
                 'music' => (bool) $data['music'],
                 'pty' => (int) $data['pty'],
                 'ptn' => $data['ptn'],
-                'hora_inicio' => $now->getTimestamp(),
+                'hora_inicio' => Time::now() /*$now->getTimestamp()*/,
                 'duration_minutes' => $durationMinutes,
                 'expires_at' => $expiresAt,
             ], self::SCHEDULE_CACHE_CONFIG);

@@ -4,34 +4,66 @@ declare(strict_types=1);
 
 namespace SPC\DTO;
 
+use Cake\Core\Configure;
+use Cake\I18n\DateTime;
+use Cake\I18n\Time;
 
-final class StreamData
+
+final readonly class StreamData extends RadioBroadcast
 {
-    public const string DEFAULT_PROGRAM_NAME = 'Paisajes sonoros';
-
-    public const string DEFAULT_PRODUCTION_NAME = 'Fonoteca';
-
-    public const string DEFAULT_CONDUCCION = 'Auto DJ';
-
-    public const string DEFAULT_PTN = 'Musica';
-
-    public const int DEFAULT_PTY = 12;
-
-    public const bool DEFAULT_MUSICAL = true;
-
-    public const int DEFAULT_DURATION_MINUTES = 60;
-
     public function __construct(
-        public readonly string $programa,
-        public readonly string $produccion,
-        public readonly int $pty,
-        public readonly string $ptn,
-        public readonly bool $music,
-        public readonly bool $sm,
-        public readonly string $image,
-        public readonly int $horaInicio,
-        public readonly string $conduccion = self::DEFAULT_CONDUCCION,
-        public readonly int $durationMinutes = self::DEFAULT_DURATION_MINUTES,
-        public readonly ?int $expiresAt = null,
-    ) {}
+        string $programa = '',
+        string $produccion = '',
+        string $conduccion = '',
+        int $pty = 0,
+        string $ptn = '',
+        bool $music = true,
+        bool $sm = true,
+        string $image = '',
+        int $horaInicio = 0,
+        int $durationMinutes = 30,
+    ) {
+        if ($horaInicio > 0) {
+            $tz = Configure::read('App.defaultTimezone');
+            $dt = DateTime::createFromTimestamp($horaInicio, $tz);
+            $startTime = Time::parse($dt->format('H:i:s'));
+            $endTime = Time::parse($dt->addMinutes($durationMinutes)->format('H:i:s'));
+        } else {
+            $startTime = Time::now();
+            $endTime = Time::parse(DateTime::now()->addMinutes($durationMinutes)->format('H:i:s'));
+        }
+
+        parent::__construct(
+            name: $programa ?: parent::DEFAULT_PROGRAM_NAME,
+            producer: $produccion ?: parent::DEFAULT_PRODUCTION_NAME,
+            host: $conduccion ?: parent::DEFAULT_CONDUCCION,
+            image: $image,
+            icon: '',
+            slug: $ptn ?: parent::DEFAULT_PTN,
+            startTime: $startTime,
+            endTime: $endTime,
+            PTY: $pty > 0 ? $pty : parent::DEFAULT_PTY,
+            PTN: $ptn ?: parent::DEFAULT_PTN,
+            SM: $sm,
+            music: $music,
+            durationMinutes: $durationMinutes,
+        );
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'programa' => $this->name,
+            'produccion' => $this->producer,
+            'pty' => $this->PTY,
+            'ptn' => $this->PTN,
+            'music' => $this->music,
+            'sm' => $this->SM,
+            'image' => $this->image,
+            'horaInicio' => $this->startTime->format('U'),
+            'conduccion' => $this->host,
+            'durationMinutes' => $this->durationMinutes,
+            'expiresAt' => null,
+        ];
+    }
 }
