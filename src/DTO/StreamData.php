@@ -7,9 +7,10 @@ namespace SPC\DTO;
 use Cake\Core\Configure;
 use Cake\I18n\DateTime;
 use Cake\I18n\Time;
+use JsonSerializable;
 
 
-final readonly class StreamData extends RadioBroadcast
+final readonly class StreamData extends RadioBroadcast implements JsonSerializable
 {
     public function __construct(
         string $programa = '',
