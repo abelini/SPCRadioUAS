@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace SPC\Trait;
 
 use Cake\Cache\Cache;
-use Cake\Core\Configure;
 use Cake\I18n\DateTime;
+use Cake\I18n\Time;
 use SPC\DTO\RadioBroadcast;
 use SPC\DTO\RadioProgram;
 use SPC\DTO\StreamData;
@@ -51,14 +51,17 @@ trait APICacheTrait
         if ($daily) {
             return new RadioProgram(
                 ID: $override['ID'],
-                name: $override['name'],
-                producer: $override['producer'],
-                host: $override['host'],
+                name: $override['programa'],
+                producer: $override['produccion'],
+                host: $override['conduccion'],
                 slug: $override['slug'],
-                image: $override['image'],
-                startTime: $override['horaInicio'],
-                endTime: $override['horaFin'],
+                image: Programa::getDefaultCover(musical: $override['music']),
+                startTime: Time::now(),
+                endTime: Time::endOfDay(),
                 icon: $override['icon'],
+                PTY: $override['pty'],
+                PTN: $override['ptn'],
+                music: $override['music'],
             );
         }
 
