@@ -10,9 +10,9 @@ use Cake\I18n\Time;
 abstract readonly class RadioBroadcast
 {
     public const int DEFAULT_ID = 999;
-    public const string DEFAULT_PROGRAM_NAME = 'Paisajes sonoros';
-    public const string DEFAULT_PRODUCTION_NAME = 'Fonoteca';
-    public const string DEFAULT_CONDUCCION = 'Radio DJ';
+    public const string DEFAULT_NAME = 'Paisajes sonoros';
+    public const string DEFAULT_PRODUCER = 'Fonoteca';
+    public const string DEFAULT_HOST = 'Radio DJ';
     public const string DEFAULT_PTN = 'music';
     public const int DEFAULT_PTY = 12;
     public const bool DEFAULT_MUSICAL = true;

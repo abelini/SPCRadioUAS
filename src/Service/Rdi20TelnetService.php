@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace SPC\Service;
@@ -188,13 +189,13 @@ class Rdi20TelnetService
                 return sprintf('Override activo: %s', $this->send());
             }
         }
-        $this->rt = $this->buildRadioText($data->programa);
+        $this->rt = $this->buildRadioText($data->name);
         $this->ps = self::XPSS;
-        $this->pty = $data->pty === 0
-            ? Cache::remember('last_pty_' . md5($data->programa), fn() => self::PTY_FALLBACKS[array_rand(self::PTY_FALLBACKS)])
-            : $data->pty;
-        $this->music = $data->sm;
-        $this->ptn = $data->ptn;
+        $this->pty = $data->PTY === 0
+            ? Cache::remember('last_pty_' . md5($data->name), fn() => self::PTY_FALLBACKS[array_rand(self::PTY_FALLBACKS)])
+            : $data->PTY;
+        $this->music = $data->SM;
+        $this->ptn = $data->PTN;
 
         return $this->send();
     }

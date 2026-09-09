@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace SPC\Service;
@@ -36,7 +37,7 @@ class ShoutcastService
 
     public function update(StreamData $data): string
     {
-        $text = $data->produccion . ' - ' . $data->programa;
+        $text = $data->producer . ' - ' . $data->name;
         $ts = date('Y-m-d H:i:s');
 
         $lastSent = Cache::read(self::CACHE_KEY);

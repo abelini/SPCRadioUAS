@@ -35,9 +35,9 @@ final readonly class StreamData extends RadioBroadcast implements JsonSerializab
         }
 
         parent::__construct(
-            name: $programa ?: parent::DEFAULT_PROGRAM_NAME,
-            producer: $produccion ?: parent::DEFAULT_PRODUCTION_NAME,
-            host: $conduccion ?: parent::DEFAULT_CONDUCCION,
+            name: $programa ?: parent::DEFAULT_NAME,
+            producer: $produccion ?: parent::DEFAULT_PRODUCER,
+            host: $conduccion ?: parent::DEFAULT_HOST,
             image: $image,
             icon: '',
             slug: $ptn ?: parent::DEFAULT_PTN,

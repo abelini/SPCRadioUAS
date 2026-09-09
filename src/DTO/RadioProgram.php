@@ -9,15 +9,15 @@ use Cake\I18n\Time;
 final readonly class RadioProgram extends RadioBroadcast
 {
     public function __construct(
-        int $ID,
-        string $name,
-        string $producer,
-        string $host,
+        int $ID = parent::DEFAULT_ID,
+        string $name = parent::DEFAULT_NAME,
+        string $producer = parent::DEFAULT_PRODUCER,
+        string $host = parent::DEFAULT_HOST,
+        Time $startTime,
+        Time $endTime,
         string $slug,
         string $image,
         string $icon,
-        Time $startTime,
-        Time $endTime,
         int $PTY = parent::DEFAULT_PTY,
         string $PTN = parent::DEFAULT_PTN,
         bool $music = parent::DEFAULT_MUSICAL,

@@ -50,15 +50,15 @@ trait APICacheTrait
 
         if ($daily) {
             return new RadioProgram(
-                ID: $override['ID'],
+                ID: 999,
                 name: $override['programa'],
                 producer: $override['produccion'],
                 host: $override['conduccion'],
-                slug: $override['slug'],
+                slug: 'music',
                 image: Programa::getDefaultCover(musical: $override['music']),
                 startTime: Time::now(),
                 endTime: Time::endOfDay(),
-                icon: $override['icon'],
+                icon: 'fa-solid fa-music',
                 PTY: $override['pty'],
                 PTN: $override['ptn'],
                 music: $override['music'],

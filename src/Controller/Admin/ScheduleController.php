@@ -86,7 +86,7 @@ class ScheduleController extends AppController
                         host: $p->host,
                         image: Programa::getDefaultCover(musical: true),
                         icon: Programa::getDefaultIcon(musical: true),
-                        slug: 'Music',
+                        slug: 'music',
                     );
                 }
             }
@@ -158,9 +158,9 @@ class ScheduleController extends AppController
         }
 
         $minutesUntilMidnight = $now->diffInMinutes($midnight);
-        $defaultPrograma = StreamData::DEFAULT_PROGRAM_NAME;
-        $defaultProduccion = StreamData::DEFAULT_PRODUCTION_NAME;
-        $defaultConduccion = StreamData::DEFAULT_CONDUCCION;
+        $defaultPrograma = StreamData::DEFAULT_NAME;
+        $defaultProduccion = StreamData::DEFAULT_PRODUCER;
+        $defaultConduccion = StreamData::DEFAULT_HOST;
         $defaultMusic = StreamData::DEFAULT_MUSICAL;
         $defaultDurationMinutes = StreamData::DEFAULT_DURATION_MINUTES;
         $defaultPty = StreamData::DEFAULT_PTY;
