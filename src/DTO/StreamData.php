@@ -54,6 +54,7 @@ final readonly class StreamData extends RadioBroadcast implements JsonSerializab
     public function jsonSerialize(): array
     {
         return [
+            'ID' => $this->ID,
             'programa' => $this->name,
             'produccion' => $this->producer,
             'pty' => $this->PTY,

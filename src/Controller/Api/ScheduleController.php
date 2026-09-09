@@ -77,7 +77,7 @@ class ScheduleController extends ApiController
 			$result = array_map(fn(RadioProgram $programa): array => [
 				'ID' => $programa->ID,
 				'name' => $programa->name,
-				'produccion' => $programa->producer,
+				'subtitle' => $programa->producer,
 				'image' => $programa->image,
 				'musical' => $programa->music,
 				'dayOfWeek' => $day,
