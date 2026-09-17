@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace SPC\Service;
@@ -136,6 +137,16 @@ class RdiTelnetClient
         }
     }
 
+    public function save(): string
+    {
+        return $this->sendCommand("XSAV\r\n");
+    }
+
+    public function reboot(): string
+    {
+        return $this->sendCommand("XRES\r\n");
+    }
+
     public function disconnect(): void
     {
         try {
@@ -176,10 +187,11 @@ class RdiTelnetClient
         while ((microtime(true) - $start) < $maxWait) {
             $chunk = $this->socket->read(4096);
             if ($chunk === null || $chunk === '') {
-                if ($data !== '') {
-                    usleep(100000);
-                }
-                break;
+                // Sin datos todavía (p. ej. XSAV escribiendo a NVRAM):
+                // seguir esperando hasta agotar $maxWait, no salir.
+                usleep(100000);
+
+                continue;
             }
             $data .= $chunk;
 

@@ -134,11 +134,11 @@ class Programa extends Entity implements Stringable
 	{
 		return (int) $this->_fields['pty']->value ?? (int) PTY::SoftMusic->value;
 	}
-
+	/*
 	protected function _getImage(): string
 	{
 		return $this->_getImageUrl();
-	}
+	}*/
 
 	protected function _getImageUrl(): string
 	{
