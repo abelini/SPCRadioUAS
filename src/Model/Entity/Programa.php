@@ -37,7 +37,7 @@ class Programa extends Entity implements Stringable
 
 	//protected const int DEFAULT_PTY = 8;
 
-	protected const string IMAGE_CDN_URL = 'https://images.radiouas.org/';
+	protected const string IMAGE_CDN_URL = 'https://assets.radiouas.org/covers/';
 
 	protected array $_accessible = [
 		'name' => true,
