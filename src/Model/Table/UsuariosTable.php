@@ -77,6 +77,11 @@ class UsuariosTable extends Table
             ->boolean('base')
             ->notEmptyString('base');
 
+        $validator
+            ->scalar('photo')
+            ->maxLength('photo', 255)
+            ->allowEmptyString('photo');
+
         return $validator;
     }
 

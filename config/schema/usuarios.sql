@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS usuarios (
     fullname VARCHAR(255) NOT NULL,
     email VARCHAR(64) NOT NULL,
     base TINYINT(1) NOT NULL DEFAULT 0,
-    photo VARCHAR(255) NOT NULL,
+    photo VARCHAR(255) NULL DEFAULT NULL,
     PRIMARY KEY (ID),
     UNIQUE KEY uk_username (username),
     UNIQUE KEY uk_empleado (empleado)

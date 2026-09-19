@@ -41,6 +41,11 @@
     </div>
 
     <div class="form-group">
+        <?= $this->Form->label('photo', 'Foto') ?>
+        <?= $this->Form->control('photo', ['label' => false, 'class' => 'form-control']) ?>
+    </div>
+
+    <div class="form-group">
         <?= $this->Form->label('permisos._ids', 'Permisos') ?>
         <?= $this->Form->control('permisos._ids', ['options' => $permisos, 'label' => false, 'class' => 'form-control', 'size' => count($permisos)]) ?>
     </div>
