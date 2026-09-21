@@ -71,7 +71,7 @@ final class NowPlayingService
             ptn: $first->ptn,
             music: $first->musical,
             sm: $first->musical,
-            image: $first->image,
+            image: $first->image_url,
             horaInicio: DateTime::createFromFormat('H:i:s', $first->horaInicio->format('H:i:s'))->getTimestamp(),
         );
     }
