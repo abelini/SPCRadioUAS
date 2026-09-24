@@ -11,7 +11,7 @@ abstract readonly class RadioBroadcast
 {
     public const int DEFAULT_ID = 999;
     public const string DEFAULT_NAME = 'Paisajes sonoros';
-    public const string DEFAULT_PRODUCER = 'Fonoteca';
+    public const string DEFAULT_PRODUCER = 'Selecciones de la Fonoteca';
     public const string DEFAULT_HOST = 'Radio DJ';
     public const string DEFAULT_PTN = 'music';
     public const int DEFAULT_PTY = 12;
