@@ -1,6 +1,6 @@
 {
     "name": "cakephp/app",
-    "version": "3.7.11",
+    "version": "3.7.12",
     "description": "Sistema de Producción y Cabina - Radio UAS",
     "homepage": "https://spc.radiouas.org",
     "type": "project",
