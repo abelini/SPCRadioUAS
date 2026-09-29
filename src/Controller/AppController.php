@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace SPC\Controller;
@@ -54,10 +55,17 @@ class AppController extends Controller
 
 		$this->set('AppName', self::APP_NAME);
 		$this->set('AppLogo', self::LOGO);
-		$this->set('AppVersion', self::VERSION);
+		$this->set('AppVersion', $this->getAppVersion());
 		$this->set('datetime', self::$datetime);
-
 	}
+
+	private function getAppVersion(): string
+	{
+		$composer = json_decode((string) file_get_contents(ROOT . DS . 'composer.json'), true);
+
+		return $composer['version'];
+	}
+
 
 	public function initialize(): void
 	{
@@ -73,4 +81,3 @@ class AppController extends Controller
 		return self::$datetime;
 	}
 }
-
