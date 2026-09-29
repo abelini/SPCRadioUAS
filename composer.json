@@ -1,11 +1,12 @@
 {
     "name": "cakephp/app",
+    "version": "3.7.10",
     "description": "Sistema de Producción y Cabina - Radio UAS",
     "homepage": "https://spc.radiouas.org",
     "type": "project",
     "license": "MIT",
     "require": {
-        "php": ">=8.4",
+        "php": ">=8.5",
         "cakephp/authentication": "^4.2",
         "cakephp/cakephp": "^5.0.6",
         "cakephp/migrations": "5.1",
@@ -53,7 +54,10 @@
         "cs-check": "phpcs --colors -p",
         "cs-fix": "phpcbf --colors -p",
         "stan": "phpstan analyse",
-        "test": "phpunit --colors=always"
+        "test": "phpunit --colors=always",
+        "release:patch": "php bin/release.php patch",
+        "release:minor": "php bin/release.php minor",
+        "release:major": "php bin/release.php major"
     },
     "config": {
         "platform-check": true,
