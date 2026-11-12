@@ -1,12 +1,15 @@
 <?php
 
-if (!empty($playlistItems) && isset($playlistItems[0])) {
+if (!empty($playlistItems)) {
     $firstVideoId = $playlistItems[0]->snippet->resourceId->videoId;
     $firstVideoTitle = $playlistItems[0]->snippet->title;
     $description = $playlistItems[0]->snippet->description;
     $episode = 1;
 } else {
     $firstVideoId = '';
+    $firstVideoTitle = '';
+    $description = '';
+    $episode = 1;
 }
 ?>
 	<h2 class="title"><?= $playlistTitle ?></h2>
@@ -14,7 +17,7 @@ if (!empty($playlistItems) && isset($playlistItems[0])) {
 	<div class="main-stage">
 		<div id="yt-player"></div>
 	</div>
-	<h3 class="subtitle" id="video-title"><?= $firstVideoTitle ?></span></h3>
+	<h3 class="subtitle" id="video-title"><?= $firstVideoTitle ?></h3>
 	<p id="video-desc"><?= $description ?></p>
 
 	<div class="thumbnails-track">
@@ -25,7 +28,7 @@ if (!empty($playlistItems) && isset($playlistItems[0])) {
 					$title = $item->snippet->title;
 					$description = $item->snippet->description;
 					$episode = $index + 1;
-					$thumbUrl = isset($item->snippet->thumbnails->medium) ? $item->snippet->thumbnails->medium->url : $item->snippet->thumbnails->default->url;
+					$thumbUrl = empty($item->snippet->thumbnails->medium) ? $item->snippet->thumbnails->default->url : $item->snippet->thumbnails->medium->url;
 
 					$activeClass = ($index === 0) ? 'active' : '';
 				?>
@@ -93,7 +96,7 @@ if (!empty($playlistItems) && isset($playlistItems[0])) {
 			}
 			let episodeElement = document.getElementById('episode');
 			if (episodeElement) {
-				episode.textContent = videoEpisode;
+				episodeElement.textContent = videoEpisode;
 			}
 			let thumbnails = document.querySelectorAll('.video-thumb');
 			thumbnails.forEach(function(thumb) {
