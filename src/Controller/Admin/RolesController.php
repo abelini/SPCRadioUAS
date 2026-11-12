@@ -53,6 +53,7 @@ class RolesController extends AppController
 
 		$weekStart = clone $rol->fechaInicio;
 		$asignaciones = (new Collection($rol->asignaciones))
+			->filter(fn(Asignacion $asignacion) => !empty($asignacion->locutor))
 			->groupBy(fn($a) => (clone $weekStart)->addDays($a->diaID - 1)->toDateString())
 			->toArray();
 
