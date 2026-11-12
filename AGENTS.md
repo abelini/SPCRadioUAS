@@ -69,6 +69,7 @@ PHPStan at **level 8**. Psalm at **error level 2** (both in config).
 
 ## Conventions
 
+- Cero `null`: prohibidos `?Tipo`, `null`, `??`, `isset`, `is_null`, `?->` y `=== null`
 - DocBlocks in **Spanish**, method names in **English**
 - Fully typed params, return types, and properties
 - `declare(strict_types=1);` on every PHP file
