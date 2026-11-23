@@ -31,7 +31,6 @@ class GeminiService
 
     protected array $models = [
         'gemini-3.5-flash-lite',
-        'gemini-3.1-flash-lite',
         'gemini-2.5-flash-lite',
         'gemini-3.5-flash',
         'gemini-3.6-flash',
@@ -56,7 +55,7 @@ class GeminiService
      * @param string $model Modelo inicial.
      * @return string Texto generado o fallback con el prompt.
      */
-    public function generateText(string $prompt, string $model = 'gemini-4-hydrogen'): string
+    public function generateText(string $prompt, string $model = 'gemini-3.1-flash-lite'): string
     {
         $start = hrtime(true);
         $models = array_values(array_unique(array_merge([$model], $this->models)));
