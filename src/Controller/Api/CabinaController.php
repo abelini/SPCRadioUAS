@@ -129,7 +129,7 @@ class CabinaController extends ApiController
 				$tema = $programa->get('tema');
 				if (!isset($tema)) {
 					$tema = $temasTable->newEmptyEntity();
-					$tema->set('programaID', $programa->get('ID'));
+					$tema->set('ProgramaID', $programa->get('ID'));
 				}
 				$tema->set('tema', $nuevoTema);
 				$tema->set('invitados', $nuevoInvitados);
