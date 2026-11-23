@@ -1,10 +1,9 @@
 <?php
+
 declare(strict_types=1);
 
 namespace SPC\Controller\Api;
 
-use SPC\Controller\ApiController;
-use SPC\Trait\APICacheTrait;
 use Cake\Cache\Cache;
 use Cake\Core\Configure;
 use Cake\Http\Client;
@@ -12,9 +11,12 @@ use Cake\Http\Response;
 use Cake\I18n\DateTime;
 use Cake\I18n\Time;
 use Cake\ORM\Query\SelectQuery;
+use SPC\Controller\ApiController;
 use SPC\DTO\FBComment;
+use SPC\Model\Entity\Programa;
 use SPC\Service\GeminiService;
-
+use SPC\Service\SocialContentService;
+use SPC\Trait\APICacheTrait;
 
 class CabinaController extends ApiController
 {
@@ -80,15 +82,15 @@ class CabinaController extends ApiController
 	public function getProgramInfo(): Response
 	{
 		$this->request->allowMethod(['ajax', 'get']);
-		$nombrePrograma = urldecode($this->request->getQuery('name'));
+		$nombrePrograma = (string)urldecode((string)$this->request->getQuery('name'));
 
 		$programa = $this->getTableLocator()->get('Programas')
 			->find()
 			->where(['name' => $nombrePrograma])
-			->contain('TemasProgramas')
+			->contain('TemasProgramas', fn(SelectQuery $query) => $query->select(['ID', 'ProgramaID', 'tema', 'invitados', 'tags']))
 			->first();
 
-		if ($programa !== null) {
+		if ($programa) {
 			$programa->set('image', $programa->image_url);
 		}
 
@@ -103,25 +105,45 @@ class CabinaController extends ApiController
 		$prompt = Configure::read('Prompts.' . $type);
 
 		if ($type == self::LIVE_SHOW) {
-			$programa = $this->getTableLocator()->get('Programas')
+			$nombrePrograma = trim(strip_tags((string)$this->request->getData('programa')));
+			$nuevaConduccion = trim(strip_tags((string)$this->request->getData('conduccion')));
+			$nuevoInvitados = trim(strip_tags((string)$this->request->getData('invitados')));
+			$nuevoTema = trim(strip_tags((string)$this->request->getData('tema')));
+			$nuevosTags = trim(strip_tags((string)$this->request->getData('tags')));
+
+			$programasTable = $this->getTableLocator()->get('Programas');
+			$programa = $programasTable
 				->find()
 				->select(['ID', 'name', 'conduccion'])
-				->where(['name' => $this->request->getData('programa')])
-				->contain('TemasProgramas', fn(SelectQuery $query) => $query->select(['ID', 'ProgramaID', 'invitados', 'tags']))
+				->where(['name' => $nombrePrograma])
+				->contain('TemasProgramas', fn(SelectQuery $query) => $query->select(['ID', 'ProgramaID', 'tema', 'invitados', 'tags']))
 				->first();
 
-			$conduccion = 'Conductor/a: ' . $programa->conduccion;
-			$invitados = $this->request->getData('invitados') ? 'Invitado(s): ' . $this->request->getData('invitados') : 'Invitado(s): ' . $programa->tema?->invitados;
-			$keywords = $programa->tema->tags ? 'Palabras clave/Estilo: ' . $programa->tema?->tags : '';
-			$tema = $this->request->getData('tema') ? 'Tema del día: ' . $this->request->getData('tema') : 'Tema del día: ' . $programa->tema?->tema;
-			$programa = 'Programa: ' . $programa->name;
+			if ($programa instanceof Programa) {
+				// Actualizar conduccion en Programas
+				$programa->set('conduccion', $nuevaConduccion);
+				$programasTable->save($programa);
 
-			$prompt = str_replace(['%programa%', '%conduccion%', '%invitados%', '%tema%', '%keywords%'], [$programa, $conduccion, $invitados, $tema, $keywords], $prompt);
+				// Actualizar o crear en TemasProgramas
+				$temasTable = $this->getTableLocator()->get('TemasProgramas');
+				$tema = $programa->get('tema');
+				if (!isset($tema)) {
+					$tema = $temasTable->newEmptyEntity();
+					$tema->set('programaID', $programa->get('ID'));
+				}
+				$tema->set('tema', $nuevoTema);
+				$tema->set('invitados', $nuevoInvitados);
+				$tema->set('tags', $nuevosTags);
+				$temasTable->save($tema);
+			}
+
+			$socialService = new SocialContentService();
+			$respuesta = $socialService->generateForProgramName($nombrePrograma);
 		} else {
 			$evento = $this->request->getData('evento');
 			$participantes = $this->request->getData('participantes') ? 'Los participantes son: «' . $this->request->getData('participantes') . '».' : '';
 
-			$prompt = str_replace(['%evento%', '%participantes%'], [$evento, $participantes], $prompt);
+			$prompt = str_replace(['%evento%', '%participantes%'], [$evento, $participantes], (string)Configure::read('Prompts.' . $type));
 
 			$controlActual = Cache::read(self::CR_CACHE_KEY, self::CR_CACHE_CONFIG);
 
@@ -132,11 +154,10 @@ class CabinaController extends ApiController
 					'inicio' => DateTime::now()->getTimestamp()
 				], self::CR_CACHE_CONFIG);
 			}
-		}
 
-		//$respuesta = $prompt;
-		$gemini = new GeminiService();
-		$respuesta = $gemini->generateText($prompt);
+			$gemini = new GeminiService();
+			$respuesta = $gemini->generateText($prompt);
+		}
 
 		$this->set(compact('respuesta'));
 		$this->viewBuilder()->setLayout('ajax');
@@ -209,7 +230,6 @@ class CabinaController extends ApiController
 					}
 					$legend = 'Comentarios en:<br><strong>' . $title . '</strong>';
 					break;
-
 				} else if (isset($body->error)) {
 					$legend = '[#ApplicationRequestLimitReached]';
 					continue;

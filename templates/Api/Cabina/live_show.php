@@ -47,9 +47,16 @@
 
     <?= $this->Form->label('tema', 'Tema a tratar') ?>
     <?= $this->Form->text('tema', [
-        'value' => $nextProgram->tema ?? '',
+        'value' => $nextProgram->tema?->tema ?? '',
         'class' => 'w3-input',
         'id' => 'input-tema'
+    ]) ?>
+
+    <?= $this->Form->label('tags', 'Palabras clave / Estilo') ?>
+    <?= $this->Form->text('tags', [
+        'value' => $nextProgram->tema?->tags ?? '',
+        'class' => 'w3-input',
+        'id' => 'input-tags'
     ]) ?>
 
     <?= $this->Form->hidden('type', [

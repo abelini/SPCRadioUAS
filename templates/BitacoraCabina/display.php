@@ -216,8 +216,13 @@
 					if (data.programa.tema != null) {
 						inputTema.value = data.programa.tema.tema || '';
 						inputInvitados.value = data.programa.tema.invitados || '';
+						const inputTags = document.getElementById('input-tags');
+						if (inputTags) inputTags.value = data.programa.tema.tags || '';
 					} else {
 						inputTema.value = '';
+						inputInvitados.value = '';
+						const inputTags = document.getElementById('input-tags');
+						if (inputTags) inputTags.value = '';
 					}
 				})
 				.catch(error => {
