@@ -355,6 +355,16 @@
 				btn.disabled = false;
 				btn.innerHTML = textoOriginal;
 
+				const copyBtn = document.getElementById('copy-prompt-btn');
+				const promptEl = document.getElementById('prompt-fallback-text');
+				if (copyBtn && promptEl) {
+					copyBtn.addEventListener('click', () => {
+						navigator.clipboard.writeText(promptEl.value).then(() => {
+							copyBtn.innerHTML = '<i class="fa-solid fa-check"></i> Copiado';
+						});
+					});
+				}
+
 				if (datos.get('evento')) {
 					const nombreEvento = datos.get('evento');
 					mostrarTarjetaAjax(nombreEvento);
